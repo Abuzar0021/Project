@@ -34,6 +34,78 @@ body {
   outline-offset: 2px;
 }
 
+/*
+ * Suggestion marks (DESIGN 8.1). Category is encoded by underline stroke style,
+ * never by color alone, so the marks work in grayscale and for color-blind
+ * readers. Each category sets its own thickness in --mt, which the hover state
+ * grows by 0.5px.
+ */
+.margin-mark {
+  text-decoration-line: underline;
+  text-decoration-thickness: var(--mt, 1.5px);
+  text-underline-offset: 4px;
+  text-decoration-skip-ink: none;
+  cursor: pointer;
+}
+
+.margin-mark:hover {
+  text-decoration-thickness: calc(var(--mt, 1.5px) + 0.5px);
+}
+
+.margin-mark--correctness {
+  --mt: 1.5px;
+  text-decoration-style: wavy;
+  text-decoration-color: var(--cat-correct);
+}
+
+.margin-mark--clarity {
+  --mt: 2px;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--cat-clarity);
+}
+
+.margin-mark--tone {
+  --mt: 1.5px;
+  text-decoration-style: dashed;
+  text-decoration-color: var(--cat-tone);
+}
+
+.margin-mark--style {
+  --mt: 1px;
+  text-decoration-style: double;
+  text-decoration-color: var(--cat-style);
+}
+
+/* Active mark (card open or note active): a category tint behind the text. */
+.margin-mark--active {
+  border-radius: 2px;
+}
+.margin-mark--active.margin-mark--correctness {
+  background: var(--cat-correct-tint);
+}
+.margin-mark--active.margin-mark--clarity {
+  background: var(--cat-clarity-tint);
+}
+.margin-mark--active.margin-mark--tone {
+  background: var(--cat-tone-tint);
+}
+.margin-mark--active.margin-mark--style {
+  background: var(--cat-style-tint);
+}
+
+/* Screen-reader-only text (accessibility floor, DESIGN 11). */
+.margin-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Motion only answers actions. When the user asks for less, remove it. The
    applied-fix wash keeps a static tint elsewhere; there is nothing to disable
    here beyond transitions and animations. */
