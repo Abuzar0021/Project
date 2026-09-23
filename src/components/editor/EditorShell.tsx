@@ -11,6 +11,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { EditorContent } from "@tiptap/react";
 import { useMarginEditor } from "./use-margin-editor";
+import { useChecking } from "./use-checking";
 import { TopBar } from "./TopBar";
 import { useEditorUI } from "@/store/editor-ui";
 import { SAMPLE_DOC, DEFAULT_TITLE } from "@/lib/editor/sample-doc";
@@ -22,9 +23,9 @@ const AUTOSAVE_DELAY_MS = 500;
 
 export function EditorShell() {
   const editor = useMarginEditor();
+  const { runCheck } = useChecking(editor);
   const setTitle = useEditorUI((s) => s.setTitle);
   const setWordCount = useEditorUI((s) => s.setWordCount);
-  const setStatus = useEditorUI((s) => s.setStatus);
   const title = useEditorUI((s) => s.title);
 
   const initedRef = useRef(false);
@@ -58,25 +59,24 @@ export function EditorShell() {
       setTitle(DEFAULT_TITLE);
     }
 
-    const text = editor.getText();
-    setWordCount(countWords(text));
-    setStatus(text.trim() ? "idle" : "empty");
-  }, [editor, setTitle, setWordCount, setStatus]);
+    setWordCount(countWords(editor.getText()));
+    // The initial load uses emitUpdate=false, so kick off checking explicitly.
+    runCheck();
+  }, [editor, setTitle, setWordCount, runCheck]);
 
-  // Keep word count and status live, and autosave on every document change.
+  // Keep the word count live and autosave on every document change. Checking is
+  // driven by its own update listener inside useChecking.
   useEffect(() => {
     if (!editor) return;
     const onUpdate = () => {
-      const text = editor.getText();
-      setWordCount(countWords(text));
-      setStatus(text.trim() ? "idle" : "empty");
+      setWordCount(countWords(editor.getText()));
       scheduleSave();
     };
     editor.on("update", onUpdate);
     return () => {
       editor.off("update", onUpdate);
     };
-  }, [editor, setWordCount, setStatus, scheduleSave]);
+  }, [editor, setWordCount, scheduleSave]);
 
   // Autosave when only the title changes (no document edit fired).
   useEffect(() => {
@@ -92,13 +92,12 @@ export function EditorShell() {
 
   const onNewDraft = useCallback(() => {
     if (!editor) return;
+    // clearContent emits an update, which drives useChecking and the word count.
     editor.commands.clearContent(true);
     clearDraft();
     setTitle(DEFAULT_TITLE);
-    setWordCount(0);
-    setStatus("empty");
     editor.commands.focus();
-  }, [editor, setTitle, setWordCount, setStatus]);
+  }, [editor, setTitle]);
 
   return (
     <div className={styles.app}>

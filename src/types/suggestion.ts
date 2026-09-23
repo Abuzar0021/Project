@@ -36,6 +36,24 @@ export interface Suggestion {
   source: SuggestionSource;
 }
 
+/**
+ * A detected issue before it is placed in the document. Both the LanguageTool
+ * path and the local rules produce these; build-suggestions maps their block
+ * offsets to document positions and turns them into Suggestions.
+ */
+export interface DetectedIssue {
+  /** UTF-16 offset into the block text. */
+  offset: number;
+  /** Length in UTF-16 code units. */
+  length: number;
+  ruleId: string;
+  category: Category;
+  title: string;
+  message: string;
+  replacements: string[];
+  source: SuggestionSource;
+}
+
 /** The category filter shown in the top bar. "all" shows every category. */
 export type CategoryFilter = "all" | Category;
 
