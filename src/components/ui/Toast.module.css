@@ -1,0 +1,39 @@
+/* Toast styles. Values from tokens.css. */
+
+.region {
+  position: fixed;
+  left: 50%;
+  bottom: var(--s-6);
+  transform: translateX(-50%);
+  z-index: 60;
+  pointer-events: none;
+}
+
+.toast {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--s-4);
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--radius-note);
+  box-shadow: var(--shadow-card);
+  font: var(--t-ui);
+  pointer-events: auto;
+}
+
+.message {
+  white-space: nowrap;
+}
+
+.action {
+  font: var(--t-ui);
+  font-weight: 500;
+  color: var(--paper);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}

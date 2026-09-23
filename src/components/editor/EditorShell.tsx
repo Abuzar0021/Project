@@ -13,6 +13,9 @@ import { EditorContent } from "@tiptap/react";
 import { useMarginEditor } from "./use-margin-editor";
 import { useChecking } from "./use-checking";
 import { useSuggestionDecorations } from "./use-suggestion-decorations";
+import { useMarkClicks } from "@/components/card/use-mark-clicks";
+import { SuggestionCard } from "@/components/card/SuggestionCard";
+import { Toast } from "@/components/ui/Toast";
 import { TopBar } from "./TopBar";
 import { useEditorUI } from "@/store/editor-ui";
 import { SAMPLE_DOC, DEFAULT_TITLE } from "@/lib/editor/sample-doc";
@@ -26,6 +29,7 @@ export function EditorShell() {
   const editor = useMarginEditor();
   const { runCheck } = useChecking(editor);
   useSuggestionDecorations(editor);
+  useMarkClicks(editor);
   const setTitle = useEditorUI((s) => s.setTitle);
   const setWordCount = useEditorUI((s) => s.setWordCount);
   const title = useEditorUI((s) => s.title);
@@ -115,6 +119,8 @@ export function EditorShell() {
           <aside className={styles.rail} aria-label="Suggestions" />
         </div>
       </div>
+      <SuggestionCard editor={editor} />
+      <Toast />
     </div>
   );
 }

@@ -93,6 +93,41 @@ body {
   background: var(--cat-style-tint);
 }
 
+/*
+ * Applied-fix wash (DESIGN 6): a category tint over the new text that fades out
+ * over 600ms. The base background is the static tint; the animation fades it to
+ * transparent. Under reduced motion the animation is off, so the tint stays flat
+ * for the 600ms until the decoration is removed.
+ */
+.margin-wash {
+  border-radius: 2px;
+  animation: margin-wash-fade var(--dur-wash) ease-out forwards;
+}
+.margin-wash--correctness {
+  background-color: var(--cat-correct-tint);
+}
+.margin-wash--clarity {
+  background-color: var(--cat-clarity-tint);
+}
+.margin-wash--tone {
+  background-color: var(--cat-tone-tint);
+}
+.margin-wash--style {
+  background-color: var(--cat-style-tint);
+}
+
+@keyframes margin-wash-fade {
+  to {
+    background-color: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .margin-wash {
+    animation: none !important;
+  }
+}
+
 /* Screen-reader-only text (accessibility floor, DESIGN 11). */
 .margin-visually-hidden {
   position: absolute;

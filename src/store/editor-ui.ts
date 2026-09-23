@@ -22,6 +22,10 @@ interface EditorUIState {
 
   status: CheckStatus;
   setStatus: (status: CheckStatus) => void;
+
+  /** The suggestion whose card is open, or null. One card at a time. */
+  activeSuggestionId: string | null;
+  setActiveSuggestion: (id: string | null) => void;
 }
 
 export const useEditorUI = create<EditorUIState>((set) => ({
@@ -36,4 +40,7 @@ export const useEditorUI = create<EditorUIState>((set) => ({
 
   status: "empty",
   setStatus: (status) => set({ status }),
+
+  activeSuggestionId: null,
+  setActiveSuggestion: (activeSuggestionId) => set({ activeSuggestionId }),
 }));

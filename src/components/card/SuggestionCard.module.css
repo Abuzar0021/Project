@@ -1,0 +1,119 @@
+/* Suggestion card styles (DESIGN 8.2). Values from tokens.css. */
+
+.card {
+  width: 320px;
+  max-width: calc(100vw - 2 * var(--s-4));
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--s-4);
+  z-index: 50;
+  animation: card-open var(--dur-popover) var(--ease-standard);
+}
+
+@keyframes card-open {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none;
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font: var(--t-ui-sm);
+  color: var(--ink-muted);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.category {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.sep {
+  color: var(--rule);
+}
+
+.title {
+  color: var(--ink-muted);
+}
+
+.replacements {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+
+.original {
+  font: var(--t-ui);
+  color: var(--ink-muted);
+  text-decoration-line: line-through;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.primaryRepl,
+.altRepl {
+  font: var(--t-ui);
+  padding: 2px var(--s-2);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--rule);
+  background: var(--sheet);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.primaryRepl {
+  border-color: var(--pencil);
+  color: var(--pencil);
+  font-weight: 500;
+}
+
+.altRepl:hover,
+.primaryRepl:hover {
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+.message {
+  font: var(--t-ui);
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-1);
+}

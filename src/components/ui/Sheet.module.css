@@ -1,0 +1,36 @@
+/* Bottom sheet styles. Values from tokens.css. */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: rgb(28 33 39 / 0.32);
+  z-index: 70;
+}
+
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 71;
+  max-height: 85dvh;
+  overflow-y: auto;
+  background: var(--sheet);
+  border-top-left-radius: var(--radius-card);
+  border-top-right-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--s-5) var(--s-4)
+    calc(var(--s-5) + env(safe-area-inset-bottom, 0px));
+  animation: sheet-rise var(--dur-note) var(--ease-standard);
+}
+
+@keyframes sheet-rise {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

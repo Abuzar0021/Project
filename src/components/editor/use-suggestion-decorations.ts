@@ -17,12 +17,18 @@ import {
 } from "@/lib/editor/suggestions-plugin";
 import { useSuggestions } from "@/store/suggestions";
 import { useEditorUI } from "@/store/editor-ui";
+import { usePrefs } from "@/store/prefs";
+import { visibleSuggestions } from "@/lib/suggestions/visibility";
 
 export function useSuggestionDecorations(editor: Editor | null): void {
   const removeSuggestion = useSuggestions((s) => s.removeSuggestion);
   const updatePositions = useSuggestions((s) => s.updatePositions);
   const byId = useSuggestions((s) => s.byId);
   const filter = useEditorUI((s) => s.filter);
+  const activeId = useEditorUI((s) => s.activeSuggestionId);
+  const ignoredRules = usePrefs((s) => s.ignoredRules);
+  const dictionary = usePrefs((s) => s.dictionary);
+  const dismissed = usePrefs((s) => s.dismissed);
   const lastSignature = useRef<string>("");
 
   // Register the plugin once per editor instance.
@@ -41,18 +47,24 @@ export function useSuggestionDecorations(editor: Editor | null): void {
     };
   }, [editor, removeSuggestion, updatePositions]);
 
-  // Rebuild marks when the suggestion id set or the filter changes.
+  // Rebuild marks when the visible suggestion set, the filter, or the active
+  // suggestion changes. Position syncs keep the id set the same, so they never
+  // trigger a rebuild.
   useEffect(() => {
     if (!editor) return;
-    const suggestions = Object.values(byId);
+    const suggestions = visibleSuggestions(Object.values(byId), {
+      ignoredRules,
+      dictionary,
+      dismissed,
+    });
     const signature = `${suggestions
       .map((s) => s.id)
       .sort()
-      .join("|")}::${filter}`;
+      .join("|")}::${filter}::${activeId ?? ""}`;
     if (signature === lastSignature.current) return;
     lastSignature.current = signature;
     editor.view.dispatch(
-      editor.state.tr.setMeta(REBUILD_META, { suggestions, filter }),
+      editor.state.tr.setMeta(REBUILD_META, { suggestions, filter, activeId }),
     );
-  }, [editor, byId, filter]);
+  }, [editor, byId, filter, activeId, ignoredRules, dictionary, dismissed]);
 }

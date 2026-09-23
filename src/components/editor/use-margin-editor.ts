@@ -8,9 +8,19 @@
 "use client";
 
 import { useEditor, type Editor } from "@tiptap/react";
+import { Extension } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { BlockId } from "@/lib/editor/block-id";
+import { createWashPlugin } from "@/lib/editor/wash-plugin";
+
+// Registers the applied-fix wash as a ProseMirror plugin on the editor.
+const Wash = Extension.create({
+  name: "wash",
+  addProseMirrorPlugins() {
+    return [createWashPlugin()];
+  },
+});
 
 const PLACEHOLDER =
   "Start writing, or paste a draft. Suggestions appear in the margin.";
@@ -31,6 +41,7 @@ export function useMarginEditor(): Editor | null {
         showOnlyCurrent: false,
       }),
       BlockId,
+      Wash,
     ],
     editorProps: {
       attributes: {

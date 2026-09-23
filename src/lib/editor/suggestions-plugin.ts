@@ -28,6 +28,7 @@ export const REBUILD_META = "rebuildSuggestions";
 interface RebuildMeta {
   suggestions: Suggestion[];
   filter: CategoryFilter;
+  activeId?: string | null;
 }
 
 interface PositionSync {
@@ -64,6 +65,7 @@ export function buildDecorationSet(
   doc: ProseMirrorNode,
   suggestions: Suggestion[],
   filter: CategoryFilter,
+  activeId?: string | null,
 ): DecorationSet {
   const decorations: Decoration[] = [];
   const max = doc.content.size;
@@ -74,12 +76,13 @@ export function buildDecorationSet(
     // Guard against positions that fall outside the current document.
     if (from < 0 || to > max || from >= to) continue;
 
+    const activeClass = id === activeId ? " margin-mark--active" : "";
     decorations.push(
       Decoration.inline(
         from,
         to,
         {
-          class: `margin-mark margin-mark--${category}`,
+          class: `margin-mark margin-mark--${category}${activeClass}`,
           "data-suggestion-id": id,
           "aria-describedby": descriptionId(id),
         },
@@ -150,6 +153,7 @@ export function createSuggestionsPlugin(
               tr.doc,
               meta.suggestions,
               meta.filter,
+              meta.activeId,
             ),
             removedIds: [],
             syncs: [],
