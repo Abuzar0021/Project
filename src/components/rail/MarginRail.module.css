@@ -1,0 +1,160 @@
+/* Margin rail styles (DESIGN 8.3). Values from tokens.css. */
+
+.rail {
+  position: relative;
+  width: 300px;
+  flex: none;
+}
+
+.empty {
+  font: var(--t-ui-sm);
+  color: var(--ink-muted);
+  margin: 0;
+  padding-top: var(--s-1);
+}
+
+/* Notes are absolutely positioned; top comes from the layout algorithm and
+   animates when the active note pulls the stack level with its line. */
+.item {
+  position: absolute;
+  left: 0;
+  right: 0;
+  transition: top var(--dur-note) var(--ease-standard);
+}
+
+.noteButton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-note);
+  padding: var(--s-2);
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.item:hover .noteButton,
+.itemHovered .noteButton {
+  border-color: var(--rule);
+  background: var(--sheet);
+}
+
+.itemActive .noteButton {
+  border-color: var(--pencil);
+  background: var(--sheet);
+  box-shadow: var(--shadow-note-active);
+}
+
+.noteHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font: var(--t-ui-sm);
+  color: var(--ink);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.noteTitle {
+  font-weight: 500;
+}
+
+.preview {
+  display: flex;
+  gap: var(--s-2);
+  font: var(--t-ui-sm);
+  color: var(--ink-muted);
+  padding-left: calc(8px + var(--s-2));
+}
+
+.original {
+  text-decoration-line: line-through;
+  color: var(--ink-muted);
+}
+
+.previewRepl {
+  color: var(--ink);
+}
+
+/* Expanded (active) note: replacements and inline actions. */
+.expanded {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: 0 var(--s-2) var(--s-2);
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+
+.primaryRepl,
+.altRepl {
+  font: var(--t-ui-sm);
+  padding: 2px var(--s-2);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--rule);
+  background: var(--sheet);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.primaryRepl {
+  border-color: var(--pencil);
+  color: var(--pencil);
+  font-weight: 500;
+}
+
+.message {
+  font: var(--t-ui-sm);
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: var(--s-2);
+}
+
+/* Tablet dot rail. */
+.dotRail {
+  width: 44px;
+}
+
+.dotItem {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: top var(--dur-note) var(--ease-standard);
+}
+
+.dotButton {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--sheet);
+  cursor: pointer;
+  padding: 0;
+}
+
+.dotHovered {
+  outline: 2px solid var(--pencil);
+  outline-offset: 1px;
+}
+
+@media (max-width: 767px) {
+  .rail {
+    display: none;
+  }
+}

@@ -48,8 +48,14 @@ body {
   cursor: pointer;
 }
 
-.margin-mark:hover {
+.margin-mark:hover,
+.margin-mark--hovered {
   text-decoration-thickness: calc(var(--mt, 1.5px) + 0.5px);
+}
+
+.margin-mark--hovered {
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+  border-radius: 2px;
 }
 
 .margin-mark--correctness {

@@ -14,7 +14,9 @@ import { useMarginEditor } from "./use-margin-editor";
 import { useChecking } from "./use-checking";
 import { useSuggestionDecorations } from "./use-suggestion-decorations";
 import { useMarkClicks } from "@/components/card/use-mark-clicks";
+import { useMarkHover } from "@/components/card/use-mark-hover";
 import { SuggestionCard } from "@/components/card/SuggestionCard";
+import { MarginRail } from "@/components/rail/MarginRail";
 import { Toast } from "@/components/ui/Toast";
 import { TopBar } from "./TopBar";
 import { useEditorUI } from "@/store/editor-ui";
@@ -30,6 +32,7 @@ export function EditorShell() {
   const { runCheck } = useChecking(editor);
   useSuggestionDecorations(editor);
   useMarkClicks(editor);
+  useMarkHover(editor);
   const setTitle = useEditorUI((s) => s.setTitle);
   const setWordCount = useEditorUI((s) => s.setWordCount);
   const title = useEditorUI((s) => s.title);
@@ -115,8 +118,7 @@ export function EditorShell() {
           <div className={styles.sheet}>
             <EditorContent editor={editor} className={styles.editor} />
           </div>
-          {/* Reserved margin rail (DESIGN 8.3), filled in Phase 5. */}
-          <aside className={styles.rail} aria-label="Suggestions" />
+          <MarginRail editor={editor} />
         </div>
       </div>
       <SuggestionCard editor={editor} />

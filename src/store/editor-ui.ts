@@ -23,9 +23,15 @@ interface EditorUIState {
   status: CheckStatus;
   setStatus: (status: CheckStatus) => void;
 
-  /** The suggestion whose card is open, or null. One card at a time. */
+  /** The active suggestion, or null. One at a time. The source decides how it
+   * shows: "mark" opens the popover/sheet card, "rail" expands the rail note. */
   activeSuggestionId: string | null;
-  setActiveSuggestion: (id: string | null) => void;
+  activeSource: "mark" | "rail" | null;
+  setActiveSuggestion: (id: string | null, source?: "mark" | "rail") => void;
+
+  /** The suggestion currently hovered (in the rail or the text), or null. */
+  hoveredSuggestionId: string | null;
+  setHoveredSuggestion: (id: string | null) => void;
 }
 
 export const useEditorUI = create<EditorUIState>((set) => ({
@@ -42,5 +48,13 @@ export const useEditorUI = create<EditorUIState>((set) => ({
   setStatus: (status) => set({ status }),
 
   activeSuggestionId: null,
-  setActiveSuggestion: (activeSuggestionId) => set({ activeSuggestionId }),
+  activeSource: null,
+  setActiveSuggestion: (id, source = "mark") =>
+    set({
+      activeSuggestionId: id,
+      activeSource: id ? source : null,
+    }),
+
+  hoveredSuggestionId: null,
+  setHoveredSuggestion: (hoveredSuggestionId) => set({ hoveredSuggestionId }),
 }));

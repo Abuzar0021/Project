@@ -40,10 +40,13 @@ const EMPTY_RECT = {
 
 export function SuggestionCard({ editor }: { editor: Editor | null }) {
   const activeId = useEditorUI((s) => s.activeSuggestionId);
+  const activeSource = useEditorUI((s) => s.activeSource);
   const setActive = useEditorUI((s) => s.setActiveSuggestion);
   const suggestion = useSuggestions((s) =>
     activeId ? s.byId[activeId] : undefined,
   );
+  // The card only handles mark/dot activations; rail activations expand inline.
+  const cardOpen = Boolean(suggestion) && activeSource === "mark";
   const ignoreRule = usePrefs((s) => s.ignoreRule);
   const addToDictionary = usePrefs((s) => s.addToDictionary);
   const dismiss = usePrefs((s) => s.dismiss);
@@ -90,13 +93,13 @@ export function SuggestionCard({ editor }: { editor: Editor | null }) {
   });
 
   useEffect(() => {
-    if (!suggestion || isMobile) return;
+    if (!cardOpen || isMobile) return;
     refs.setPositionReference(reference);
-  }, [refs, reference, suggestion, isMobile]);
+  }, [refs, reference, cardOpen, isMobile]);
 
   // Keep the popover glued to the mark while the document scrolls or resizes.
   useEffect(() => {
-    if (!suggestion || isMobile) return;
+    if (!cardOpen || isMobile) return;
     const onMove = () => update();
     window.addEventListener("scroll", onMove, true);
     window.addEventListener("resize", onMove);
@@ -104,7 +107,7 @@ export function SuggestionCard({ editor }: { editor: Editor | null }) {
       window.removeEventListener("scroll", onMove, true);
       window.removeEventListener("resize", onMove);
     };
-  }, [suggestion, isMobile, update]);
+  }, [cardOpen, isMobile, update]);
 
   const close = useCallback(() => {
     setActive(null);
@@ -116,9 +119,9 @@ export function SuggestionCard({ editor }: { editor: Editor | null }) {
   // Move focus into the card when it opens so the keyboard map works and screen
   // readers announce the dialog.
   useEffect(() => {
-    if (!suggestion || isMobile) return;
+    if (!cardOpen || isMobile) return;
     refs.floating.current?.focus();
-  }, [suggestion, isMobile, refs]);
+  }, [cardOpen, isMobile, refs]);
 
   // Close if the suggestion is gone (removed by an edit or a recheck).
   useEffect(() => {
@@ -127,7 +130,7 @@ export function SuggestionCard({ editor }: { editor: Editor | null }) {
 
   // Outside press closes the popover.
   useEffect(() => {
-    if (!suggestion || isMobile) return;
+    if (!cardOpen || isMobile) return;
     const onDown = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null;
       if (!target) return;
@@ -137,7 +140,7 @@ export function SuggestionCard({ editor }: { editor: Editor | null }) {
     };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
-  }, [suggestion, isMobile, refs, setActive]);
+  }, [cardOpen, isMobile, refs, setActive]);
 
   const doApply = useCallback(
     (replacement: string) => {
@@ -195,7 +198,7 @@ export function SuggestionCard({ editor }: { editor: Editor | null }) {
     [suggestion, close, doApply, doDismiss],
   );
 
-  if (!suggestion) return null;
+  if (!suggestion || !cardOpen) return null;
 
   const showAddToDictionary =
     suggestion.category === "correctness" &&

@@ -41,11 +41,6 @@
   max-width: calc(var(--editor-measure) + 2 * var(--s-6));
 }
 
-.rail {
-  width: 300px;
-  flex: none;
-}
-
 /* Editor content: type from the scale, capped at the reading measure. */
 .editor :global(.ProseMirror) {
   font: var(--t-doc-body);
@@ -91,16 +86,9 @@
   pointer-events: none;
 }
 
-/* Tablet: rail collapses to a dot column (DESIGN 7). */
-@media (max-width: 1099px) and (min-width: 768px) {
-  .rail {
-    width: 44px;
-  }
-}
-
-/* Mobile: no rail, no minimap; marks stay inline (DESIGN 7). */
+/* Mobile: no minimap; the rail hides itself (see MarginRail). Marks stay inline
+   (DESIGN 7). */
 @media (max-width: 767px) {
-  .rail,
   .minimap {
     display: none;
   }
