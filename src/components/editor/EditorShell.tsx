@@ -13,6 +13,7 @@ import { EditorContent } from "@tiptap/react";
 import { useMarginEditor } from "./use-margin-editor";
 import { useChecking } from "./use-checking";
 import { useSuggestionDecorations } from "./use-suggestion-decorations";
+import { useKeyboardShortcuts } from "./use-keyboard-shortcuts";
 import { useMarkClicks } from "@/components/card/use-mark-clicks";
 import { useMarkHover } from "@/components/card/use-mark-hover";
 import { SuggestionCard } from "@/components/card/SuggestionCard";
@@ -34,6 +35,7 @@ export function EditorShell() {
   useSuggestionDecorations(editor);
   useMarkClicks(editor);
   useMarkHover(editor);
+  useKeyboardShortcuts(editor);
   const setTitle = useEditorUI((s) => s.setTitle);
   const setWordCount = useEditorUI((s) => s.setWordCount);
   const setPlainText = useEditorUI((s) => s.setPlainText);

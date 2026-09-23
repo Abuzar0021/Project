@@ -1,0 +1,62 @@
+/* Shortcuts dialog styles. Values from tokens.css. */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: rgb(28 33 39 / 0.32);
+  z-index: 70;
+}
+
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 71;
+  width: min(420px, calc(100vw - 2 * var(--s-4)));
+  max-height: 85dvh;
+  overflow-y: auto;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--s-5);
+}
+
+.title {
+  font: var(--t-ui-lg);
+  margin: 0 0 var(--s-4);
+  color: var(--ink);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  margin: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 40% 1fr;
+  gap: var(--s-3);
+  align-items: baseline;
+}
+
+.keys {
+  font: var(--t-ui-sm);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.action {
+  font: var(--t-ui);
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--s-5);
+}

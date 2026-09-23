@@ -13,9 +13,10 @@ import { useEditorUI } from "@/store/editor-ui";
 import { CATEGORIES, CATEGORY_LABELS } from "@/types/suggestion";
 import type { CategoryFilter } from "@/types/suggestion";
 import { Chip } from "@/components/ui/Chip";
-import { Button } from "@/components/ui/Button";
 import { ScorePanel } from "@/components/score/ScorePanel";
+import { StatusIndicator } from "@/components/status/StatusIndicator";
 import { ThemeToggle } from "./ThemeToggle";
+import { ShortcutsDialog } from "./ShortcutsDialog";
 import styles from "./TopBar.module.css";
 
 const CATEGORY_COLORS: Record<(typeof CATEGORIES)[number], string> = {
@@ -68,11 +69,10 @@ export function TopBar({ onNewDraft }: TopBarProps) {
         <span className={styles.wordCount}>
           {wordCount.toLocaleString("en-US")} words
         </span>
-        {/* Status slot: the StatusIndicator lands here once checking exists. */}
-        <span className={styles.statusSlot} aria-live="polite" />
+        <StatusIndicator />
         <ScorePanel />
         <ThemeToggle />
-        <Button aria-label="Keyboard shortcuts">Shortcuts</Button>
+        <ShortcutsDialog />
       </div>
     </header>
   );

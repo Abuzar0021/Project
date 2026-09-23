@@ -128,7 +128,8 @@ export function SuggestionCard({ editor }: { editor: Editor | null }) {
     if (activeId && !suggestion) setActive(null);
   }, [activeId, suggestion, setActive]);
 
-  // Outside press closes the popover.
+  // Outside press or Escape closes the popover. Escape is handled at the
+  // document level too, so it works even if focus has not landed in the card.
   useEffect(() => {
     if (!cardOpen || isMobile) return;
     const onDown = (event: MouseEvent) => {
@@ -138,9 +139,16 @@ export function SuggestionCard({ editor }: { editor: Editor | null }) {
       if (target.closest("[data-suggestion-id]")) return; // handled elsewhere
       setActive(null);
     };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close();
+    };
     document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [cardOpen, isMobile, refs, setActive]);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [cardOpen, isMobile, refs, setActive, close]);
 
   const doApply = useCallback(
     (replacement: string) => {

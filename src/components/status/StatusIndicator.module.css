@@ -1,0 +1,10 @@
+/* Status indicator styles. Values from tokens.css. */
+
+.status {
+  font: var(--t-ui-sm);
+  color: var(--ink-muted);
+  white-space: nowrap;
+  max-width: 40ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
