@@ -1,0 +1,39 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# Next.js
+/.next
+/out
+/build
+next-env.d.ts
+
+# Production
+/dist
+
+# Testing
+/coverage
+/playwright-report
+/test-results
+/.playwright
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Editor and OS
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# TypeScript build info
+*.tsbuildinfo

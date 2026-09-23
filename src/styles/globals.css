@@ -1,0 +1,49 @@
+/*
+ * globals.css: base layer for the app.
+ * Pulls in Tailwind v4 and the design tokens, sets the paper background and
+ * default type, and defines the shared focus ring and reduced-motion rule. Page
+ * and component specifics live with their components, not here.
+ */
+@import "tailwindcss";
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font: var(--t-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100dvh;
+}
+
+/* One focus ring for every interactive element (accessibility floor). */
+:focus-visible {
+  outline: 2px solid var(--pencil);
+  outline-offset: 2px;
+}
+
+/* Motion only answers actions. When the user asks for less, remove it. The
+   applied-fix wash keeps a static tint elsewhere; there is nothing to disable
+   here beyond transitions and animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

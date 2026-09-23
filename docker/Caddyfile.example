@@ -1,0 +1,11 @@
+# Example Caddy reverse proxy for a production deployment of Margin.
+# Copy to Caddyfile and edit the domain. Caddy fetches HTTPS certificates
+# automatically. Only the web app is exposed; LanguageTool stays on the
+# internal Docker network and is never reachable from outside.
+#
+# This file is a template for Phase 8. It is not used in local development.
+
+write.example.com {
+	encode zstd gzip
+	reverse_proxy web:3000
+}

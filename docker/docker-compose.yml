@@ -1,0 +1,25 @@
+# LanguageTool grammar engine for local development.
+# Margin never talks to LanguageTool directly from the browser; it goes through
+# our own /api/check route. In dev this container is the only piece you need to
+# run alongside `pnpm dev`.
+#
+# Start it with:  docker compose -f docker/docker-compose.yml up languagetool
+# Verify it with: curl "http://localhost:8010/v2/languages"
+
+services:
+  languagetool:
+    image: erikvl87/languagetool:latest
+    container_name: margin-languagetool
+    ports:
+      # Host 8010 maps to the container's default 8010. Matches LANGUAGETOOL_URL.
+      - "8010:8010"
+    environment:
+      # Cap the JVM heap so the container stays within a modest memory limit.
+      Java_Xmx: "1g"
+      # Disable ngram/word2vec downloads; the base rules are enough for the demo.
+      langtool_languageModel: ""
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+    restart: unless-stopped
