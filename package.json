@@ -25,9 +25,15 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
-    "next": "15.5.4",
+    "@tiptap/core": "^2.27.3",
+    "@tiptap/extension-placeholder": "^2.27.3",
+    "@tiptap/pm": "^2.27.3",
+    "@tiptap/react": "^2.27.3",
+    "@tiptap/starter-kit": "^2.27.3",
+    "next": "15.5.26",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.1",
@@ -39,7 +45,7 @@
     "@types/react-dom": "19.2.1",
     "@vitejs/plugin-react": "5.0.4",
     "eslint": "9.37.0",
-    "eslint-config-next": "15.5.4",
+    "eslint-config-next": "15.5.26",
     "eslint-config-prettier": "10.1.8",
     "jsdom": "27.0.0",
     "prettier": "3.6.2",

@@ -1,0 +1,156 @@
+/* TopBar styles. All values from tokens.css. */
+
+.bar {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: 0 var(--s-4);
+  background: var(--sheet);
+  border-bottom: 1px solid var(--rule);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  flex: none;
+}
+
+.wordmark {
+  font: var(--t-ui-lg);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.titleWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+
+.title {
+  font: var(--t-ui);
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  padding: var(--s-1) var(--s-2);
+  width: 18ch;
+  max-width: 40vw;
+}
+
+.title:hover {
+  border-color: var(--rule);
+}
+
+.titleMenuButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.titleMenuButton:hover {
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  color: var(--ink);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + var(--s-1));
+  left: 0;
+  min-width: 160px;
+  padding: var(--s-1);
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  z-index: 20;
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: var(--t-ui);
+  color: var(--ink);
+  padding: var(--s-2) var(--s-3);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  cursor: pointer;
+}
+
+.menuItem:hover {
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+.chips {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chips::-webkit-scrollbar {
+  display: none;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  flex: none;
+  margin-left: auto;
+}
+
+.wordCount {
+  font: var(--t-ui-sm);
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.statusSlot {
+  font: var(--t-ui-sm);
+  color: var(--ink-muted);
+  min-width: 0;
+}
+
+.score {
+  font-weight: 500;
+}
+
+/* Below 768px the bar wraps: wordmark/title and the right cluster share the top
+   row, and the filter chips drop to a full-width scrollable row (DESIGN 7). */
+@media (max-width: 767px) {
+  .bar {
+    height: auto;
+    flex-wrap: wrap;
+    padding: var(--s-2) var(--s-3);
+    row-gap: var(--s-2);
+  }
+
+  .right {
+    order: 2;
+  }
+
+  .chips {
+    order: 3;
+    flex-basis: 100%;
+  }
+}

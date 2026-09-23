@@ -1,0 +1,115 @@
+/* EditorShell layout. All values from tokens.css. Section references: DESIGN 7. */
+
+.app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+}
+
+.workspace {
+  position: relative;
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+/* Thin issue-minimap strip pinned to the left edge (DESIGN 8.4). Reserved and
+   empty this phase; 8px wide so the centered canvas stays visually balanced. */
+.minimap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+}
+
+.canvas {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--s-6);
+  padding: var(--s-7) var(--s-5);
+}
+
+.sheet {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sheet);
+  padding: var(--s-7) var(--s-6);
+  width: 100%;
+  /* Text is capped at the reading measure; padding adds the paper gutters. */
+  max-width: calc(var(--editor-measure) + 2 * var(--s-6));
+}
+
+.rail {
+  width: 300px;
+  flex: none;
+}
+
+/* Editor content: type from the scale, capped at the reading measure. */
+.editor :global(.ProseMirror) {
+  font: var(--t-doc-body);
+  color: var(--ink);
+  max-width: var(--editor-measure);
+  min-height: 60vh;
+  outline: none;
+}
+
+.editor :global(.ProseMirror h1) {
+  font: var(--t-doc-h1);
+  margin: 0 0 var(--s-4);
+}
+
+.editor :global(.ProseMirror h2) {
+  font: var(--t-doc-h2);
+  margin: var(--s-6) 0 var(--s-3);
+}
+
+.editor :global(.ProseMirror p) {
+  margin: 0 0 var(--s-4);
+}
+
+.editor :global(.ProseMirror ul) {
+  margin: 0 0 var(--s-4);
+  padding-left: var(--s-5);
+}
+
+.editor :global(.ProseMirror li) {
+  margin: var(--s-1) 0;
+}
+
+.editor :global(.ProseMirror li p) {
+  margin: 0;
+}
+
+/* Empty-document placeholder (DESIGN 9), provided by the Placeholder extension. */
+.editor :global(.ProseMirror p.is-editor-empty:first-child::before) {
+  content: attr(data-placeholder);
+  color: var(--ink-muted);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Tablet: rail collapses to a dot column (DESIGN 7). */
+@media (max-width: 1099px) and (min-width: 768px) {
+  .rail {
+    width: 44px;
+  }
+}
+
+/* Mobile: no rail, no minimap; marks stay inline (DESIGN 7). */
+@media (max-width: 767px) {
+  .rail,
+  .minimap {
+    display: none;
+  }
+
+  .canvas {
+    padding: var(--s-5) var(--s-4);
+  }
+
+  .sheet {
+    padding: var(--s-5) var(--s-4);
+  }
+}

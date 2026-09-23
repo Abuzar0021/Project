@@ -1,0 +1,43 @@
+/* Button primitive styles. Values come from tokens.css only. */
+
+.button {
+  font: var(--t-ui);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  min-height: 32px;
+  padding: 0 var(--s-3);
+  border-radius: var(--radius-control);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ghost:hover {
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+.primary {
+  background: var(--pencil);
+  color: var(--sheet);
+  font-weight: 500;
+}
+
+.primary:hover {
+  /* Darken the accent slightly on hover without leaving the token system. */
+  background: color-mix(in srgb, var(--pencil) 88%, var(--ink));
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Touch targets grow to 44px on coarse pointers (accessibility floor). */
+@media (pointer: coarse) {
+  .button {
+    min-height: 44px;
+  }
+}
