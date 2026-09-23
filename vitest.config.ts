@@ -16,6 +16,13 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["src/lib/**"],
+      // The brief requires 85%+ coverage for src/lib.
+      thresholds: {
+        statements: 85,
+        lines: 85,
+        functions: 85,
+        branches: 75,
+      },
     },
   },
   resolve: {

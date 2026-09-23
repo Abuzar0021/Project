@@ -8,6 +8,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Standalone output bundles a minimal server for the production Docker image.
+  output: "standalone",
 };
 
 export default nextConfig;

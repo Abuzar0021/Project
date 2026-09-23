@@ -1,25 +1,42 @@
-# LanguageTool grammar engine for local development.
-# Margin never talks to LanguageTool directly from the browser; it goes through
-# our own /api/check route. In dev this container is the only piece you need to
-# run alongside `pnpm dev`.
+# Full stack for Margin: the Next.js app and the LanguageTool engine.
 #
-# Start it with:  docker compose -f docker/docker-compose.yml up languagetool
-# Verify it with: curl "http://localhost:8010/v2/languages"
+# LanguageTool has no published ports, so it is reachable only by the `web`
+# service over the internal Docker network, never from the internet. The app
+# talks to it at http://languagetool:8010.
+#
+# Production:  docker compose -f docker/docker-compose.yml up --build
+#             then put Caddy (see Caddyfile.example) in front of web:3000.
+#
+# Local development of the app on the host does not use the `web` service. Run
+# just the engine and expose it to localhost with the dev override:
+#   docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up languagetool
 
 services:
   languagetool:
     image: erikvl87/languagetool:latest
     container_name: margin-languagetool
-    ports:
-      # Host 8010 maps to the container's default 8010. Matches LANGUAGETOOL_URL.
-      - "8010:8010"
     environment:
-      # Cap the JVM heap so the container stays within a modest memory limit.
       Java_Xmx: "1g"
-      # Disable ngram/word2vec downloads; the base rules are enough for the demo.
       langtool_languageModel: ""
+    # No `ports`: internal only. The dev override publishes it for host dev.
+    expose:
+      - "8010"
     deploy:
       resources:
         limits:
           memory: 1536M
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: margin-web
+    environment:
+      LANGUAGETOOL_URL: "http://languagetool:8010"
+    ports:
+      # Expose the app so an edge proxy (Caddy) or a browser can reach it.
+      - "3000:3000"
+    depends_on:
+      - languagetool
     restart: unless-stopped

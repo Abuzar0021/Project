@@ -1,0 +1,11 @@
+# Development override: publish LanguageTool to the host loopback so the app,
+# run on the host with `pnpm dev`, can reach it at http://localhost:8010. This
+# binds to 127.0.0.1 only, so it is never exposed to the network.
+#
+# Usage:
+#   docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up languagetool
+
+services:
+  languagetool:
+    ports:
+      - "127.0.0.1:8010:8010"

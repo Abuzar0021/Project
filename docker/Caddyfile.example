@@ -3,7 +3,10 @@
 # automatically. Only the web app is exposed; LanguageTool stays on the
 # internal Docker network and is never reachable from outside.
 #
-# This file is a template for Phase 8. It is not used in local development.
+# Two ways to run this:
+#   - As a Caddy service on the same compose network: use `reverse_proxy web:3000`.
+#   - As Caddy on the host in front of the published port: use
+#     `reverse_proxy localhost:3000`.
 
 write.example.com {
 	encode zstd gzip
