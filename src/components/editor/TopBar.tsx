@@ -14,6 +14,7 @@ import { CATEGORIES, CATEGORY_LABELS } from "@/types/suggestion";
 import type { CategoryFilter } from "@/types/suggestion";
 import { Chip } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
+import { ScorePanel } from "@/components/score/ScorePanel";
 import { ThemeToggle } from "./ThemeToggle";
 import styles from "./TopBar.module.css";
 
@@ -69,9 +70,7 @@ export function TopBar({ onNewDraft }: TopBarProps) {
         </span>
         {/* Status slot: the StatusIndicator lands here once checking exists. */}
         <span className={styles.statusSlot} aria-live="polite" />
-        <Button className={styles.score} aria-label="Open score panel">
-          Score
-        </Button>
+        <ScorePanel />
         <ThemeToggle />
         <Button aria-label="Keyboard shortcuts">Shortcuts</Button>
       </div>

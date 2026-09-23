@@ -1,26 +1,18 @@
 /* EditorShell layout. All values from tokens.css. Section references: DESIGN 7. */
 
 .app {
-  min-height: 100dvh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   background: var(--paper);
+  overflow: hidden;
 }
 
+/* The scroll container; the issue minimap is positioned against it. */
 .workspace {
   position: relative;
   flex: 1 1 auto;
   overflow-y: auto;
-}
-
-/* Thin issue-minimap strip pinned to the left edge (DESIGN 8.4). Reserved and
-   empty this phase; 8px wide so the centered canvas stays visually balanced. */
-.minimap {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 8px;
 }
 
 .canvas {
@@ -86,13 +78,8 @@
   pointer-events: none;
 }
 
-/* Mobile: no minimap; the rail hides itself (see MarginRail). Marks stay inline
-   (DESIGN 7). */
+/* Mobile: the minimap and rail hide themselves. Marks stay inline (DESIGN 7). */
 @media (max-width: 767px) {
-  .minimap {
-    display: none;
-  }
-
   .canvas {
     padding: var(--s-5) var(--s-4);
   }

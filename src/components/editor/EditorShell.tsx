@@ -17,6 +17,7 @@ import { useMarkClicks } from "@/components/card/use-mark-clicks";
 import { useMarkHover } from "@/components/card/use-mark-hover";
 import { SuggestionCard } from "@/components/card/SuggestionCard";
 import { MarginRail } from "@/components/rail/MarginRail";
+import { IssueMinimap } from "@/components/minimap/IssueMinimap";
 import { Toast } from "@/components/ui/Toast";
 import { TopBar } from "./TopBar";
 import { useEditorUI } from "@/store/editor-ui";
@@ -35,10 +36,12 @@ export function EditorShell() {
   useMarkHover(editor);
   const setTitle = useEditorUI((s) => s.setTitle);
   const setWordCount = useEditorUI((s) => s.setWordCount);
+  const setPlainText = useEditorUI((s) => s.setPlainText);
   const title = useEditorUI((s) => s.title);
 
   const initedRef = useRef(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const workspaceRef = useRef<HTMLDivElement>(null);
 
   // Debounced save of the current document and title. Reads the title from the
   // store at fire time so a title edit and a text edit share one timer.
@@ -68,24 +71,28 @@ export function EditorShell() {
       setTitle(DEFAULT_TITLE);
     }
 
-    setWordCount(countWords(editor.getText()));
+    const text = editor.getText();
+    setWordCount(countWords(text));
+    setPlainText(text);
     // The initial load uses emitUpdate=false, so kick off checking explicitly.
     runCheck();
-  }, [editor, setTitle, setWordCount, runCheck]);
+  }, [editor, setTitle, setWordCount, setPlainText, runCheck]);
 
   // Keep the word count live and autosave on every document change. Checking is
   // driven by its own update listener inside useChecking.
   useEffect(() => {
     if (!editor) return;
     const onUpdate = () => {
-      setWordCount(countWords(editor.getText()));
+      const text = editor.getText();
+      setWordCount(countWords(text));
+      setPlainText(text);
       scheduleSave();
     };
     editor.on("update", onUpdate);
     return () => {
       editor.off("update", onUpdate);
     };
-  }, [editor, setWordCount, scheduleSave]);
+  }, [editor, setWordCount, setPlainText, scheduleSave]);
 
   // Autosave when only the title changes (no document edit fired).
   useEffect(() => {
@@ -111,9 +118,12 @@ export function EditorShell() {
   return (
     <div className={styles.app}>
       <TopBar onNewDraft={onNewDraft} />
-      <div className={styles.workspace}>
-        {/* Reserved minimap strip (DESIGN 8.4), filled in Phase 6. */}
-        <div className={styles.minimap} aria-hidden="true" />
+      <div
+        className={styles.workspace}
+        ref={workspaceRef}
+        data-testid="workspace"
+      >
+        <IssueMinimap editor={editor} scrollRef={workspaceRef} />
         <div className={styles.canvas}>
           <div className={styles.sheet}>
             <EditorContent editor={editor} className={styles.editor} />

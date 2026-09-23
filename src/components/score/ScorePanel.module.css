@@ -1,0 +1,138 @@
+/* Score panel styles (DESIGN 8.5). Values from tokens.css. */
+
+.scoreLabel {
+  font-weight: 500;
+}
+
+.scoreNumber {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--pencil);
+}
+
+.panel {
+  width: 300px;
+  max-width: calc(100vw - 2 * var(--s-4));
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--s-4);
+  z-index: 50;
+  animation: score-open var(--dur-popover) var(--ease-standard);
+}
+
+@keyframes score-open {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.overall {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+
+.overallNumber {
+  font: var(--t-score);
+  color: var(--ink);
+}
+
+.overallLabel {
+  font: var(--t-ui-sm);
+  color: var(--ink-muted);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 84px 1fr 24px;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-1) var(--s-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: transparent;
+  cursor: pointer;
+  font: var(--t-ui);
+  color: var(--ink);
+}
+
+.row:hover {
+  border-color: var(--rule);
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+.rowLabel {
+  text-align: left;
+}
+
+/* A simple filled track, no rounded pill (DESIGN 8.5). */
+.bar {
+  display: block;
+  height: 8px;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+.barFill {
+  display: block;
+  height: 100%;
+}
+
+.rowCount {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+}
+
+.metrics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  margin: 0;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  font: var(--t-ui);
+}
+
+.metric dt {
+  color: var(--ink-muted);
+}
+
+.metric dd {
+  margin: 0;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.disclaimer {
+  font: var(--t-ui-sm);
+  color: var(--ink-muted);
+  margin: 0;
+}

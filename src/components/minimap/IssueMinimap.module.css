@@ -1,0 +1,47 @@
+/* Issue minimap styles (DESIGN 8.4). Values from tokens.css. */
+
+.strip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: pointer;
+}
+
+.window {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  pointer-events: none;
+}
+
+.tick {
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  height: 3px;
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+.tooltip {
+  position: absolute;
+  left: calc(8px + var(--s-1));
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font: var(--t-ui-sm);
+  color: var(--paper);
+  background: var(--ink);
+  padding: 2px var(--s-2);
+  border-radius: var(--radius-control);
+  pointer-events: none;
+  z-index: 5;
+}
+
+@media (max-width: 767px) {
+  .strip {
+    display: none;
+  }
+}

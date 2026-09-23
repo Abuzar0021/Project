@@ -20,6 +20,10 @@ interface EditorUIState {
   wordCount: number;
   setWordCount: (count: number) => void;
 
+  /** Plain text of the document, used by the score panel. */
+  plainText: string;
+  setPlainText: (text: string) => void;
+
   status: CheckStatus;
   setStatus: (status: CheckStatus) => void;
 
@@ -43,6 +47,9 @@ export const useEditorUI = create<EditorUIState>((set) => ({
 
   wordCount: 0,
   setWordCount: (wordCount) => set({ wordCount }),
+
+  plainText: "",
+  setPlainText: (plainText) => set({ plainText }),
 
   status: "empty",
   setStatus: (status) => set({ status }),
