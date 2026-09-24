@@ -9,7 +9,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Standalone output bundles a minimal server for the production Docker image.
-  output: "standalone",
+  // Vercel provides its own build output, so we skip it there (VERCEL is set
+  // during Vercel builds) and keep it for Docker and local production runs.
+  ...(process.env.VERCEL ? {} : { output: "standalone" as const }),
 };
 
 export default nextConfig;
