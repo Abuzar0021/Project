@@ -1,0 +1,25 @@
+# Caddy config for the LanguageTool gateway.
+#
+# Caddy gets a real HTTPS certificate for CHECK_DOMAIN automatically (Let's
+# Encrypt), then forwards a request to LanguageTool only when both are true:
+#   1. the path is one of the two LanguageTool endpoints we allow, and
+#   2. the request carries the correct X-Check-Secret header.
+# Everything else gets a plain 404, so the checker is invisible to randoms.
+#
+# CHECK_DOMAIN and CHECK_SHARED_SECRET come from the .env file via compose.
+
+{$CHECK_DOMAIN} {
+	@authorized {
+		path /v2/check /v2/languages
+		header X-Check-Secret {$CHECK_SHARED_SECRET}
+	}
+
+	handle @authorized {
+		reverse_proxy languagetool:8010
+	}
+
+	# Wrong path, or missing/incorrect secret: reveal nothing.
+	handle {
+		respond "Not found" 404
+	}
+}

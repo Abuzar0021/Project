@@ -1,0 +1,52 @@
+# LanguageTool behind Caddy, for the Margin app on Vercel to call.
+#
+# LanguageTool is never published to the host or the public internet. Only Caddy
+# can reach it, over the internal Docker network, and Caddy forwards a request
+# only when it carries the correct shared secret on the two allowed paths.
+#
+# Prerequisites on the VPS:
+#   - Docker and the Docker Compose plugin installed
+#   - Ports 80 and 443 open in the firewall
+#   - A DNS A record for CHECK_DOMAIN pointing at this VPS public IP
+#   - A .env file next to this file (copy .env.example, fill in the values)
+
+services:
+  languagetool:
+    image: erikvl87/languagetool:latest
+    container_name: languagetool
+    restart: unless-stopped
+    environment:
+      # Tune to the VPS memory. 2g heap is comfortable for general use.
+      - Java_Xms=512m
+      - Java_Xmx=2g
+    expose:
+      # Visible only to other services on checknet, not to the host or public.
+      - "8010"
+    networks:
+      - checknet
+
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: unless-stopped
+    depends_on:
+      - languagetool
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - CHECK_DOMAIN=${CHECK_DOMAIN}
+      - CHECK_SHARED_SECRET=${CHECK_SHARED_SECRET}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - checknet
+
+networks:
+  checknet:
+
+volumes:
+  caddy_data:
+  caddy_config:

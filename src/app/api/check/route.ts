@@ -92,6 +92,10 @@ export async function POST(request: Request) {
   }
 
   const base = process.env.LANGUAGETOOL_URL ?? "http://localhost:8010";
+  // Optional shared secret. When set, it is sent to the checker gateway so the
+  // VPS (Caddy) accepts only our requests. This runs on the server only and is
+  // never exposed to the browser; the client talks to /api/check, not the VPS.
+  const secret = process.env.LANGUAGETOOL_SECRET;
   const form = new URLSearchParams({
     text,
     language: lang,
@@ -102,7 +106,10 @@ export async function POST(request: Request) {
   try {
     ltResponse = await fetch(`${base}/v2/check`, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        ...(secret ? { "X-Check-Secret": secret } : {}),
+      },
       body: form.toString(),
     });
   } catch {
