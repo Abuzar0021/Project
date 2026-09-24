@@ -96,6 +96,12 @@ export function RailNote({
             <span className={styles.previewRepl}>{primary}</span>
           </span>
         ) : null}
+        {!active && !primary && suggestion.original ? (
+          // Advisory notes (hedging, passive voice, long sentence) carry no
+          // replacement, so instead of a bare label we show the flagged text so
+          // the writer sees what the note refers to. Long spans are clamped.
+          <span className={styles.flag}>{suggestion.original}</span>
+        ) : null}
       </button>
 
       {active ? (

@@ -84,6 +84,19 @@
   color: var(--ink);
 }
 
+/* Flagged text for advisory notes that have no replacement. Aligned under the
+   title and clamped to two lines so a long sentence stays a compact note. */
+.flag {
+  font: var(--t-ui-sm);
+  color: var(--ink-muted);
+  padding-left: calc(8px + var(--s-2));
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
 /* Expanded (active) note: replacements and inline actions. */
 .expanded {
   display: flex;
