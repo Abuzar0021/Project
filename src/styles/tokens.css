@@ -45,6 +45,9 @@
   --radius-note: 8px;
   --radius-card: 12px;
 
+  /* Scrim behind modal sheets and dialogs. */
+  --scrim: rgb(28 33 39 / 0.32);
+
   /* Elevation. The sheet has no shadow; only active notes and cards lift. */
   --shadow-note-active: 0 4px 16px rgb(28 33 39 / 0.1);
   --shadow-card:
@@ -89,7 +92,8 @@
   --cat-tone: #b18ceb;
   --cat-style: #4fc2a2;
 
-  /* Shadows read stronger on dark surfaces. */
+  /* Shadows and scrim read stronger on dark surfaces. */
+  --scrim: rgb(0 0 0 / 0.5);
   --shadow-note-active: 0 4px 16px rgb(0 0 0 / 0.4);
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 28px rgb(0 0 0 / 0.45);
 }
@@ -107,6 +111,7 @@
     --cat-clarity: #6fa0f2;
     --cat-tone: #b18ceb;
     --cat-style: #4fc2a2;
+    --scrim: rgb(0 0 0 / 0.5);
     --shadow-note-active: 0 4px 16px rgb(0 0 0 / 0.4);
     --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 28px rgb(0 0 0 / 0.45);
   }

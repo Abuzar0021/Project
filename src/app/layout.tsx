@@ -14,6 +14,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
+  // Browser-chrome color. This is HTML metadata, not styling, and cannot read a
+  // CSS variable, so these two values mirror --paper (light and dark) by hand.
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f3f4f1" },
     { media: "(prefers-color-scheme: dark)", color: "#16181b" },

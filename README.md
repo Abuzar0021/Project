@@ -84,9 +84,9 @@ docs/        Architecture notes
 
 In order, the five files that explain the most:
 
-1. `docs/ARCHITECTURE.md` — the checking pipeline and the hard problems.
-2. `src/lib/checking/scheduler.ts` — debounce, concurrency, abort, backoff,
+1. `docs/ARCHITECTURE.md`: the checking pipeline and the hard problems.
+2. `src/lib/checking/scheduler.ts`: debounce, concurrency, abort, backoff,
    staleness.
-3. `src/lib/checking/extract.ts` — text and the position map that anchors marks.
-4. `src/lib/editor/suggestions-plugin.ts` — how marks render and stay anchored.
-5. `src/lib/layout/rail-layout.ts` — the margin rail stacking algorithm.
+3. `src/lib/checking/extract.ts`: text and the position map that anchors marks.
+4. `src/lib/editor/suggestions-plugin.ts`: how marks render and stay anchored.
+5. `src/lib/layout/rail-layout.ts`: the margin rail stacking algorithm.

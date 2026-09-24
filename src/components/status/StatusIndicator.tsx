@@ -1,8 +1,11 @@
 /**
  * StatusIndicator: the small checker-status text in the top bar (DESIGN 8.6).
- * Copy is exact per the spec. "Checking..." only appears once a check has been
- * running for more than 400ms, so quick checks never flash it. An empty document
- * shows nothing.
+ * "Checking..." only appears once a check has been running for more than 400ms,
+ * so quick checks never flash it; "Checking paused..." shows when the checker is
+ * unreachable. The idle "all checked" label from 8.6 is intentionally dropped
+ * (Phase 9 declutter): it is persistent reassurance that says nothing actionable
+ * and crowds the filter chips at tablet width, so only the states that ask the
+ * writer to notice something are shown. An empty document shows nothing.
  */
 "use client";
 
@@ -27,8 +30,7 @@ export function StatusIndicator() {
   }, [status]);
 
   let text = "";
-  if (status === "idle") text = "All checked";
-  else if (status === "checking") text = showChecking ? "Checking..." : "";
+  if (status === "checking") text = showChecking ? "Checking..." : "";
   else if (status === "unreachable") text = UNREACHABLE_COPY;
 
   return (

@@ -3,7 +3,7 @@
 .scrim {
   position: fixed;
   inset: 0;
-  background: rgb(28 33 39 / 0.32);
+  background: var(--scrim);
   z-index: 70;
 }
 
