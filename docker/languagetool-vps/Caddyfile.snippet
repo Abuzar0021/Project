@@ -1,0 +1,23 @@
+# Caddy site block for the "behind an existing proxy" setup.
+#
+# Append this to your existing Caddyfile, then reload Caddy
+# (docker exec <caddy-container> caddy reload --config /etc/caddy/Caddyfile).
+# It serves LanguageTool over HTTPS at your subdomain, but only for requests
+# that carry the shared secret on the two allowed paths. Everything else is 404,
+# so the checker is invisible to anyone without the secret.
+#
+# Replace the domain and the secret with your own. The secret must match
+# LANGUAGETOOL_SECRET in your Vercel project settings.
+
+check.example.com {
+    @authorized {
+        path /v2/check /v2/languages
+        header X-Check-Secret "replace-with-your-shared-secret"
+    }
+    handle @authorized {
+        reverse_proxy languagetool:8010
+    }
+    handle {
+        respond "Not found" 404
+    }
+}

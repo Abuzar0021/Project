@@ -22,6 +22,14 @@ services:
     expose:
       # Visible only to other services on checknet, not to the host or public.
       - "8010"
+    healthcheck:
+      # LanguageTool takes a few minutes to load its models, so the check counts
+      # as "starting" (not "unhealthy") until start_period passes.
+      test: ["CMD-SHELL", "timeout 3 bash -c '</dev/tcp/localhost/8010' || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 300s
     networks:
       - checknet
 

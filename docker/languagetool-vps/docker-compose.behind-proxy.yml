@@ -1,0 +1,37 @@
+# LanguageTool joined to an EXISTING reverse proxy on the same host.
+#
+# Use this when the VPS already runs a proxy (Caddy, nginx, Traefik) that owns
+# ports 80 and 443. LanguageTool publishes no ports; the existing proxy reaches
+# it by the container name "languagetool" on a shared external network, and is
+# responsible for HTTPS and the shared-secret check (see Caddyfile.snippet).
+#
+# Set PROXY_NETWORK in .env to the existing proxy's Docker network name (find it
+# with `docker inspect <proxy-container> --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}'`),
+# then start with:
+#   docker compose -f docker-compose.behind-proxy.yml up -d
+
+services:
+  languagetool:
+    image: erikvl87/languagetool:latest
+    container_name: languagetool
+    restart: unless-stopped
+    environment:
+      - Java_Xms=512m
+      - Java_Xmx=2g
+    expose:
+      - "8010"
+    healthcheck:
+      # LanguageTool takes a few minutes to load its models, so the check counts
+      # as "starting" (not "unhealthy") until start_period passes.
+      test: ["CMD-SHELL", "timeout 3 bash -c '</dev/tcp/localhost/8010' || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 300s
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+    name: ${PROXY_NETWORK}
