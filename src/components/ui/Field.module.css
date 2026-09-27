@@ -1,0 +1,39 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.label {
+  font-size: 13px;
+  color: var(--tx-2);
+}
+
+.input {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  color: var(--tx);
+  font-size: 15px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color var(--dur-hover) ease;
+}
+
+.input::placeholder {
+  color: var(--tx-3);
+}
+
+.input:focus {
+  border-color: var(--accent);
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--error);
+}
+
+.error {
+  font-size: 13px;
+  color: var(--error);
+}

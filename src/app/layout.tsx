@@ -1,37 +1,24 @@
-/**
- * Root layout for Margin.
- * Wires the two fonts onto <html> as CSS variables, loads global styles, and
- * applies the saved theme before first paint so there is no light/dark flash.
- */
 import type { Metadata, Viewport } from "next";
-import { newsreader, instrumentSans } from "@/lib/fonts";
+import { inter, interTight, jetbrainsMono } from "@/lib/fonts";
 import "@/styles/globals.css";
 
+const description =
+  "Margin checks spelling, clarity and tone, then leaves short notes beside your text. It learns how you write, so its edits sound like you.";
+
 export const metadata: Metadata = {
-  title: "Margin",
-  description:
-    "A writing editor where suggestions live in the margin, pinned to the line they refer to.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  ),
+  title: { default: "Margin", template: "%s | Margin" },
+  description,
+  openGraph: { title: "Margin", description, type: "website" },
+  twitter: { card: "summary_large_image", title: "Margin", description },
 };
 
 export const viewport: Viewport = {
-  // Browser-chrome color. This is HTML metadata, not styling, and cannot read a
-  // CSS variable, so these two values mirror --paper (light and dark) by hand.
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f3f4f1" },
-    { media: "(prefers-color-scheme: dark)", color: "#16181b" },
-  ],
+  themeColor: "#08090a",
+  colorScheme: "dark",
 };
-
-// Runs before paint: promote a stored theme choice to <html data-theme> so the
-// first render matches the user's last pick instead of flashing the OS default.
-const themeInitScript = `
-try {
-  var t = localStorage.getItem("margin-theme");
-  if (t === "light" || t === "dark") {
-    document.documentElement.setAttribute("data-theme", t);
-  }
-} catch (e) {}
-`;
 
 export default function RootLayout({
   children,
@@ -39,12 +26,8 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${newsreader.variable} ${instrumentSans.variable}`}
-      suppressHydrationWarning
+      className={`${inter.variable} ${interTight.variable} ${jetbrainsMono.variable}`}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
       <body>{children}</body>
     </html>
   );

@@ -1,113 +1,148 @@
-/**
- * Marketing page e2e (DESIGN 14). The page renders its hero and sends the one
- * primary action to the editor, carries none of the section 13 tells, shows
- * the screenshot for the active theme, and its dithered mark draws dots but
- * holds still under reduced motion.
- */
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
-/** Snapshot of the dithered mark's pixels, for before/after comparisons. */
-async function markPixels(page: Page): Promise<string> {
-  return page
-    .locator("main canvas")
-    .evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
-}
+const PAGES = [
+  "/",
+  "/pricing",
+  "/changelog",
+  "/contact",
+  "/privacy",
+  "/terms",
+  "/about",
+  "/signup",
+  "/login",
+];
 
-async function markHasDots(page: Page): Promise<boolean> {
-  return page.locator("main canvas").evaluate((canvas: HTMLCanvasElement) => {
-    const ctx = canvas.getContext("2d");
-    if (!ctx || canvas.width === 0) return false;
-    const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    for (let i = 3; i < data.length; i += 4) if (data[i] !== 0) return true;
-    return false;
+test.describe("marketing site", () => {
+  test("every link on the public pages goes somewhere real", async ({
+    page,
+    request,
+  }) => {
+    const seen = new Set<string>();
+    for (const path of ["/", "/pricing"]) {
+      await page.goto(path);
+      const hrefs = await page
+        .locator("a[href^='/']")
+        .evaluateAll((links) =>
+          links.map((a) => (a as HTMLAnchorElement).getAttribute("href") ?? ""),
+        );
+      for (const href of hrefs) seen.add(href.split("#")[0] || "/");
+    }
+    for (const href of seen) {
+      const response = await request.get(href, { maxRedirects: 0 });
+      expect(response.status(), href).toBeLessThan(400);
+    }
+    for (const path of PAGES)
+      expect(
+        seen.has(path) || path === "/about",
+        `${path} is linked`,
+      ).toBeTruthy();
   });
-}
 
-test.describe("marketing page", () => {
-  test("hero states the product and opens the editor", async ({ page }) => {
-    await page.goto("/");
+  test("placeholder pages say coming soon", async ({ page }) => {
+    for (const path of [
+      "/changelog",
+      "/contact",
+      "/privacy",
+      "/terms",
+      "/about",
+    ]) {
+      await page.goto(path);
+      await expect(page.getByText("Coming soon.")).toBeVisible();
+    }
+  });
+
+  test("unknown pages show a helpful not found page", async ({ page }) => {
+    const response = await page.goto("/nothing-here");
+    expect(response?.status()).toBe(404);
     await expect(
-      page.getByRole("heading", {
-        level: 1,
-        name: /Suggestions that live where you're writing/,
-      }),
+      page.getByRole("link", { name: "Back to the home page" }),
     ).toBeVisible();
-
-    // One primary action in the hero, and it leads to the working editor.
-    const hero = page.locator("section").first();
-    await expect(hero.getByRole("link")).toHaveCount(1);
-    await hero.getByRole("link", { name: "Open the editor" }).click();
-    await expect(page).toHaveURL(/\/app$/);
-    await expect(page.locator(".ProseMirror")).toBeVisible();
   });
 
-  test("has three feature sections at most", async ({ page }) => {
+  test("the hero runs the real editor with the five sample notes", async ({
+    page,
+  }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 2 })).toHaveCount(3);
-  });
+    const frameNotes = page
+      .getByRole("list", { name: "Margin notes" })
+      .getByRole("listitem");
+    await expect(frameNotes).toHaveCount(5);
+    await expect(frameNotes.first()).toContainText("Passive voice");
 
-  test("carries none of the section 13 tells", async ({ page }) => {
-    await page.goto("/");
-    const found = await page.evaluate(() => {
-      const problems: string[] = [];
-      for (const el of Array.from(document.querySelectorAll("*"))) {
-        const style = getComputedStyle(el);
-        if (style.backgroundImage.includes("gradient")) {
-          problems.push(`gradient on ${el.tagName}`);
-        }
-        if (style.backdropFilter && style.backdropFilter !== "none") {
-          problems.push(`backdrop-filter on ${el.tagName}`);
-        }
-      }
-      return problems;
-    });
-    expect(found).toEqual([]);
-
-    const text = await page.locator("body").innerText();
-    expect(text).not.toMatch(/\bAI\b|powered by|made with|built with/i);
-    expect(text).not.toMatch(/\p{Extended_Pictographic}/u);
-    expect(text).not.toMatch(/\u2014/);
-  });
-
-  test("shows the screenshot that matches the theme", async ({ page }) => {
-    await page.emulateMedia({ colorScheme: "dark" });
-    await page.goto("/");
-    const visible = page.locator("main img").filter({ visible: true }).first();
-    await expect(visible).toHaveAttribute("src", /hero-dark/);
-    const loaded = await visible.evaluate(
-      (img: HTMLImageElement) => img.complete && img.naturalWidth > 0,
+    await frameNotes
+      .first()
+      .getByRole("button", { name: /Accept/ })
+      .click();
+    await expect(page.getByLabel("Sample draft")).toContainText(
+      "The team decided the new pricing",
     );
-    expect(loaded).toBe(true);
+    await expect(frameNotes).toHaveCount(4);
   });
 
-  test("the dithered mark draws and reacts to the pointer", async ({
+  test("stet in the hero shows the kept message with undo", async ({
     page,
   }) => {
     await page.goto("/");
-    await expect.poll(() => markHasDots(page)).toBe(true);
-    const before = await markPixels(page);
-
-    const box = await page.locator("main canvas").boundingBox();
-    if (!box) throw new Error("canvas has no box");
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.mouse.move(box.x + box.width / 2 + 6, box.y + box.height / 2);
-    await expect.poll(() => markPixels(page)).not.toBe(before);
+    const frame = page.getByRole("list", { name: "Margin notes" });
+    const utilize = frame
+      .getByRole("listitem")
+      .filter({ hasText: "Plainer word" });
+    await utilize.getByRole("button").first().click();
+    await utilize.getByRole("button", { name: /Stet/ }).click();
+    await expect(frame.getByText(/Kept\. Margin won.t flag/)).toBeVisible();
+    await frame.getByRole("button", { name: "Undo" }).click();
+    await expect(
+      frame.getByRole("listitem").filter({ hasText: "Plainer word" }),
+    ).toBeVisible();
   });
 
-  test("the dithered mark holds still under reduced motion", async ({
-    page,
-  }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/");
-    await expect.poll(() => markHasDots(page)).toBe(true);
-    const before = await markPixels(page);
+  test("pricing switches between yearly and monthly", async ({ page }) => {
+    await page.goto("/pricing");
+    const pro = page
+      .getByRole("heading", { name: /Most writers/ })
+      .locator("..");
+    await expect(pro).toContainText("$12");
+    await page.getByRole("button", { name: "Monthly" }).click();
+    await expect(pro).toContainText("$15");
+    await expect(
+      pro.getByRole("link", { name: "Start 14-day trial" }),
+    ).toHaveAttribute("href", "/signup?plan=pro&period=monthly");
+  });
 
-    const box = await page.locator("main canvas").boundingBox();
-    if (!box) throw new Error("canvas has no box");
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.mouse.move(box.x + box.width / 2 + 6, box.y + box.height / 2);
-    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
-    await page.waitForTimeout(300);
-    expect(await markPixels(page)).toBe(before);
+  test("nothing scrolls sideways on a phone", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    for (const path of ["/", "/pricing", "/signup"]) {
+      await page.goto(path);
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
+      );
+      expect(overflow, path).toBeLessThanOrEqual(0);
+    }
+  });
+
+  test("carries none of the banned design tells", async ({ page }) => {
+    for (const path of ["/", "/pricing"]) {
+      await page.goto(path);
+      const problems = await page.evaluate(() => {
+        const found: string[] = [];
+        for (const el of Array.from(document.querySelectorAll("*"))) {
+          const style = getComputedStyle(el);
+          if (style.backgroundImage.includes("gradient"))
+            found.push(`gradient on ${el.tagName}`);
+          // The sticky nav is the one place a blur is allowed.
+          if (style.backdropFilter !== "none" && !el.closest("header"))
+            found.push(`blur on ${el.tagName}`);
+        }
+        return found;
+      });
+      expect(problems, path).toEqual([]);
+      const text = await page.locator("body").innerText();
+      expect(text).not.toMatch(/\bAI\b|powered by|made with|built with/i);
+      expect(text).not.toMatch(
+        /revolutioni[sz]e|supercharge|unlock|seamless|effortless|game-changer|cutting-edge/i,
+      );
+      expect(text).not.toMatch(/\u2014/);
+      expect(text).not.toMatch(/\p{Extended_Pictographic}/u);
+    }
   });
 });

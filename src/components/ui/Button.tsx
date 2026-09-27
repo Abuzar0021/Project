@@ -1,27 +1,50 @@
-/**
- * Button: the one hand-built button primitive for Margin's chrome.
- * Variants keep the top bar quiet (ghost) while allowing a single loud action
- * (primary) elsewhere. All sizing and color come from tokens, and the shared
- * focus ring from globals, so buttons never drift from the design system.
- */
-"use client";
-
-import { forwardRef, type ButtonHTMLAttributes } from "react";
+import Link from "next/link";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 import styles from "./Button.module.css";
 
-type Variant = "primary" | "ghost";
+type Variant = "pill" | "primary" | "outline" | "app-primary" | "app-outline";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: Variant;
+interface Look {
+  variant: Variant;
+  block?: boolean;
+  className?: string;
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  function Button({ variant = "ghost", className, type, ...rest }, ref) {
-    const classes = [styles.button, styles[variant], className]
-      .filter(Boolean)
-      .join(" ");
-    return (
-      <button ref={ref} type={type ?? "button"} className={classes} {...rest} />
-    );
-  },
-);
+function classes({ variant, block, className }: Look): string {
+  return [
+    styles.button,
+    styles[variant],
+    block ? styles.block : "",
+    className ?? "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+export function Button({
+  variant,
+  block,
+  className,
+  type = "button",
+  ...rest
+}: Look & ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type={type}
+      className={classes({ variant, block, className })}
+      {...rest}
+    />
+  );
+}
+
+export function ButtonLink({
+  href,
+  children,
+  ...look
+}: Look & { href: string; children: ReactNode }) {
+  return (
+    <Link href={href} className={classes(look)}>
+      {children}
+    </Link>
+  );
+}

@@ -1,10 +1,3 @@
-/**
- * languagetool.ts: trimmed types for the LanguageTool response.
- * We never expose LanguageTool's full payload to the client; the /api/check
- * route narrows each match to just these fields. Keeping the shape small makes
- * the wire format cheap and the client code easy to reason about.
- */
-
 /** One match as returned by our /api/check route (already trimmed). */
 export interface RawMatch {
   /** UTF-16 code-unit offset into the block text. */

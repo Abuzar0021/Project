@@ -1,13 +1,4 @@
-/**
- * block-hash.ts: a fast, stable string hash (cyrb53).
- * The checking cache is keyed by a block's text hash, so two identical
- * paragraphs anywhere in the document reuse the same result and an unchanged
- * block is never rechecked. cyrb53 is small, fast, and has good distribution for
- * short strings, which is all we need. It is not cryptographic and does not need
- * to be.
- */
-
-/** Return a stable hex hash of the input string. Same input, same output. */
+/** cyrb53: a small, fast, non-cryptographic hash of a block's text, as hex. */
 export function hashBlock(text: string, seed = 0): string {
   let h1 = 0xdeadbeef ^ seed;
   let h2 = 0x41c6ce57 ^ seed;

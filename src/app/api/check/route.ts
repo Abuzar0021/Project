@@ -1,10 +1,4 @@
-/**
- * /api/check: the only path between the browser and LanguageTool.
- * The client never talks to LanguageTool directly. This route validates input,
- * rate-limits per IP, forwards the text as form data to LANGUAGETOOL_URL/v2/check,
- * and returns a trimmed, typed match list. Errors return a plain JSON message
- * and an appropriate status, never a stack trace.
- */
+/** The only way from the browser to LanguageTool: validate, rate limit, forward, trim. */
 import { NextResponse } from "next/server";
 import type { CheckResponse, RawMatch } from "@/types/languagetool";
 

@@ -1,17 +1,9 @@
 /**
- * scheduler.ts: the race-safe heart of the checking pipeline.
- * It debounces bursts of edits, sends only blocks whose result is not already
- * cached, limits concurrency, aborts a block's in-flight request when that block
- * changes again, prioritizes blocks the caller lists first (the viewport), and
- * backs off when the checker is unreachable. Every delivered result passes the
- * staleness guard, so a response that arrives after the text moved on is dropped
- * rather than shown against the wrong words.
- *
- * The scheduler owns no DOM or React state; it talks to the outside through the
- * callbacks in SchedulerOptions, which keeps it unit testable.
+ * Sends changed blocks to the checker: debounced, cached, a few at a time,
+ * with stale results dropped and a backoff while the server is unreachable.
  */
 import type { RawMatch } from "@/types/languagetool";
-import type { CheckStatus } from "@/store/editor-ui";
+export type CheckStatus = "idle" | "checking" | "unreachable";
 import type { MatchCache } from "./cache";
 import { CheckerError } from "./languagetool";
 
@@ -42,7 +34,7 @@ export interface SchedulerOptions {
 
 const DEFAULTS = {
   language: "en-US",
-  debounceMs: 400,
+  debounceMs: 600,
   concurrency: 4,
   backoffMs: [10_000, 20_000, 40_000, 60_000],
 };

@@ -1,0 +1,36 @@
+.foot {
+  border-top: 1px solid var(--line);
+  padding-block: 48px 64px;
+  display: grid;
+  grid-template-columns: 2fr repeat(3, 1fr);
+  gap: 32px;
+  font-size: 14px;
+}
+
+.logo {
+  display: inline-flex;
+  border-radius: var(--radius-chip);
+}
+
+.heading {
+  font: 500 13px var(--sans);
+  margin-bottom: 12px;
+}
+
+.link {
+  display: block;
+  width: fit-content;
+  color: var(--tx-2);
+  padding: 3px 0;
+  transition: color var(--dur-hover) ease;
+}
+
+.link:hover {
+  color: var(--tx);
+}
+
+@media (max-width: 900px) {
+  .foot {
+    grid-template-columns: 1fr 1fr;
+  }
+}

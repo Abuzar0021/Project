@@ -1,8 +1,3 @@
-/**
- * Vitest config for unit tests.
- * Pure logic under src/lib is the main target, but jsdom is enabled so we can
- * also test React-free DOM helpers later. The @ alias mirrors tsconfig.
- */
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";

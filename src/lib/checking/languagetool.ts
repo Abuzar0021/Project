@@ -1,10 +1,4 @@
-/**
- * languagetool.ts: typed browser client for our /api/check route.
- * It posts a single block's text and returns the trimmed matches. A failure that
- * looks like the checker being unreachable (network error, 429, 5xx) is thrown
- * as a retriable CheckerError so the scheduler can back off; aborts propagate as
- * the native AbortError so superseded requests unwind quietly.
- */
+/** Browser client for /api/check. Network errors, 429 and 5xx are worth retrying. */
 import type { CheckResponse, RawMatch } from "@/types/languagetool";
 
 export class CheckerError extends Error {

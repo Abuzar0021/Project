@@ -1,0 +1,178 @@
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+.box {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: center;
+}
+
+.wide {
+  max-width: 420px;
+}
+
+.logo {
+  align-self: center;
+  margin-bottom: 18px;
+  border-radius: var(--radius-chip);
+}
+
+.title {
+  font: 500 24px/1.2 var(--disp);
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+  text-wrap: balance;
+}
+
+.oauth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px;
+  border-radius: var(--radius-md);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  font-weight: 500;
+  font-size: 14.5px;
+  transition: border-color var(--dur-hover) ease;
+}
+
+.oauth:hover {
+  border-color: var(--line-2);
+}
+
+.notice {
+  font-size: 13px;
+  color: var(--tx-2);
+  border: 1px dashed var(--line-2);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+}
+
+.submit {
+  margin-top: 4px;
+}
+
+.small {
+  font-size: 13px;
+  color: var(--tx-2);
+}
+
+.small a {
+  color: var(--tx);
+  text-decoration: underline;
+  text-decoration-color: var(--line-2);
+  text-underline-offset: 3px;
+}
+
+.small a:hover {
+  text-decoration-color: var(--tx);
+}
+
+.inlineError {
+  font-size: 13px;
+  color: var(--error);
+  text-align: left;
+}
+
+.inlineError a {
+  color: var(--tx);
+  text-decoration: underline;
+}
+
+.muted {
+  color: var(--tx-2);
+  margin-bottom: 8px;
+}
+
+.steps {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.steps i {
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--line-2);
+}
+
+.steps .on {
+  background: var(--tx);
+}
+
+.drop {
+  border: 1px dashed var(--line-2);
+  border-radius: var(--radius-cmd);
+  padding: 28px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-hover) ease,
+    background var(--dur-hover) ease;
+}
+
+.drop:hover,
+.over,
+.drop:focus-within {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
+
+.drop b {
+  font-weight: 500;
+}
+
+.files {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  font-size: 13.5px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.files li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  color: var(--tx-2);
+}
+
+.fileName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.added {
+  color: var(--ok);
+  font-size: 12.5px;
+  flex: none;
+}
+
+.failed {
+  color: var(--error);
+  font-size: 12.5px;
+  flex: none;
+}

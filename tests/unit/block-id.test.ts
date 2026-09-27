@@ -1,10 +1,3 @@
-/**
- * Unit tests for the BlockId extension.
- * Runs a headless TipTap editor in jsdom and checks that every textblock gets a
- * unique id, that a split gives the new half a fresh id while the original keeps
- * its own, that ids survive edits elsewhere, and that duplicate ids (as arrive
- * from a paste) are de-duplicated.
- */
 import { describe, it, expect, afterEach } from "vitest";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
@@ -43,6 +36,27 @@ afterEach(() => {
 });
 
 describe("BlockId", () => {
+  it("gives ids to content passed in when the editor is created", async () => {
+    editor = new Editor({
+      element: document.createElement("div"),
+      extensions: [StarterKit, BlockId],
+      content: {
+        type: "doc",
+        content: [
+          { type: "paragraph", content: [{ type: "text", text: "One" }] },
+          { type: "paragraph", content: [{ type: "text", text: "Two" }] },
+        ],
+      },
+    });
+    // TipTap fires onCreate on the next tick.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const ids = blockIds(editor);
+    expect(ids.every(Boolean)).toBe(true);
+    expect(new Set(ids).size).toBe(2);
+    // Assigning ids is not an edit the writer can undo.
+    expect(editor.can().undo()).toBe(false);
+  });
+
   it("assigns a unique id to every textblock", () => {
     editor = makeEditor();
     const doc: JSONContent = {

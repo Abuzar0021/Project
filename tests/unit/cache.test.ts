@@ -1,7 +1,3 @@
-/**
- * Unit tests for the LRU MatchCache: hits, misses, capacity eviction, and that
- * reading an entry refreshes its recency so it is not the next one evicted.
- */
 import { describe, it, expect } from "vitest";
 import { MatchCache } from "@/lib/checking/cache";
 import type { RawMatch } from "@/types/languagetool";

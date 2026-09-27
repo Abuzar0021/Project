@@ -1,11 +1,6 @@
 /**
- * extract.ts: turn a ProseMirror document into per-block plain text plus a
- * position map. LanguageTool works on plain text and returns character offsets,
- * but the editor needs ProseMirror document positions to place a mark. posMap[i]
- * is the document position of character i in the block text, so an offset/length
- * from the checker maps back to an exact range. Offsets are UTF-16 code units,
- * which is what both JavaScript strings and LanguageTool (Java chars) use, so
- * the mapping stays correct for accents and emoji.
+ * Plain text per block, plus posMap: posMap[i] is the document position of
+ * text[i]. Both sides count UTF-16 code units, so accents and emoji map exactly.
  */
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { BLOCK_ID_TYPES } from "@/lib/editor/block-id";

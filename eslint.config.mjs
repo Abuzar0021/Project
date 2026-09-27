@@ -1,10 +1,3 @@
-/**
- * Flat ESLint config for Margin.
- * Combines Next.js core-web-vitals rules with typescript-eslint's strict and
- * stylistic presets (type-aware, scoped to .ts/.tsx) and Prettier's conflict-off
- * config. The rule set is deliberately tight: the brief forbids `any` and any
- * disabled rule without an explanatory comment.
- */
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { FlatCompat } from "@eslint/eslintrc";

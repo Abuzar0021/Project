@@ -1,16 +1,9 @@
-/**
- * use-checking.ts: connect the editor to the checking pipeline.
- * On every change it extracts the document into blocks, runs the local rules
- * immediately (so tone, clarity, and style feedback is instant), and schedules
- * the changed blocks for LanguageTool through the race-safe scheduler. When
- * LanguageTool results arrive, the block's suggestions are rebuilt from the
- * current text so LanguageTool and local issues live together. The staleness
- * guard and the scheduler's aborts keep results pinned to the right words.
- */
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
 import type { Editor } from "@tiptap/react";
+import type { Category } from "@/types/suggestion";
+import type { RawMatch } from "@/types/languagetool";
 import { MatchCache } from "@/lib/checking/cache";
 import { CheckScheduler, type BlockInput } from "@/lib/checking/scheduler";
 import { extractBlocks } from "@/lib/checking/extract";
@@ -21,172 +14,114 @@ import {
   matchToIssue,
 } from "@/lib/checking/build-suggestions";
 import { fetchMatches } from "@/lib/checking/languagetool";
-import type { RawMatch } from "@/types/languagetool";
-import { useSuggestions } from "@/store/suggestions";
-import { useEditorUI, type CheckStatus } from "@/store/editor-ui";
+import { voiceIssues } from "@/lib/voice/notes";
+import type { VoiceProfile } from "@/lib/voice/profile";
+import { isKept, type StetRule } from "@/lib/stet";
+import { useNotesStore } from "./notes-store";
 
-const LANGUAGE = "en-US";
+export interface CheckOptions {
+  draftId: string;
+  categories: Category[];
+  profile: VoiceProfile | null;
+  kept: StetRule[];
+}
 
-interface CurrentBlock {
+interface Block {
   text: string;
   posMap: number[];
   hash: string;
-  pos: number | null;
 }
 
-export function useChecking(editor: Editor | null): { runCheck: () => void } {
-  const setStatus = useEditorUI((s) => s.setStatus);
-  const setBlockSuggestions = useSuggestions((s) => s.setBlockSuggestions);
-  const clearBlock = useSuggestions((s) => s.clearBlock);
-
-  const cacheRef = useRef<MatchCache | null>(null);
-  const schedulerRef = useRef<CheckScheduler | null>(null);
-  const currentRef = useRef<Map<string, CurrentBlock>>(new Map());
-  const ltRef = useRef<Map<string, { hash: string; matches: RawMatch[] }>>(
-    new Map(),
+export function useChecking(
+  editor: Editor | null,
+  options: CheckOptions,
+): void {
+  const store = useNotesStore();
+  const optionsRef = useRef(options);
+  const blocksRef = useRef(new Map<string, Block>());
+  const serverRef = useRef(
+    new Map<string, { hash: string; matches: RawMatch[] }>(),
   );
-  const docEmptyRef = useRef(true);
+  const schedulerRef = useRef<CheckScheduler | null>(null);
 
-  // Rebuild one block's suggestions from its current text: local rules always,
-  // plus LanguageTool matches when they belong to the current hash.
-  const rebuildBlock = useCallback(
+  const rebuild = useCallback(
     (blockId: string) => {
-      const block = currentRef.current.get(blockId);
+      const block = blocksRef.current.get(blockId);
       if (!block) return;
-      const localIssues = runLocalRules(block.text);
-      const lt = ltRef.current.get(blockId);
-      const ltIssues =
-        lt && lt.hash === block.hash ? lt.matches.map(matchToIssue) : [];
+      const { categories, profile, kept, draftId } = optionsRef.current;
+      const server = serverRef.current.get(blockId);
+      const issues = [
+        ...(server?.hash === block.hash
+          ? server.matches.map(matchToIssue)
+          : []),
+        ...runLocalRules(block.text),
+        ...(profile && categories.includes("voice")
+          ? voiceIssues(block.text, profile.sample, profile.count)
+          : []),
+      ].filter((issue) => categories.includes(issue.category));
+
       const suggestions = buildSuggestions(
         blockId,
         block.hash,
         block.text,
         block.posMap,
-        [...ltIssues, ...localIssues],
-      );
-      setBlockSuggestions(blockId, suggestions);
+        issues,
+      ).filter((s) => !isKept(s, kept, draftId));
+      store.getState().setBlock(blockId, suggestions);
     },
-    [setBlockSuggestions],
+    [store],
   );
 
-  // Create the scheduler once. Its callbacks read the refs above, which always
-  // hold the latest block state.
   useEffect(() => {
-    cacheRef.current = new MatchCache();
     const scheduler = new CheckScheduler({
       check: fetchMatches,
-      cache: cacheRef.current,
-      language: LANGUAGE,
-      isStale: (blockId, hash) => {
-        const block = currentRef.current.get(blockId);
-        return !block || block.hash !== hash;
-      },
+      cache: new MatchCache(),
+      isStale: (blockId, hash) => blocksRef.current.get(blockId)?.hash !== hash,
       onResult: (blockId, hash, matches) => {
-        ltRef.current.set(blockId, { hash, matches });
-        rebuildBlock(blockId);
+        serverRef.current.set(blockId, { hash, matches });
+        rebuild(blockId);
       },
-      // Map the scheduler's "idle" to "empty" when the document has no text.
-      onStatus: (status: CheckStatus) => {
-        if (status === "idle" && docEmptyRef.current) setStatus("empty");
-        else setStatus(status);
-      },
+      onStatus: (status) => store.getState().setStatus(status),
     });
     schedulerRef.current = scheduler;
-    return () => {
-      scheduler.dispose();
-      schedulerRef.current = null;
-    };
-  }, [rebuildBlock, setStatus]);
+    return () => scheduler.dispose();
+  }, [rebuild, store]);
 
-  const runCheck = useCallback(() => {
-    if (!editor || !schedulerRef.current) return;
+  const run = useCallback(
+    (force: boolean) => {
+      if (!editor || editor.isDestroyed) return;
+      const next = new Map<string, Block>();
+      const queue: BlockInput[] = [];
 
-    const blocks = extractBlocks(editor.state.doc);
-    const next = new Map<string, CurrentBlock>();
-    const inputs: { input: BlockInput; pos: number }[] = [];
-    let hasText = false;
-
-    for (const block of blocks) {
-      const hash = hashBlock(block.text);
-      const pos = block.posMap[0] ?? null;
-      const entry: CurrentBlock = {
-        text: block.text,
-        posMap: block.posMap,
-        hash,
-        pos,
-      };
-      next.set(block.blockId, entry);
-
-      const prev = currentRef.current.get(block.blockId);
-      // Local rules only need to rerun when the text (hash) actually changed.
-      if (!prev || prev.hash !== hash) {
-        // currentRef must hold the new block before rebuild reads it.
-        currentRef.current.set(block.blockId, entry);
-        rebuildBlock(block.blockId);
+      for (const { blockId, text, posMap } of extractBlocks(editor.state.doc)) {
+        const block = { text, posMap, hash: hashBlock(text) };
+        const previous = blocksRef.current.get(blockId);
+        next.set(blockId, block);
+        blocksRef.current.set(blockId, block);
+        if (force || previous?.hash !== block.hash) rebuild(blockId);
+        if (text.trim()) queue.push({ blockId, text, hash: block.hash });
       }
 
-      if (block.text.trim().length > 0 && pos !== null) {
-        hasText = true;
-        inputs.push({
-          input: { blockId: block.blockId, text: block.text, hash },
-          pos,
-        });
+      for (const blockId of blocksRef.current.keys()) {
+        if (!next.has(blockId)) store.getState().clearBlock(blockId);
       }
-    }
+      blocksRef.current = next;
+      schedulerRef.current?.schedule(queue);
+    },
+    [editor, rebuild, store],
+  );
 
-    // Remove suggestions for blocks that no longer exist.
-    for (const blockId of currentRef.current.keys()) {
-      if (!next.has(blockId)) {
-        clearBlock(blockId);
-        ltRef.current.delete(blockId);
-      }
-    }
+  useEffect(() => {
+    optionsRef.current = options;
+    run(true);
+  }, [options, run]);
 
-    currentRef.current = next;
-    docEmptyRef.current = !hasText;
-
-    if (!hasText) {
-      setStatus("empty");
-      schedulerRef.current.schedule([]);
-      return;
-    }
-
-    schedulerRef.current.schedule(orderByViewport(editor, inputs));
-  }, [editor, rebuildBlock, clearBlock, setStatus]);
-
-  // Recheck on every document change.
   useEffect(() => {
     if (!editor) return;
-    const onUpdate = () => runCheck();
+    const onUpdate = () => run(false);
     editor.on("update", onUpdate);
     return () => {
       editor.off("update", onUpdate);
     };
-  }, [editor, runCheck]);
-
-  return { runCheck };
-}
-
-/** Order blocks so viewport-visible ones are checked first (DESIGN Phase 2). */
-function orderByViewport(
-  editor: Editor,
-  entries: { input: BlockInput; pos: number }[],
-): BlockInput[] {
-  try {
-    const viewportBottom = window.innerHeight;
-    return entries
-      .map((entry) => {
-        const coords = editor.view.coordsAtPos(entry.pos);
-        const inView = coords.top < viewportBottom && coords.bottom > 0;
-        return { input: entry.input, inView, distance: Math.abs(coords.top) };
-      })
-      .sort((a, b) => {
-        if (a.inView !== b.inView) return a.inView ? -1 : 1;
-        return a.distance - b.distance;
-      })
-      .map((entry) => entry.input);
-  } catch {
-    // coordsAtPos can throw during layout churn; fall back to document order.
-    return entries.map((entry) => entry.input);
-  }
+  }, [editor, run]);
 }

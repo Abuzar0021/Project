@@ -1,111 +1,101 @@
 # Margin
 
-A writing editor where suggestions live in the margin, the way a copy editor's
-pencil notes sit beside a manuscript. Each suggestion is a note pinned to the
-exact line it refers to, not an item in a generic list.
+A writing editor that checks spelling, clarity and tone, and leaves short notes
+in the margin beside the text instead of in a popup or sidebar. It learns how
+you write from your own drafts, flags edits that would make you sound generic,
+and remembers every suggestion you turn down.
 
-See `DESIGN.md` for the visual and interaction spec and
-`docs/ARCHITECTURE.md` for how the checking pipeline works.
+`DESIGN.md` is the spec for how everything looks and behaves;
+`reference/prototype.html` is the clickable prototype it describes.
+`docs/ARCHITECTURE.md` explains how checking works.
 
-## Stack
+## What this build is
 
-- Next.js 15 (App Router), React 19, TypeScript strict
-- Tailwind CSS v4 with all design values in `src/styles/tokens.css`
-- TipTap v2 for the editor
-- Zustand for client state
-- Self-hosted LanguageTool as the grammar engine, reached only through
-  `/api/check`
-- Vitest for unit tests, Playwright for end-to-end tests
-- pnpm as the package manager
+A complete, clickable product preview. Everything a visitor can see works:
 
-## Quick start
+- Marketing site: landing page (the hero runs the real editor), pricing with a
+  yearly and monthly toggle, and placeholder pages for the footer links.
+- Sign up, log in, log out, and onboarding with writing uploads.
+- The app: drafts with autosave, margin notes with Accept and Stet, the rhythm
+  gutter, the voice meter, stet memory, a command bar, settings, and light and
+  dark themes. Plans gate features the way the pricing page describes.
+
+Accounts, drafts, kept suggestions and voice profiles are stored in the
+visitor's browser, so each tester gets a private workspace with no setup.
+Nothing a tester writes leaves their device except the text sent to your own
+LanguageTool server for spelling and grammar.
+
+Not connected yet, by design: Supabase (accounts in a database, Google sign-in
+and email login links) and Stripe (checkout and billing). The "Continue with
+Google" button says so when pressed. Choosing or cancelling a plan updates the
+preview account immediately, with no payment.
+
+## Run it locally
 
 ```bash
-# 1. Install dependencies
+corepack enable
 pnpm install
-
-# 2. Start the grammar engine (separate terminal). The dev override publishes it
-#    to localhost so the app, run on the host, can reach it.
-docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up languagetool
-#    Verify it:
-curl "http://localhost:8010/v2/languages"
-
-# 3. Point the app at it
 cp .env.example .env.local
-
-# 4. Run the app
 pnpm dev
 ```
 
-Open http://localhost:3000 for the marketing page, or http://localhost:3000/app
-for the editor. The app also runs without LanguageTool: the tone, clarity, and
-style rules run in the browser, and the status bar shows the checker as paused.
+Open http://localhost:3000. Sign up with any name and email to get a workspace
+with four sample drafts.
 
-## Screenshots
-
-Every product image (the marketing page shots, `docs/screenshots/`, and the iOS
-app icon) comes from the real app. With the app running, regenerate them all:
+Spelling and grammar come from LanguageTool. Without it the app still works:
+clarity notes, the voice meter and a built-in list of common misspellings run in
+the browser, and the status bar shows "Checking paused, retrying". To run
+LanguageTool locally with Docker:
 
 ```bash
-node scripts/capture-screenshots.mjs
+docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up languagetool
 ```
 
-The checker is stubbed with LanguageTool's responses for the sample draft, so
-captures are deterministic. Rebuild afterwards: the marketing page reads the
-image sizes from `src/components/marketing/shots.json` at build time.
+## Environment variables
 
-If Playwright's browser download is blocked or slow, point the capture script
-and `pnpm e2e` at any installed Chromium with `PLAYWRIGHT_CHROMIUM_PATH`.
+| Name                   | Needed for                                                    |
+| ---------------------- | ------------------------------------------------------------- |
+| `LANGUAGETOOL_URL`     | The LanguageTool server. Local: `http://localhost:8010`       |
+| `LANGUAGETOOL_SECRET`  | Shared secret the VPS gateway checks. Empty for local Docker  |
+| `NEXT_PUBLIC_SITE_URL` | Absolute URLs for link previews, such as the Open Graph image |
+
+## Deploy
+
+The app deploys to Vercel as a standard Next.js project. Set
+`LANGUAGETOOL_URL` to the public HTTPS address of the LanguageTool server (never
+localhost) and `LANGUAGETOOL_SECRET` to the value its Caddy gateway expects. The
+VPS setup is in `docker/languagetool-vps/`.
 
 ## Scripts
 
-| Script               | What it does                |
-| -------------------- | --------------------------- |
-| `pnpm dev`           | Start the dev server        |
-| `pnpm build`         | Production build            |
-| `pnpm start`         | Serve the production build  |
-| `pnpm lint`          | ESLint                      |
-| `pnpm typecheck`     | TypeScript, no emit         |
-| `pnpm test`          | Vitest unit tests           |
-| `pnpm test:coverage` | Unit tests with coverage    |
-| `pnpm e2e`           | Playwright end-to-end tests |
-| `pnpm format`        | Prettier write              |
+| Script               | What it does                        |
+| -------------------- | ----------------------------------- |
+| `pnpm dev`           | Development server                  |
+| `pnpm build`         | Production build                    |
+| `pnpm start`         | Serve the production build          |
+| `pnpm lint`          | ESLint                              |
+| `pnpm typecheck`     | TypeScript                          |
+| `pnpm test`          | Unit tests                          |
+| `pnpm test:coverage` | Unit tests with coverage            |
+| `pnpm e2e`           | Browser tests against a running app |
 
-## Production (Docker)
-
-```bash
-docker compose -f docker/docker-compose.yml up --build
-```
-
-This runs `web` and `languagetool` on an internal network. LanguageTool has no
-published ports, so only `web` can reach it. Put Caddy in front of `web:3000`
-for HTTPS; see `docker/Caddyfile.example`.
+If Playwright's browser download is blocked, point `pnpm e2e` at any installed
+Chromium with `PLAYWRIGHT_CHROMIUM_PATH`.
 
 ## Project layout
 
 ```
 src/
-  app/       Routes: / (marketing), /app (editor), /api/check, icons
-  components/ editor, card, rail, minimap, score, status, brand, marketing,
-             ui primitives
-  lib/       Pure logic: checking pipeline, editor plugins, layout, scoring
-  store/     Zustand stores
-  styles/    tokens.css and globals.css
-  types/     Shared domain types
-tests/       unit (Vitest) and e2e (Playwright)
-docker/      Dockerfile, compose files, and a Caddy example
-docs/        Architecture notes and screenshots
-public/      The logo mark source and the marketing page captures
-scripts/     capture-screenshots.mjs
+  app/          (marketing) and (auth) route groups, /app, /api/check
+  components/
+    app/        Sidebar, top bar, status bar, command bar, draft and settings views
+    editor/     The editor, margin notes, rhythm gutter, keyboard handling
+    marketing/  Nav, footer, landing sections, pricing
+    auth/       Sign up, log in, onboarding
+    ui/         Button, Field, Kbd, Logo, Divider, Tooltip
+  lib/          Checking pipeline, voice profile, drafts, accounts, plans
+  styles/       tokens.css and globals.css
+tests/          unit (Vitest) and e2e (Playwright)
+reference/      The clickable prototype and the logo source
+docker/         LanguageTool for local use and for the VPS
 ```
-
-## Where to start reading
-
-In order, the five files that explain the most:
-
-1. `docs/ARCHITECTURE.md`: the checking pipeline and the hard problems.
-2. `src/lib/checking/scheduler.ts`: debounce, concurrency, abort, backoff,
-   staleness.
-3. `src/lib/checking/extract.ts`: text and the position map that anchors marks.
-4. `src/lib/editor/suggestions-plugin.ts`: how marks render and stay anchored.
-5. `src/lib/layout/rail-layout.ts`: the margin rail stacking algorithm.

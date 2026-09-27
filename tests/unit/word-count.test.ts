@@ -1,7 +1,3 @@
-/**
- * Unit tests for countWords: empty and whitespace-only strings are zero, runs of
- * whitespace collapse, and punctuation does not inflate the total.
- */
 import { describe, it, expect } from "vitest";
 import { countWords } from "@/lib/text/word-count";
 

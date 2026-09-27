@@ -1,0 +1,94 @@
+.hero {
+  padding-block: clamp(72px, 12vw, 150px) 56px;
+}
+
+.heroRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.new {
+  display: flex;
+  gap: 10px;
+  font-size: 15px;
+}
+
+.new b {
+  font-weight: 500;
+}
+
+.new a {
+  color: var(--tx-2);
+  transition: color var(--dur-hover) ease;
+}
+
+.new a:hover {
+  color: var(--tx);
+}
+
+.keys {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.key {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--bg-2);
+  font-size: 14px;
+  color: var(--tx-2);
+}
+
+.promises {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 8px;
+}
+
+.promiseTitle {
+  font: 500 16px var(--disp);
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+
+.promiseText {
+  color: var(--tx-2);
+  font-size: 14.5px;
+}
+
+.cta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.ctaActions {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .promises {
+    grid-template-columns: 1fr;
+  }
+
+  .desktopBreak {
+    display: none;
+  }
+}

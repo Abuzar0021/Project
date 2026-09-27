@@ -1,8 +1,3 @@
-/**
- * Unit tests for CheckScheduler: it debounces, sends one request per changed
- * block (cache hits cost nothing), aborts a superseded request for the same
- * block, drops stale results, and backs off when the checker is unreachable.
- */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { CheckScheduler, type BlockInput } from "@/lib/checking/scheduler";
 import { MatchCache } from "@/lib/checking/cache";
@@ -38,7 +33,7 @@ describe("CheckScheduler", () => {
 
     scheduler.schedule([block("1", "h1"), block("2", "h2")]);
     scheduler.schedule([block("1", "h1"), block("2", "h2")]); // resets debounce
-    await vi.advanceTimersByTimeAsync(399);
+    await vi.advanceTimersByTimeAsync(599);
     expect(check).toHaveBeenCalledTimes(0);
     await vi.advanceTimersByTimeAsync(1);
     expect(check).toHaveBeenCalledTimes(2);
@@ -56,12 +51,12 @@ describe("CheckScheduler", () => {
     });
 
     scheduler.schedule([block("1", "h1"), block("2", "h2"), block("3", "h3")]);
-    await vi.advanceTimersByTimeAsync(400);
+    await vi.advanceTimersByTimeAsync(600);
     expect(check).toHaveBeenCalledTimes(3);
 
     // Only block 3 changes; blocks 1 and 2 are cache hits now.
     scheduler.schedule([block("1", "h1"), block("2", "h2"), block("3", "h3b")]);
-    await vi.advanceTimersByTimeAsync(400);
+    await vi.advanceTimersByTimeAsync(600);
     expect(check).toHaveBeenCalledTimes(4);
     scheduler.dispose();
   });
@@ -83,11 +78,11 @@ describe("CheckScheduler", () => {
     });
 
     scheduler.schedule([block("A", "h1")]);
-    await vi.advanceTimersByTimeAsync(400);
+    await vi.advanceTimersByTimeAsync(600);
     expect(check).toHaveBeenCalledTimes(1);
 
     scheduler.schedule([block("A", "h2")]);
-    await vi.advanceTimersByTimeAsync(400);
+    await vi.advanceTimersByTimeAsync(600);
     expect(check).toHaveBeenCalledTimes(2);
     expect(signals[0]?.aborted).toBe(true);
     expect(signals[1]?.aborted).toBe(false);
@@ -113,7 +108,7 @@ describe("CheckScheduler", () => {
     });
 
     scheduler.schedule([block("A", "h1")]);
-    await vi.advanceTimersByTimeAsync(400);
+    await vi.advanceTimersByTimeAsync(600);
     expect(check).toHaveBeenCalledTimes(1);
     expect(onResult).not.toHaveBeenCalled();
     scheduler.dispose();
@@ -134,7 +129,7 @@ describe("CheckScheduler", () => {
     });
 
     scheduler.schedule([block("A", "h1")]);
-    await vi.advanceTimersByTimeAsync(400);
+    await vi.advanceTimersByTimeAsync(600);
     expect(check).toHaveBeenCalledTimes(1);
     expect(statuses).toContain("unreachable");
 

@@ -1,9 +1,3 @@
-/**
- * Unit tests for extractBlocks.
- * The critical property is that posMap turns a block offset back into the exact
- * document range, including across an accent (one code unit) and an emoji (a
- * surrogate pair, two code units), and that a hard break reads as a newline.
- */
 import { describe, it, expect, afterEach } from "vitest";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";

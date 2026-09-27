@@ -1,9 +1,3 @@
-/**
- * Unit tests for the /api/check route: it validates input, trims the
- * LanguageTool response to our shape, short-circuits empty text, and turns an
- * unreachable checker into a clean 503 rather than a stack trace. fetch is
- * mocked so no real network or LanguageTool is needed.
- */
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { POST } from "@/app/api/check/route";
 

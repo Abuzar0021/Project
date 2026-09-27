@@ -1,0 +1,11 @@
+.tip {
+  position: fixed;
+  z-index: 60;
+  background: var(--tip-bg);
+  color: var(--tip-ink);
+  font-size: 12px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+  white-space: nowrap;
+}

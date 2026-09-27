@@ -1,122 +1,27 @@
-/**
- * local-rules.ts: Margin's own checks, run in the browser with no network.
- * These cover the judgment calls LanguageTool does not: hedging and weak
- * intensifiers (tone), passive voice (tone), overlong sentences (clarity), and a
- * word repeated too often in one paragraph (style). Each returns DetectedIssues
- * with offsets into the block text, which build-suggestions maps to document
- * positions. Every rule is a pure function so it can be unit tested directly.
- */
 import type { DetectedIssue } from "@/types/suggestion";
-import { countWords } from "@/lib/text/word-count";
+import { HEDGES, MISSPELLINGS, PLAINER, WEAK_WORDS, WORDY } from "./phrases";
+import { passiveIssues } from "./passive";
+import { longSentenceIssues } from "./long-sentence";
 
-const LONG_SENTENCE_WORDS = 30;
-const REPETITION_MIN = 3;
-const REPETITION_MIN_WORD_LENGTH = 4;
+const escape = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-const HEDGES = [
-  "just",
-  "sort of",
-  "kind of",
-  "maybe",
-  "i think",
-  "i feel like",
-  "perhaps",
-];
-const INTENSIFIERS = ["very", "really", "extremely"];
+const NUMBER_WORDS = ["no", "one", "two", "three", "four", "five", "six"];
 
-// Auxiliary "to be" forms for the passive-voice heuristic.
-const BE_FORMS = "am|is|are|was|were|be|been|being";
-// Common irregular past participles, since they do not end in "ed".
-const IRREGULAR_PARTICIPLES = [
-  "written",
-  "sent",
-  "done",
-  "made",
-  "seen",
-  "taken",
-  "given",
-  "shown",
-  "known",
-  "kept",
-  "held",
-  "built",
-  "found",
-  "paid",
-  "told",
-  "brought",
-  "bought",
-  "caught",
-  "taught",
-  "thought",
-  "left",
-  "lost",
-  "met",
-  "read",
-  "said",
-  "set",
-  "put",
-  "chosen",
-  "drawn",
-  "grown",
-  "thrown",
-];
-
-const STOPWORDS = new Set([
-  "the",
-  "and",
-  "that",
-  "was",
-  "were",
-  "for",
-  "with",
-  "this",
-  "there",
-  "their",
-  "they",
-  "them",
-  "then",
-  "than",
-  "have",
-  "has",
-  "had",
-  "are",
-  "our",
-  "you",
-  "your",
-  "but",
-  "not",
-  "all",
-  "any",
-  "who",
-  "how",
-  "why",
-  "what",
-  "when",
-  "which",
-  "will",
-  "would",
-  "been",
-  "from",
-  "into",
-  "about",
-  "across",
-  "some",
-]);
-
-function escapeForRegex(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/** Keep the capital when the original word started a sentence. */
+export function matchCase(original: string, replacement: string): string {
+  if (!replacement || original.charAt(0) !== original.charAt(0).toUpperCase()) {
+    return replacement;
+  }
+  return replacement.charAt(0).toUpperCase() + replacement.slice(1);
 }
 
-/** Match any of a word/phrase list, case-insensitive, at word boundaries. */
-function matchPhrases(
+function findPhrases(
   text: string,
   phrases: string[],
-  build: (matched: string, offset: number) => DetectedIssue,
+  build: (found: string, offset: number) => DetectedIssue,
 ): DetectedIssue[] {
-  const pattern = new RegExp(
-    `\\b(${phrases.map(escapeForRegex).join("|")})\\b`,
-    "gi",
-  );
+  if (phrases.length === 0) return [];
+  const pattern = new RegExp(`\\b(${phrases.map(escape).join("|")})\\b`, "gi");
   const issues: DetectedIssue[] = [];
   let match: RegExpExecArray | null;
   while ((match = pattern.exec(text)) !== null) {
@@ -125,119 +30,97 @@ function matchPhrases(
   return issues;
 }
 
-function hedgingIssues(text: string): DetectedIssue[] {
-  return matchPhrases(text, HEDGES, (matched, offset) => ({
-    offset,
-    length: matched.length,
-    ruleId: "local:hedging",
-    category: "tone",
-    title: "Hedging",
-    message: "Hedging language can weaken your point.",
-    replacements: [],
-    source: "local",
-  }));
-}
-
-function intensifierIssues(text: string): DetectedIssue[] {
-  return matchPhrases(text, INTENSIFIERS, (matched, offset) => ({
-    offset,
-    length: matched.length,
-    ruleId: "local:intensifier",
-    category: "tone",
-    title: "Weak intensifier",
-    message: "This intensifier adds little. Consider cutting it.",
-    replacements: [],
-    source: "local",
-  }));
-}
-
-function passiveVoiceIssues(text: string): DetectedIssue[] {
-  const participle = `\\w+ed|${IRREGULAR_PARTICIPLES.join("|")}`;
-  // "to be" form, an optional adverb, then a past participle.
-  const pattern = new RegExp(
-    `\\b(${BE_FORMS})\\b(\\s+\\w+ly)?\\s+(${participle})\\b`,
-    "gi",
-  );
-  const issues: DetectedIssue[] = [];
-  let match: RegExpExecArray | null;
-  while ((match = pattern.exec(text)) !== null) {
-    issues.push({
-      offset: match.index,
-      length: match[0].length,
-      ruleId: "local:passive",
-      category: "tone",
-      title: "Passive voice",
-      message: "Passive voice. Consider naming who did the action.",
-      replacements: [],
-      source: "local",
-    });
-  }
-  return issues;
-}
-
-function longSentenceIssues(text: string): DetectedIssue[] {
-  const pattern = /[^.!?]+[.!?]*/g;
-  const issues: DetectedIssue[] = [];
-  let match: RegExpExecArray | null;
-  while ((match = pattern.exec(text)) !== null) {
-    const raw = match[0];
-    const trimmed = raw.trim();
-    if (trimmed.length === 0) continue;
-    if (countWords(trimmed) <= LONG_SENTENCE_WORDS) continue;
-    const leading = raw.length - raw.trimStart().length;
-    issues.push({
-      offset: match.index + leading,
-      length: trimmed.length,
-      ruleId: "local:long-sentence",
+function wordyIssues(text: string): DetectedIssue[] {
+  return findPhrases(text, Object.keys(WORDY), (found, offset) => {
+    const to = WORDY[found.toLowerCase()] ?? "";
+    const saved = found.split(/\s+/).length - to.split(/\s+/).length;
+    return {
+      offset,
+      length: found.length,
+      ruleId: "local:wordy",
       category: "clarity",
-      title: "Long sentence",
-      message: "This sentence is long. Consider splitting it.",
-      replacements: [],
+      label: "Wordy",
+      reason: `Same meaning, ${NUMBER_WORDS[saved] ?? saved} fewer ${saved === 1 ? "word" : "words"}.`,
+      replacements: [matchCase(found, to)],
       source: "local",
-    });
-  }
-  return issues;
+    };
+  });
 }
 
-function repetitionIssues(text: string): DetectedIssue[] {
-  const pattern = /\b[\p{L}']+\b/gu;
-  const occurrences = new Map<string, { offset: number; length: number }[]>();
-  let match: RegExpExecArray | null;
-  while ((match = pattern.exec(text)) !== null) {
-    const word = match[0].toLowerCase();
-    if (word.length < REPETITION_MIN_WORD_LENGTH) continue;
-    if (STOPWORDS.has(word)) continue;
-    const list = occurrences.get(word) ?? [];
-    list.push({ offset: match.index, length: match[0].length });
-    occurrences.set(word, list);
-  }
-
-  const issues: DetectedIssue[] = [];
-  for (const [word, list] of occurrences) {
-    if (list.length < REPETITION_MIN) continue;
-    for (const spot of list) {
-      issues.push({
-        offset: spot.offset,
-        length: spot.length,
-        ruleId: "local:repetition",
-        category: "style",
-        title: "Repeated word",
-        message: `The word "${word}" repeats in this paragraph.`,
-        replacements: [],
-        source: "local",
-      });
-    }
-  }
-  return issues;
+function plainerIssues(text: string): DetectedIssue[] {
+  return findPhrases(text, Object.keys(PLAINER), (found, offset) => {
+    const to = PLAINER[found.toLowerCase()] ?? "";
+    return {
+      offset,
+      length: found.length,
+      ruleId: `local:plainer:${found.toLowerCase()}`,
+      category: "clarity",
+      label: "Plainer word",
+      reason: `"${to.charAt(0).toUpperCase()}${to.slice(1)}" does the same job. Stet this if the formal word is on purpose.`,
+      replacements: [matchCase(found, to)],
+      source: "local",
+    };
+  });
 }
 
-/** Run every local rule over one block's text. */
+function cutIssues(
+  text: string,
+  words: string[],
+  ruleId: string,
+  label: string,
+  reason: string,
+): DetectedIssue[] {
+  return findPhrases(text, words, (found, offset) => ({
+    offset,
+    length: found.length,
+    ruleId,
+    category: "clarity",
+    label,
+    reason,
+    replacements: [""],
+    source: "local",
+  }));
+}
+
+function spellingIssues(text: string): DetectedIssue[] {
+  return findPhrases(text, Object.keys(MISSPELLINGS), (found, offset) => {
+    const to = MISSPELLINGS[found.toLowerCase()] ?? found;
+    return {
+      offset,
+      length: found.length,
+      ruleId: "local:spelling",
+      category: "spelling",
+      label: "Spelling",
+      reason:
+        found.toLowerCase().includes("ie") && to.includes("ei")
+          ? "I before E, except in this one."
+          : `This is spelled "${to}".`,
+      replacements: [matchCase(found, to)],
+      source: "local",
+    };
+  });
+}
+
 export function runLocalRules(text: string): DetectedIssue[] {
   return [
-    ...hedgingIssues(text),
-    ...intensifierIssues(text),
-    ...passiveVoiceIssues(text),
+    ...spellingIssues(text),
+    ...wordyIssues(text),
+    ...plainerIssues(text),
+    ...cutIssues(
+      text,
+      HEDGES,
+      "local:hedging",
+      "Hedging",
+      "Cut it and the sentence sounds surer.",
+    ),
+    ...cutIssues(
+      text,
+      WEAK_WORDS,
+      "local:weak-word",
+      "Weak word",
+      "It adds length, not strength.",
+    ),
+    ...passiveIssues(text),
     ...longSentenceIssues(text),
-    ...repetitionIssues(text),
   ];
 }

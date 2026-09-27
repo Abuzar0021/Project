@@ -1,0 +1,7 @@
+.page {
+  padding-block: clamp(64px, 9vw, 110px) clamp(96px, 14vw, 160px);
+}
+
+.soon {
+  margin-top: 20px;
+}

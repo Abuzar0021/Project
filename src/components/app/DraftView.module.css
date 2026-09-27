@@ -1,0 +1,26 @@
+.scroll {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+}
+
+.tag {
+  color: var(--ink-2);
+}
+
+.loading {
+  flex: 1;
+}
+
+.missing {
+  padding: 56px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.missing a {
+  color: var(--ac);
+}

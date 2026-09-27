@@ -1,74 +1,50 @@
-/**
- * Shared domain types for Margin.
- * These describe a single writing suggestion and the four categories it can
- * belong to. They are referenced across the checking pipeline, the store, and
- * every view (marks, cards, rail, minimap), so they live in one place.
- */
+export type Category = "spelling" | "clarity" | "voice";
 
-/** The four suggestion families. Category is never communicated by color alone;
- * each also has its own underline stroke (see DESIGN.md 3 and 8.1). */
-export type Category = "correctness" | "clarity" | "tone" | "style";
+export type SuggestionSource = "languagetool" | "local" | "voice" | "sample";
 
-/** Where a suggestion came from: the LanguageTool server or our local rules. */
-export type SuggestionSource = "languagetool" | "local";
+export const CATEGORY_NAMES: Record<Category, string> = {
+  spelling: "Spelling and grammar",
+  clarity: "Clarity",
+  voice: "Voice",
+};
 
-export interface Suggestion {
-  /** Stable id: `${blockId}:${ruleId}:${offsetInBlock}:${length}`. */
-  id: string;
-  /** The block this suggestion belongs to (data-block-id). */
-  blockId: string;
-  /** Hash of the block text when this suggestion was produced (staleness guard). */
-  blockHash: string;
-  /** Current ProseMirror document positions, kept mapped through edits. */
+/** A wider edit than the underlined text, such as rewriting a passive clause. */
+export interface Rewrite {
   from: number;
   to: number;
-  /** The text the suggestion refers to. */
+  text: string;
+}
+
+export interface Suggestion {
+  id: string;
+  blockId: string;
+  blockHash: string;
+  /** Document range of the underline. */
+  from: number;
+  to: number;
   original: string;
-  /** Up to three replacements, most likely first. */
+  /** First entry is what Accept applies. An empty string means delete. */
   replacements: string[];
+  /** Shown after the struck original when it differs from the replacement. */
+  fix?: string;
+  rewrite?: Rewrite;
   category: Category;
-  /** Engine rule id, for "Ignore this rule" and debugging. */
   ruleId: string;
-  /** Short human title, for example "Possible typo". */
-  title: string;
-  /** One plain sentence explaining the issue. */
-  message: string;
+  label: string;
+  reason: string;
   source: SuggestionSource;
 }
 
-/**
- * A detected issue before it is placed in the document. Both the LanguageTool
- * path and the local rules produce these; build-suggestions maps their block
- * offsets to document positions and turns them into Suggestions.
- */
+/** An issue found in one block, with offsets into that block's text. */
 export interface DetectedIssue {
-  /** UTF-16 offset into the block text. */
   offset: number;
-  /** Length in UTF-16 code units. */
   length: number;
   ruleId: string;
   category: Category;
-  title: string;
-  message: string;
+  label: string;
+  reason: string;
   replacements: string[];
+  fix?: string;
+  rewrite?: { offset: number; length: number; text: string };
   source: SuggestionSource;
 }
-
-/** The category filter shown in the top bar. "all" shows every category. */
-export type CategoryFilter = "all" | Category;
-
-/** Ordered list of categories, handy for rendering chips and score rows. */
-export const CATEGORIES: readonly Category[] = [
-  "correctness",
-  "clarity",
-  "tone",
-  "style",
-] as const;
-
-/** Human labels for each category, sentence case per the copy guidelines. */
-export const CATEGORY_LABELS: Record<Category, string> = {
-  correctness: "Correctness",
-  clarity: "Clarity",
-  tone: "Tone",
-  style: "Style",
-};

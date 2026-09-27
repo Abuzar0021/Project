@@ -1,0 +1,15 @@
+.mark {
+  fill: currentColor;
+  flex: none;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.word {
+  font: 600 18px/1 var(--disp);
+  letter-spacing: -0.02em;
+}

@@ -1,95 +1,69 @@
 # Architecture
 
-This document explains how Margin checks writing: the pipeline, the three
-problems that make it hard, the measured performance, and how it deploys.
+How Margin turns a draft into margin notes.
 
 ## The pipeline
 
 ```
-editor edits
-  -> extract (doc -> per-block text + posMap)
-  -> hash each block (cyrb53)
-  -> cache lookup (skip unchanged blocks)
-  -> scheduler (debounce, concurrency, abort, backoff, viewport-first)
-  -> /api/check route -> LanguageTool
-  -> staleness guard (drop results whose block moved on)
-  -> build suggestions (map offsets to doc positions)
-  -> suggestions store -> marks / rail / minimap / score
+editor edit
+  -> extract     each paragraph's text plus a position map
+  -> hash        cyrb53 per paragraph
+  -> local rules spelling list, wordy and plainer phrases, hedges, passive voice,
+                 long sentences, voice habits (instant, in the browser)
+  -> scheduler   debounce 600ms, skip cached paragraphs, four at a time,
+                 abort superseded requests, back off when unreachable
+  -> /api/check  -> LanguageTool
+  -> merge       server and local issues, one note per stretch of text
+  -> filter      the plan's categories, then kept (stetted) suggestions
+  -> notes store -> underlines, margin notes, note count
 ```
 
-Local rules (tone, clarity, style) run in the browser with no network and are
-merged with LanguageTool results per block, so tone and clarity feedback is
-instant while correctness and style repetition come from LanguageTool.
+Every note falls in one of three categories, each with its own underline so
+the categories work without color: spelling and grammar (solid), clarity
+(dotted) and voice (wavy). `lib/categories.ts` maps LanguageTool's rule
+categories onto them.
 
-## The three hard problems
+## Anchoring notes to text
 
-### 1. Offsets versus positions
+LanguageTool returns character offsets into plain text; the editor places marks
+at ProseMirror document positions. `extract.ts` builds, for each paragraph,
+`posMap[i]`, the document position of character `i`. Both sides count UTF-16
+code units, so accents and emoji map exactly. Every paragraph carries a stable
+`data-block-id` (`block-id.ts`) so results are grouped and cached by paragraph.
 
-LanguageTool works on plain text and returns character offsets, but the editor
-needs ProseMirror document positions to place a mark. `extract.ts` walks the
-document and, for each textblock, builds `text` plus `posMap`, where `posMap[i]`
-is the document position of character `i`. A hard break reads as `\n` and takes
-one position; other inline nodes contribute no text and are skipped. Offsets are
-UTF-16 code units in both Java (LanguageTool) and JavaScript, so accents and
-emoji map correctly. `build-suggestions.ts` uses `posMap` to turn each
-offset/length into a `from`/`to` range.
+`suggestions-plugin.ts` draws the underlines as ProseMirror decorations and maps
+them through every edit. Typing inside an underline removes it at once; that
+paragraph is checked again. A result that arrives after its paragraph changed
+is dropped by the staleness check, so a note is never pinned to the wrong words.
 
-### 2. Rechecking cost
+## Margin notes
 
-Rechecking the whole document on every keystroke is slow and wasteful. Two
-mechanisms prevent it:
+`lib/notes-layout.ts` places each note level with its underline, eight pixels
+above the line, and pushes it down just enough to clear the note above.
+Accepting a note strikes the text, replaces it after 280ms and highlights the
+new words; notes can also rewrite a wider range than they underline, such as
+turning "The pricing was decided by the team" into "The team decided the
+pricing". Stet removes the note and stores a rule (rule id plus the matched
+text) so the same suggestion is filtered out later, in this draft on the Free
+plan or in every draft on paid plans.
 
-- Each block's text is hashed (`block-hash.ts`, cyrb53). The scheduler only
-  sends blocks whose hash is not already in the cache, so editing one paragraph
-  in a long document sends one request. Identical paragraphs anywhere reuse the
-  same cached result.
-- `cache.ts` is an LRU capped at 2,000 entries, so a very long document cannot
-  grow it without bound.
+## Voice profile
 
-The scheduler also debounces 400ms after the last edit, limits concurrency to
-four in-flight requests, and checks blocks in the viewport first.
+`lib/voice/features.ts` measures habits, not content: contractions against
+their long forms, sentence length, formal words and exclamation marks. A
+profile combines the measurements from uploaded writing and from the writer's
+other drafts over 150 words. The meter compares the open draft with the profile,
+weighting each habit by how much evidence the draft has; voice notes flag a long
+form only when the writer uses the short form at least 90% of the time across
+three or more uses. Uploaded files are read in the browser and only their
+measurements are kept.
 
-### 3. Race conditions
+## Preview data
 
-A response can arrive after the user has already changed the text, which would
-pin a suggestion to the wrong words. Two defenses:
-
-- The scheduler holds one `AbortController` per block and aborts a block's
-  in-flight request when that block changes again, so superseded work is
-  cancelled rather than raced.
-- The staleness guard compares the hash a request was made with against the
-  block's current hash when the response arrives. If they differ, the result is
-  discarded and the block will be rechecked. Only fresh results become
-  suggestions.
-
-When the checker is unreachable the scheduler backs off (10s, 20s, 40s, cap
-60s) and surfaces an "unreachable" status, retrying automatically.
-
-## Performance
-
-Measured in Chromium on a ~5,000 word document (LanguageTool mocked so the
-numbers reflect the pipeline, not the engine):
-
-| Metric                               | Result          |
-| ------------------------------------ | --------------- |
-| Time to first suggestions            | about 1.6s      |
-| Recheck requests after a single edit | 1               |
-| Typing latency                       | about 49ms/char |
-
-The single-request-per-edit result is the payoff of the block hashing and
-cache: only the edited block is re-sent. Typing latency includes rerunning the
-local rules on the edited block and one batched rail relayout.
-
-The margin rail was profiled separately by pasting the sample document 30 times
-(240 notes): scrolling held about 16.7ms per frame (roughly 60fps) with no
-visible jank, because every rail recalculation is batched into a single
-requestAnimationFrame.
-
-## Deployment
-
-Production builds use Next.js standalone output. `docker/Dockerfile` is a
-multi-stage build that runs as a non-root user. `docker/docker-compose.yml`
-brings up two services, `web` and `languagetool`, on an internal network;
-LanguageTool has no published ports, so it is reachable only by `web` and never
-from the internet. `docker/Caddyfile.example` terminates HTTPS for a subdomain
-and reverse-proxies to `web`. See the README for the commands.
+Accounts, drafts, kept suggestions, voice measurements and preferences live in
+the browser's local storage, keyed by account. A `margin_session` cookie lets
+the middleware protect `/app` and `/welcome`, and a `margin_theme` cookie lets
+the server render the app in the right theme on the first paint. Replacing
+`lib/account.ts`, `lib/drafts.ts`, `lib/stet.ts` and `lib/voice/profile.ts` with
+database calls is the path to real accounts; the components only use those
+modules' functions.

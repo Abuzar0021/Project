@@ -1,33 +1,14 @@
-/* Button primitive styles. Values come from tokens.css only. */
-
 .button {
-  font: var(--t-ui);
   display: inline-flex;
   align-items: center;
-  gap: var(--s-1);
-  min-height: 32px;
-  padding: 0 var(--s-3);
-  border-radius: var(--radius-control);
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--ink);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.ghost:hover {
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
-}
-
-.primary {
-  background: var(--pencil);
-  color: var(--sheet);
+  justify-content: center;
+  gap: 8px;
   font-weight: 500;
-}
-
-.primary:hover {
-  /* Darken the accent slightly on hover without leaving the token system. */
-  background: color-mix(in srgb, var(--pencil) 88%, var(--ink));
+  white-space: nowrap;
+  transition:
+    opacity var(--dur-hover) ease,
+    background var(--dur-hover) ease,
+    border-color var(--dur-hover) ease;
 }
 
 .button:disabled {
@@ -35,9 +16,65 @@
   cursor: not-allowed;
 }
 
-/* Touch targets grow to 44px on coarse pointers (accessibility floor). */
-@media (pointer: coarse) {
-  .button {
-    min-height: 44px;
-  }
+.block {
+  display: flex;
+  width: 100%;
+}
+
+.pill {
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--tx);
+  color: var(--bg);
+  font-size: 14.5px;
+}
+
+.pill:hover {
+  opacity: 0.88;
+}
+
+.primary,
+.outline {
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line-2);
+  font-size: 14.5px;
+}
+
+.primary {
+  background: var(--tx);
+  border-color: var(--tx);
+  color: var(--bg);
+}
+
+.primary:hover {
+  opacity: 0.9;
+}
+
+.outline:hover {
+  background: var(--tint-1);
+}
+
+.app-primary,
+.app-outline {
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rule);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.app-primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--page);
+}
+
+.app-primary:hover {
+  opacity: 0.88;
+}
+
+.app-outline:hover {
+  background: var(--hover);
 }

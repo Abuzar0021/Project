@@ -1,8 +1,3 @@
-/**
- * Unit tests for the browser LanguageTool client: it returns matches on success,
- * throws a retriable CheckerError on 5xx and network failure, a non-retriable one
- * on 4xx, and rethrows an abort.
- */
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { fetchMatches, CheckerError } from "@/lib/checking/languagetool";
 

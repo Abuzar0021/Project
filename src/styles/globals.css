@@ -1,10 +1,3 @@
-/*
- * globals.css: base layer for the app.
- * Pulls in Tailwind v4 and the design tokens, sets the paper background and
- * default type, and defines the shared focus ring and reduced-motion rule. Page
- * and component specifics live with their components, not here.
- */
-@import "tailwindcss";
 @import "./tokens.css";
 
 *,
@@ -13,129 +6,66 @@
   box-sizing: border-box;
 }
 
-html,
+html {
+  background: var(--root-bg);
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
-  padding: 0;
-}
-
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font: var(--t-ui);
+  font: 15px/1.55 var(--sans);
+  font-feature-settings: "cv11", "ss01", "ss03";
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  min-height: 100dvh;
 }
 
-/* One focus ring for every interactive element (accessibility floor). */
-:focus-visible {
-  outline: 2px solid var(--pencil);
-  outline-offset: 2px;
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol,
+figure {
+  margin: 0;
 }
 
-/*
- * Suggestion marks (DESIGN 8.1). Category is encoded by underline stroke style,
- * never by color alone, so the marks work in grayscale and for color-blind
- * readers. Each category sets its own thickness in --mt, which the hover state
- * grows by 0.5px.
- */
-.margin-mark {
-  text-decoration-line: underline;
-  text-decoration-thickness: var(--mt, 1.5px);
-  text-underline-offset: 4px;
-  text-decoration-skip-ink: none;
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
   cursor: pointer;
 }
 
-.margin-mark:hover,
-.margin-mark--hovered {
-  text-decoration-thickness: calc(var(--mt, 1.5px) + 0.5px);
+input,
+textarea {
+  font: inherit;
+  color: inherit;
 }
 
-.margin-mark--hovered {
-  background: color-mix(in srgb, var(--ink) 5%, transparent);
-  border-radius: 2px;
+img,
+svg {
+  display: block;
 }
 
-.margin-mark--correctness {
-  --mt: 1.5px;
-  text-decoration-style: wavy;
-  text-decoration-color: var(--cat-correct);
+[hidden] {
+  display: none !important;
 }
 
-.margin-mark--clarity {
-  --mt: 2px;
-  text-decoration-style: dotted;
-  text-decoration-color: var(--cat-clarity);
+:focus-visible {
+  outline: 2px solid var(--focus, #8c9eff);
+  outline-offset: 2px;
+  border-radius: var(--radius-chip);
 }
 
-.margin-mark--tone {
-  --mt: 1.5px;
-  text-decoration-style: dashed;
-  text-decoration-color: var(--cat-tone);
-}
-
-.margin-mark--style {
-  --mt: 1px;
-  text-decoration-style: double;
-  text-decoration-color: var(--cat-style);
-}
-
-/* Active mark (card open or note active): a category tint behind the text. */
-.margin-mark--active {
-  border-radius: 2px;
-}
-.margin-mark--active.margin-mark--correctness {
-  background: var(--cat-correct-tint);
-}
-.margin-mark--active.margin-mark--clarity {
-  background: var(--cat-clarity-tint);
-}
-.margin-mark--active.margin-mark--tone {
-  background: var(--cat-tone-tint);
-}
-.margin-mark--active.margin-mark--style {
-  background: var(--cat-style-tint);
-}
-
-/*
- * Applied-fix wash (DESIGN 6): a category tint over the new text that fades out
- * over 600ms. The base background is the static tint; the animation fades it to
- * transparent. Under reduced motion the animation is off, so the tint stays flat
- * for the 600ms until the decoration is removed.
- */
-.margin-wash {
-  border-radius: 2px;
-  animation: margin-wash-fade var(--dur-wash) ease-out forwards;
-}
-.margin-wash--correctness {
-  background-color: var(--cat-correct-tint);
-}
-.margin-wash--clarity {
-  background-color: var(--cat-clarity-tint);
-}
-.margin-wash--tone {
-  background-color: var(--cat-tone-tint);
-}
-.margin-wash--style {
-  background-color: var(--cat-style-tint);
-}
-
-@keyframes margin-wash-fade {
-  to {
-    background-color: transparent;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .margin-wash {
-    animation: none !important;
-  }
-}
-
-/* Screen-reader-only text (accessibility floor, DESIGN 11). */
-.margin-visually-hidden {
+.sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -147,16 +77,12 @@ body {
   border: 0;
 }
 
-/* Motion only answers actions. When the user asks for less, remove it. The
-   applied-fix wash keeps a static tint elsewhere; there is nothing to disable
-   here beyond transitions and animations. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition: none !important;
+    animation: none !important;
     scroll-behavior: auto !important;
   }
 }

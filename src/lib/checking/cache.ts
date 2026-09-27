@@ -1,11 +1,4 @@
-/**
- * cache.ts: an LRU cache of LanguageTool results keyed by block-text hash.
- * Identical paragraphs reuse results and unchanged blocks are never re-sent, so
- * this is the main reason editing one paragraph in a long document costs one
- * request. Capacity is bounded so a very long document cannot grow it without
- * limit. Insertion order in a Map is the LRU order: reading refreshes an entry,
- * and eviction drops the oldest key.
- */
+/** LRU cache of checker results keyed by block text hash. Map order is recency order. */
 import type { RawMatch } from "@/types/languagetool";
 
 const DEFAULT_CAPACITY = 2000;

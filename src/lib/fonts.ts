@@ -1,24 +1,22 @@
-/**
- * fonts.ts: loads the two typefaces from DESIGN.md section 4 via next/font.
- * Newsreader (serif) is the writer's reading type; Instrument Sans is the
- * interface type. Each is exposed as a CSS variable that tokens.css wraps with a
- * fallback stack, so components only ever reference --font-editor / --font-ui.
- */
-import { Newsreader, Instrument_Sans } from "next/font/google";
+import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 
-export const newsreader = Newsreader({
+export const inter = Inter({
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
   display: "swap",
-  // Variable optical-size axis: book-like rendering across sizes. When axes are
-  // requested the weight must stay variable, so we do not pin specific weights.
-  axes: ["opsz"],
-  style: ["normal", "italic"],
-  variable: "--font-newsreader",
+  variable: "--font-inter",
 });
 
-export const instrumentSans = Instrument_Sans({
+export const interTight = Inter_Tight({
   subsets: ["latin"],
+  weight: ["500", "600"],
   display: "swap",
-  weight: ["400", "500", "600"],
-  variable: "--font-instrument",
+  variable: "--font-inter-tight",
+});
+
+export const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
+  variable: "--font-mono",
 });

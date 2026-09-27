@@ -1,74 +1,97 @@
-/**
- * Unit tests for the local rules: hedging and intensifiers (tone), passive
- * voice (tone), long sentences (clarity), and repeated words (style). Offsets
- * must point at the exact matched text so marks land correctly.
- */
 import { describe, it, expect } from "vitest";
-import { runLocalRules } from "@/lib/checking/local-rules";
+import { matchCase, runLocalRules } from "@/lib/checking/local-rules";
+import { passiveIssues } from "@/lib/checking/passive";
+import { longSentenceIssues } from "@/lib/checking/long-sentence";
+import { underlined } from "./helpers";
 
-function sliceAt(text: string, offset: number, length: number): string {
-  return text.slice(offset, offset + length);
-}
+const byRule = (text: string, ruleId: string) =>
+  runLocalRules(text).filter((i) => i.ruleId === ruleId);
 
-describe("runLocalRules", () => {
-  it("flags hedging with correct offsets and tone category", () => {
-    const text = "I think we should just ship it.";
-    const issues = runLocalRules(text);
-    const hedges = issues.filter((i) => i.ruleId === "local:hedging");
-    expect(hedges.length).toBeGreaterThanOrEqual(2);
-    for (const issue of hedges) {
-      expect(issue.category).toBe("tone");
-      expect(["i think", "just"]).toContain(
-        sliceAt(text, issue.offset, issue.length).toLowerCase(),
-      );
+describe("local rules", () => {
+  it("catches common misspellings with a fix", () => {
+    const [issue] = byRule("You will recieve it.", "local:spelling");
+    expect(issue?.replacements).toEqual(["receive"]);
+    expect(issue?.reason).toBe("I before E, except in this one.");
+  });
+
+  it("offers a shorter phrase and counts the words saved", () => {
+    const [issue] = byRule("We did it in order to win.", "local:wordy");
+    expect(issue?.replacements).toEqual(["to"]);
+    expect(issue?.reason).toBe("Same meaning, two fewer words.");
+  });
+
+  it("offers a plainer word and keeps a capital", () => {
+    const [issue] = byRule("Utilize the plan.", "local:plainer:utilize");
+    expect(issue?.replacements).toEqual(["Use"]);
+  });
+
+  it("suggests cutting hedges and weak words", () => {
+    expect(byRule("We just sort of decided.", "local:hedging")).toHaveLength(2);
+    expect(
+      byRule("It is very hard.", "local:weak-word")[0]?.replacements,
+    ).toEqual([""]);
+  });
+
+  it("puts every issue in one of the three categories", () => {
+    const text =
+      "The plan was decided by the team. We just want to utilize it in order to recieve more.";
+    for (const issue of runLocalRules(text)) {
+      expect(["spelling", "clarity", "voice"]).toContain(issue.category);
     }
   });
+});
 
-  it("flags weak intensifiers", () => {
-    const text = "This is very good and really nice.";
-    const issues = runLocalRules(text).filter(
-      (i) => i.ruleId === "local:intensifier",
-    );
-    expect(issues.length).toBe(2);
-    expect(issues.map((i) => sliceAt(text, i.offset, i.length))).toEqual([
-      "very",
-      "really",
-    ]);
+describe("matchCase", () => {
+  it("capitalizes only when the original was capitalized", () => {
+    expect(matchCase("Utilize", "use")).toBe("Use");
+    expect(matchCase("utilize", "use")).toBe("use");
+    expect(matchCase("Very", "")).toBe("");
+  });
+});
+
+describe("passive voice", () => {
+  it("rewrites a short passive clause with its agent", () => {
+    const text = "The new pricing was decided by the team after three weeks.";
+    const [issue] = passiveIssues(text);
+    expect(underlined(text, issue)).toBe("was decided by the team");
+    expect(issue?.fix).toBe("the team decided");
+    expect(issue?.rewrite).toEqual({
+      offset: 0,
+      length: 39,
+      text: "The team decided the new pricing",
+    });
   });
 
-  it("detects passive voice", () => {
-    const text = "The report was written by the analytics team.";
-    const issues = runLocalRules(text).filter(
-      (i) => i.ruleId === "local:passive",
+  it("flags a passive with no agent but offers no rewrite", () => {
+    const [issue] = passiveIssues("The report was written quickly.");
+    expect(issue?.label).toBe("Passive voice");
+    expect(issue?.replacements).toEqual([]);
+  });
+});
+
+describe("long sentences", () => {
+  const long =
+    "You don't need to do anything to keep your rate, since it will be applied to your account automatically and you will receive a confirmation email once the change goes live, along with a copy of your current invoice and a short note about what changes.";
+
+  it("splits a long sentence at a natural break near the middle", () => {
+    const [issue] = longSentenceIssues(long);
+    expect(issue?.reason).toMatch(
+      /^\d+ words\. Try splitting it after "automatically"\.$/,
     );
-    expect(issues.length).toBe(1);
-    const passive = issues[0];
-    if (!passive) throw new Error("expected a passive issue");
-    expect(passive.category).toBe("tone");
-    expect(sliceAt(text, passive.offset, passive.length)).toContain("written");
+    expect(issue?.replacements).toEqual(["automatically. You"]);
+    expect(underlined(long, issue)).toBe("automatically and you");
   });
 
-  it("flags sentences longer than 30 words as clarity", () => {
-    const long = `${Array.from({ length: 35 }, (_, i) => `word${i}`).join(" ")}.`;
-    const issues = runLocalRules(long).filter(
-      (i) => i.ruleId === "local:long-sentence",
+  it("leaves sentences of forty words or fewer alone", () => {
+    expect(longSentenceIssues("A short sentence. Another one.")).toHaveLength(
+      0,
     );
-    expect(issues.length).toBe(1);
-    expect(issues[0]?.category).toBe("clarity");
   });
 
-  it("flags a word repeated three or more times as style", () => {
-    const text = "apple apple apple orange orange";
-    const issues = runLocalRules(text).filter(
-      (i) => i.ruleId === "local:repetition",
-    );
-    // "apple" repeats three times; "orange" only twice, so it is not flagged.
-    expect(issues.length).toBe(3);
-    expect(issues.every((i) => i.category === "style")).toBe(true);
-    expect(
-      issues.every(
-        (i) => sliceAt(text, i.offset, i.length).toLowerCase() === "apple",
-      ),
-    ).toBe(true);
+  it("still flags a long sentence with no clean break", () => {
+    const words = Array.from({ length: 45 }, (_, i) => `word${i}`).join(" ");
+    const [issue] = longSentenceIssues(`${words}.`);
+    expect(issue?.replacements).toEqual([]);
+    expect(issue?.reason).toBe("45 words. Try splitting it into two.");
   });
 });
