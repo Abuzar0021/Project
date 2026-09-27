@@ -1,0 +1,8 @@
+<svg width="240" height="240" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <!-- Margin mark: a page edge (the vertical bar) with a note pinned beside it (the circle),
+       the same relationship the product itself draws between text and its margin notes.
+       Solid, high-contrast fills only, no gradients, no thin strokes, so it survives
+       error-diffusion dithering cleanly. -->
+  <rect x="60" y="40" width="26" height="160" rx="6" fill="#000000"/>
+  <circle cx="168" cy="88" r="40" fill="#000000"/>
+</svg>

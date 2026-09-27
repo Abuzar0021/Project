@@ -1,433 +1,366 @@
-# DESIGN.md: Margin
+# Margin: DESIGN.md
 
-Design spec for **Margin**, a Grammarly-style writing assistant demo. This file is the single source of truth for visual and interaction decisions. If code and this file disagree, this file wins. If this file is silent, choose the quieter option.
+The single source of truth for how Margin looks, reads and behaves. This version replaces every earlier DESIGN.md and DESIGN-update.md. If code and this file disagree, this file wins. If this file is silent, match `reference/prototype.html`.
 
----
-
-## 1. Product concept
-
-**One line:** A writing editor where suggestions live in the margin, the way a copy editor's pencil notes sit beside a manuscript.
-
-**Audience:** People who write for work (emails, reports, docs) and want corrections without losing focus.
-
-**Primary job:** Let the writer fix problems in place, fast, without the interface competing with their text.
-
-**The signature idea (spend boldness here, keep everything else quiet):**
-Suggestions are not dumped in a generic right-hand list. Each one is a **margin note pinned to the exact line it refers to**. Notes stack and slide to avoid overlapping, and the active note pulls itself level with its text. This is the memorable element. Everything else in the UI is restrained so this reads clearly.
+`reference/prototype.html` is a working clickable prototype of every screen described here. Open it in a browser before building anything. Copy its values (colors, sizes, spacing, copy) exactly. Do not copy its code structure; it is one HTML file, the product is a Next.js app.
 
 ---
 
-## 2. Design principles
+## 1. Product in one paragraph
 
-Reference points: **Bear** for the writing surface (warm, quiet, confident use of negative space, nothing decorative) and **Linear** for the interface chrome (precise, custom, no default component-kit look). The fusion: a calm page to write on, wrapped in an interface that feels built, not assembled.
+Margin is a writing editor that checks spelling, clarity and tone, and leaves short notes in the margin beside the text instead of in a popup or sidebar. It learns how the user writes from their past drafts and flags edits that would make them sound generic. It remembers every suggestion the user rejects ("stet") so it never nags twice.
 
-1. **The text is the hero.** Chrome recedes further than in a typical SaaS tool, closer to Bear's restraint than Grammarly's density.
-2. **Every mark earns its place.** No decoration that doesn't encode information.
-3. **Nothing borrowed from a component kit at default settings.** Every button, card, and input is intentionally spaced and styled, the way Linear's are.
-4. **Motion is felt, not seen.** Subtle, physical, never a flourish.
-5. **The product never announces that it's a tool, or that AI built it.** It reads as software someone designed, full stop.
+### Signature features (the things that make it look like no other product)
+
+1. **Margin notes.** Suggestions sit in a right-hand column, each aligned to the line it refers to.
+2. **Rhythm gutter.** A left-hand column with one horizontal bar per sentence. Bar length is word count. Sentences over 30 words turn amber.
+3. **Sounds like you.** A voice meter in the top bar, driven by a voice profile built from the user's own writing, and a "Not your voice" note category.
+4. **Stet memory.** Rejecting a suggestion with Stet stores it. The same suggestion is never shown again for that user.
+
+### Design references
+
+- **Linear** for everything outside the writing page: typography, marketing site, sidebar, command bar, keyboard-first behavior, density, dark-first color.
+- **Bear** for the writing page itself: calm, wide margins, nothing moving while you type.
+- **Grammarly** for the checking model: category-coded underlines, one suggestion at a time, accept or dismiss.
 
 ---
 
-## 3. Color tokens
+## 2. Principles
 
-Defined as CSS custom properties in `src/styles/tokens.css`. Components never use raw hex values.
+1. The text is the hero. Interface chrome is quiet, small and precise.
+2. Every visual element encodes information. No decoration.
+3. Keyboard first. Every action in the editor has a key.
+4. Nothing looks like a component kit. Every component is styled from the tokens in this file.
+5. The product never announces that it uses AI.
+6. Plain language. Say what happens, in as few words as possible.
 
-### Light theme (default)
+---
 
-| Token | Hex | Use |
+## 3. Things that must never appear
+
+Any of these in a PR is a bug.
+
+- "AI" badges, pills, chips or labels. No "Powered by AI", no "AI-powered".
+- Sparkle, magic wand, stars, or glowing icons.
+- Gradients of any kind on buttons, text, backgrounds, borders or charts. The only exception is the single soft glow shadow under the landing page product frame (section 8.2).
+- Glassmorphism panels. The sticky nav's background blur is the only blur allowed.
+- Purple-to-blue anything.
+- Emoji in interface copy, buttons, headings or empty states.
+- A centered hero with a gradient button and floating blurred shapes.
+- Unmodified shadcn/ui, Radix Themes, Tailwind UI, DaisyUI, MUI or Chakra styling. Headless primitives (Radix Primitives, cmdk) are fine; their look must come from this file.
+- Shimmer or animated gradient loading skeletons. Use flat placeholders at low opacity.
+- Scroll-triggered fade-in or stagger animations on marketing sections. Content is visible at rest.
+- Fake social proof: customer logo rows, testimonials, user counts. The product has no customers yet.
+- "Made with", "Built with", framework or tool credits anywhere.
+- Words: revolutionize, supercharge, unlock, seamless, effortless, elevate, empower, game-changer, cutting-edge, magic.
+- Em dashes in any interface copy. Use a comma, a period or a colon.
+- A numeric "writing score" out of 100. The voice meter replaces it.
+
+---
+
+## 4. Color tokens
+
+Define these as CSS custom properties. Tailwind (if used) must read from them; never use Tailwind's default palette classes like `bg-gray-900` or `text-indigo-500`.
+
+### 4.1 Marketing and auth (dark only, like Linear)
+
+| Token | Value | Use |
 |---|---|---|
-| `--paper` | `#F3F4F1` | App background (cool grey-green, deliberately not cream) |
-| `--sheet` | `#FFFFFF` | Writing surface |
-| `--ink` | `#1C2127` | Primary text |
-| `--ink-muted` | `#5B6470` | Secondary text, metadata |
-| `--rule` | `#E2E5E0` | Borders, dividers |
-| `--pencil` | `#2449C9` | Primary action, focus ring, active note border |
+| `--bg` | `#08090A` | Page background |
+| `--bg-2` | `#0E0F11` | Inputs, raised areas, product frame |
+| `--panel` | `#121316` | Small panels |
+| `--panel-2` | `#17181B` | Buttons on dark (OAuth) |
+| `--line` | `rgba(255,255,255,.08)` | Borders, dividers, grid gaps |
+| `--line-2` | `rgba(255,255,255,.14)` | Stronger borders, secondary buttons |
+| `--tx` | `#F7F8F8` | Primary text, primary button fill |
+| `--tx-2` | `#8A8F98` | Secondary text, nav links |
+| `--tx-3` | `#5E626A` | Tertiary text, fine print |
+| `--accent` | `#8C9EFF` | Focus rings, "Most writers" tag, sparing highlights |
 
-### Suggestion categories
+Marketing pages have no light theme.
 
-| Category | Token | Hex | Underline stroke | Meaning |
-|---|---|---|---|---|
-| Correctness | `--cat-correct` | `#C8372D` | wavy, 1.5px | Spelling, grammar, punctuation |
-| Clarity | `--cat-clarity` | `#2466D6` | dotted, 2px | Wordiness, redundancy, long sentences |
-| Tone | `--cat-tone` | `#7B4BC4` | dashed, 1.5px | Hedging, intensifiers, passive voice |
-| Style | `--cat-style` | `#13806A` | double, 1px | Repetition, variety |
+### 4.2 App (dark default, light optional)
 
-Each category also gets a tint for backgrounds at 10% opacity (`--cat-correct-tint`, etc.), used only for the active mark highlight and the applied-fix flash.
+| Token | Dark | Light |
+|---|---|---|
+| `--app` | `#0E0F11` | `#F4F4F2` |
+| `--side` | `#121316` | `#EFEFEC` |
+| `--page` | `#16171A` | `#FFFFFF` |
+| `--ink` | `#E4E5E9` | `#1B1B1F` |
+| `--ink-2` | `#9A9CA5` | `#5E5F66` |
+| `--ink-3` | `#63656D` | `#9A9BA1` |
+| `--rule` | `#24262B` | `#E3E3DF` |
+| `--hover` | `#1D1F23` | `#E7E7E3` |
+| `--ac` | `#8C9EFF` | `#3552D4` |
+| `--ac-soft` | `rgba(140,158,255,.12)` | `rgba(53,82,212,.09)` |
+| `--spell` | `#F0766E` | `#C23A34` |
+| `--clar` | `#8C9EFF` | `#3552D4` |
+| `--voice` | `#4CC2AE` | `#17806F` |
+| `--warn` | `#E3A948` | `#B7791F` |
+| `--bar` | `#34373E` | `#C9CAD0` |
 
-### Dark theme
-
-Same token names, remapped. The primary accent shifts to brass for a matte, premium feel.
-
-| Token | Hex |
-|---|---|
-| `--paper` | `#16181B` |
-| `--sheet` | `#1D2024` |
-| `--ink` | `#E7E9EC` |
-| `--ink-muted` | `#9AA2AD` |
-| `--rule` | `#2C3036` |
-| `--pencil` | `#C9A45C` |
-| `--cat-correct` | `#F0766B` |
-| `--cat-clarity` | `#6FA0F2` |
-| `--cat-tone` | `#B18CEB` |
-| `--cat-style` | `#4FC2A2` |
-
-Theme follows `prefers-color-scheme`, with a manual toggle stored in `localStorage` that sets `data-theme` on `<html>`.
-
-All text and underline colors must meet WCAG AA contrast against their surface. Verify with a contrast check before finishing each phase that introduces color.
-
-### Flat color only
-
-No gradients anywhere, not even subtle ones: not on buttons, not on backgrounds, not on the score ring. Linear and Bear both use flat color exclusively. A single flat accent color (`--pencil`, brass in dark mode) does everything a gradient would have done, with more restraint.
+Theme preference is stored per user (database, not localStorage only) with values `system | dark | light`. Default `dark`.
 
 ---
 
-## 4. Typography
+## 5. Typography
 
-| Role | Family | Notes |
+Linear's typography: Inter for everything, a tighter display cut for large headings, negative tracking that grows with size, medium weights instead of bold.
+
+### 5.1 Faces
+
+Load with `next/font/google`, self-hosted, `display: swap`.
+
+- **Inter** (400, 500, 600): all UI and body text, including the writing page. Enable OpenType features `"cv11", "ss01", "ss03"` on `body`.
+- **Inter Tight** (500, 600): display headings only (d1, d2, d3, document title, logo wordmark).
+- **JetBrains Mono** (400, 500): keyboard hints, counts, percentages, word counts.
+
+No other fonts. No serif anywhere.
+
+### 5.2 Scale
+
+| Name | Face | Size | Weight | Line height | Tracking |
+|---|---|---|---|---|---|
+| d1 | Inter Tight | `clamp(44px, 7vw, 84px)` | 500 | 1.0 | -0.035em |
+| d2 | Inter Tight | `clamp(32px, 4.4vw, 52px)` | 500 | 1.05 | -0.03em |
+| d3 | Inter Tight | 20px | 500 | 1.25 | -0.015em |
+| price | Inter Tight | 44px | 500 | 1.0 | -0.03em, tabular numbers |
+| doc-title | Inter Tight | 30px | 600 | 1.2 | -0.025em |
+| lead | Inter | `clamp(17px, 1.6vw, 20px)` | 400 | 1.5 | 0 |
+| body (marketing) | Inter | 15px | 400 | 1.55 | 0 |
+| nav link | Inter | 14.5px | 400 | 1 | 0 |
+| writing page | Inter | 17px | 400 | 1.75 | -0.006em, max 64ch |
+| note fix text | Inter | 14.5px | 400 | 1.45 | 0 |
+| app UI | Inter | 13px | 400/500 | 1.45 | 0 |
+| app small | Inter | 11.5 to 12.5px | 400/500 | 1.4 | 0 |
+| mono | JetBrains Mono | 11 to 13px | 400/500 | 1 | 0 |
+
+Headings use `text-wrap: balance`. Numbers that line up use `font-variant-numeric: tabular-nums`.
+
+---
+
+## 6. Shape, spacing, elevation
+
+- Spacing unit 4px. Common gaps: 4, 6, 8, 10, 14, 18, 24, 28, 32, 40, 56, 72.
+- Radius: 5px small app buttons, 6px app chips and sidebar items, 8px inputs and marketing buttons, 10px small panels, 12px command bar, 14px large marketing panels and product frame, 999px pill buttons (nav Sign up, billing toggle).
+- Borders do the separating. Shadows only on: the active margin note, the command bar, and the landing product frame.
+- Grids of panels use the Linear technique: container background `--line`, `gap: 1px`, cells filled with `--bg`. This gives hairline dividers without doubled borders.
+- Max content width on marketing: 1200px with side padding `clamp(16px, 4vw, 32px)`.
+
+---
+
+## 7. Motion
+
+Short, single-purpose, never decorative.
+
+| What | Duration | Easing |
 |---|---|---|
-| Editor text | **Newsreader** (Google Fonts, variable opsz) | Reading-grade serif. The writer's words deserve book-like type. |
-| Interface | **Instrument Sans** (Google Fonts) | Crisp, slightly narrow sans for chrome, notes, and buttons. |
+| Hover color changes | 150ms | ease |
+| Margin note moving to new position | 250ms | cubic-bezier(.2,.7,.2,1) |
+| Accept: strikethrough appears, then replacement text | 280ms before swap | ease |
+| Replacement text highlight fading out | 1200ms | ease |
+| Note fading out after resolve | 200ms | ease |
+| Stet memory confirmation | visible 6s, fades 300ms | ease |
+| Voice meter width change | 400ms | ease |
 
-Fallback stacks:
-- Editor: `"Newsreader", "Iowan Old Style", Georgia, serif`
-- UI: `"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif`
+Everything respects `prefers-reduced-motion: reduce` by removing transitions and animations.
 
-Load via `next/font/google` with `display: swap`.
+---
 
-### Type scale
+## 8. Marketing site
 
-| Token | Size / line-height | Family / weight | Use |
+Routes: `/` landing, `/pricing`. Placeholder routes `/changelog`, `/contact`, `/privacy`, `/terms` render a simple page with the nav, a d1 heading and "Coming soon." in `--tx-2`.
+
+### 8.1 Nav (all marketing pages)
+
+- Sticky, height 64px, background `rgba(8,9,10,.82)` with `backdrop-filter: saturate(1.4) blur(12px)`, 1px bottom border `--line`.
+- Left: logo mark (20px) + "Margin" in Inter Tight 18px 600, tracking -0.02em.
+- Right, in order: links Product, Pricing, Changelog, Contact (pill-shaped hover and active state: `rgba(255,255,255,.06)` background, text goes `--tx`), a 1px x 20px vertical divider, "Log in" text link, "Sign up" pill button (fill `--tx`, text `--bg`, 999px radius, 8px 16px padding, weight 500).
+- Below 900px: hide links and divider, keep Log in and Sign up.
+
+### 8.2 Landing page `/`
+
+In order, each section separated by a 1px `--line` top border and `clamp(72px,10vw,120px)` vertical padding:
+
+1. **Hero.** Left-aligned, not centered.
+   - d1: "The writing editor / that keeps your voice" (line break after "editor" on desktop).
+   - Row below with space-between: lead paragraph left ("Margin checks spelling, clarity and tone, then leaves short notes beside your text. It learns how you write, so its edits sound like you."), and right-aligned "**New** Stet memory →" link.
+   - Product frame: the real editor component running in demo mode with sample data, 600px tall, 1px `--line-2` border, 14px radius, `box-shadow: 0 40px 120px -40px rgba(140,158,255,.18)`. This must be the actual `<Editor>` component, not a screenshot, so it stays correct as the editor changes. It is interactive (click notes, accept, stet) but does not capture global keyboard shortcuts.
+2. **Feedback where you're already looking.** Two-column header (d2 left, lead right, aligned to bottom). Below it a 2x2 hairline grid (section 6) of four cells: Notes in the margin, Sentence rhythm, Sounds like you, Stet memory. Each cell: d3 title, one sentence in `--tx-2`, then a small live visual pinned to the bottom (a note card, rhythm bars, voice meter, stet confirmation). Copy is in the prototype.
+3. **Built for the keyboard.** Two-column header, then a wrapping row of key chips (J K, Enter, S, R, ⌘K) each with a label.
+4. **Your drafts stay yours.** Two-column header, then three columns: "No training on your text", "Delete means gone", "Cancel in one click". These are product promises; each must be true in the implementation.
+5. **Closing CTA.** d2 "Write your next draft in Margin" left, "See pricing →" and Sign up pill right.
+6. **Footer.** Four columns: logo; Product (Features, Pricing, Changelog); Company (About, Contact); Legal (Privacy, Terms). No social icons unless real accounts exist. No credit line.
+
+### 8.3 Pricing `/pricing`
+
+- d1 "Pricing", lead "Start free. Upgrade when Margin has learned enough of your voice to be worth it."
+- Billing toggle pill (Yearly with green "−20%" note / Monthly). Default Yearly.
+- Three plans in a hairline grid. Pro cell uses `--bg-2` and a white filled button; others use outline buttons.
+  - Free, $0: Spelling and grammar, Margin notes, Up to 20 drafts, Light and dark themes. Button "Get started".
+  - Pro, $12 yearly / $15 monthly, "Most writers" tag in `--accent`: Everything in Free, Clarity and tone notes, Sentence rhythm, Sounds-like-you voice profile, Stet memory across drafts, Unlimited drafts. Button "Start 14-day trial".
+  - Team, $18 yearly / $22 monthly per member: Everything in Pro, Shared style guide, Team word list and stet list, Admin and billing controls, Google sign-in for the whole team. Button "Start 14-day trial".
+  - Prices are placeholders until the client confirms. Keep them in one config file.
+- Comparison table with group rows (Checking, Your voice, Workspace). Table scrolls horizontally inside its own container on narrow screens.
+- Questions: two-column grid of four Q&As (copy in prototype).
+- Checklist bullets are drawn with CSS (a rotated L), not an icon font or emoji.
+
+---
+
+## 9. Auth and onboarding
+
+All auth pages: full-height centered column, max width 360px (onboarding 420px), dark marketing tokens.
+
+- **Sign up `/signup`:** logo mark 32px (links home), h1 "Create your Margin account" (Inter Tight 24px 500), "Continue with Google" button (`--panel-2`, 1px `--line`), "or" divider, Name field, Work email field, white "Continue with email" button, "Already have an account? Log in", terms line.
+- **Log in `/login`:** same layout, h1 "Log in to Margin", Google button, Email field, "Email me a login link" button, "No account yet? Sign up". No passwords.
+- **Check your email state:** after submitting email, replace the form with "Check your email" and "We sent a login link to {email}. It expires in 15 minutes." plus "Use a different email".
+- **Onboarding `/welcome`** (first login only): 3-step progress bar (thin 24x3px segments), h1 "Teach Margin how you write", one sentence explaining files are used only for the voice profile, dashed drop zone ("Drop files here or choose files", ".txt, .md or .docx"), list of added files with "Added" in `--voice`, white "Continue to editor" button, "Skip for now" link.
+- Field labels sit above inputs in 13px `--tx-2`. Focus border `--accent`. Errors appear under the field in `--spell` color with a plain sentence ("Enter an email address like name@company.com").
+
+---
+
+## 10. App shell `/app`
+
+Full viewport, CSS grid: 236px sidebar + main. No page scroll; the document area scrolls.
+
+### 10.1 Sidebar
+
+- Workspace row: mark 16px + workspace name (600) + chevron.
+- Search button: bordered, `--page` fill, "Search or jump to" + `⌘K` hint in mono. Opens the command bar.
+- Group 1: Inbox, All drafts, Shared with me, each with a 6px dot and mono count.
+- Group 2 "Recent": last 8 drafts by updated time, word count in mono on the right, current draft highlighted with `--hover` and weight 500.
+- Group 3 "Tags": `# tag` rows with counts.
+- Bottom: user row (22px initials avatar, name, "Log out" link). Clicking the row opens Settings.
+- Below 820px the sidebar is hidden and reachable from a menu button in the top bar.
+
+### 10.2 Top bar (44px)
+
+- Breadcrumb: "All drafts / # tag / **Draft title**".
+- Right tools, as chips (6px radius, transparent border, `--hover` on hover, `--rule` border when toggled on):
+  - Rhythm toggle (three-bar icon + "Rhythm"), on by default, key R.
+  - "Sounds like you" + 44x4px meter bar in `--voice` + percentage in mono.
+  - Note count in mono + "notes".
+  - Theme toggle (half-filled circle icon).
+- Below 820px chip labels hide, icons and numbers stay.
+
+### 10.3 Status bar (30px)
+
+Word count, read time, save state ("Saved", "Saving", "Offline, changes kept on this device"), and right-aligned key hints: J K move, ↵ accept, S stet, ⌘K commands.
+
+### 10.4 Command bar (⌘K / Ctrl+K)
+
+Built on `cmdk`. Centered at 14vh from top, max width 560px, 12px radius, dark panel even in light theme, backdrop `rgba(0,0,0,.45)`. Input 15px, results grouped under small headings: This draft, View, Go to, Account. Arrow keys move, Enter runs, Escape closes. Minimum commands: Next note, Accept all spelling notes, Toggle sentence rhythm, Switch light/dark, Read as (customer, manager, non-native speaker: placeholder until built), New draft, Go to any draft by title, Settings, Pricing, Log out.
+
+---
+
+## 11. The editor
+
+### 11.1 Layout
+
+A centered three-column grid inside the scroll area: `72px` rhythm gutter, `minmax(0, 640px)` page, `260px` margin notes, 28px column gap, 56px top padding, 120px bottom padding.
+
+- 1100px and below: `40px / 1fr / 230px`, 18px gap.
+- 820px and below: `20px / 1fr`, notes move below the text as a stacked list.
+
+The page has no card or border. Text sits directly on `--app`. Title is doc-title, then a meta row (edited time, tags) in `--ink-3`, then body.
+
+### 11.2 Underlines (marks)
+
+Category is shown by line shape and color, so it works for color-blind users.
+
+| Category | Line | Color | Examples |
 |---|---|---|---|
-| `--t-display` | 34 to 44px (fluid) / 1.15 | Newsreader 500 | Marketing page headline only |
-| `--t-doc-h1` | 32px / 1.25 | Newsreader 600 | Document title |
-| `--t-doc-h2` | 24px / 1.3 | Newsreader 600 | Headings inside the doc |
-| `--t-doc-body` | 19px / 1.65 | Newsreader 400 | Editor body |
-| `--t-ui-lg` | 16px / 1.4 | Instrument Sans 500 | Panel titles, score number label |
-| `--t-ui` | 14px / 1.45 | Instrument Sans 400 | Notes, buttons, most UI |
-| `--t-ui-sm` | 12.5px / 1.4 | Instrument Sans 500 | Metadata, counts |
-| `--t-score` | 40px / 1 | Instrument Sans 600, tabular nums | Score panel number |
+| Spelling and grammar | solid 1.5px | `--spell` | typos, agreement |
+| Clarity | dotted 2px | `--clar` | passive voice, wordiness, plainer word, long sentence |
+| Voice | wavy 1px | `--voice` | phrasing unlike the user's own writing |
 
-Rules:
-- Editor measure: max 68ch.
-- Sentence case everywhere. **No all-caps labels.** No tracked-out eyebrow text above headings.
-- Use `font-variant-numeric: tabular-nums` for word counts and scores.
-- Never use em dashes in UI copy, comments, or docs.
+`text-underline-offset: 4px`. The active mark gets `--ac-soft` background. Marks never change text color.
+
+### 11.3 Margin notes
+
+Each note, top to bottom: header row (12px swatch drawn in the category's line style + label such as "Passive voice"), the fix line (original struck through in `--ink-3`, then replacement), and when active, a one-sentence reason in `--ink-2` and two buttons: **Accept ↵** (filled `--ink`) and **Stet S** (outline).
+
+Positioning algorithm (run on load, on resize, after any text change, after fonts load):
+1. For each open note in document order, target top = its mark's top relative to the text column, minus 8px.
+2. Actual top = max(target, previous note's bottom + 8px).
+3. Animate `top` with the 250ms curve.
+Inactive notes show only header and fix line. The active note gets `--page` fill, 1px `--rule` border and a soft shadow.
+
+Resolving:
+- **Accept:** mark gets strikethrough, after 280ms the text is replaced and briefly highlighted (1.2s fade). Note fades and the next open note becomes active.
+- **Stet:** mark styling is removed, text unchanged, the rule is saved to stet memory, and a dashed-border confirmation replaces the note: "Kept. Margin won't flag "{text}" again in any of your drafts. Undo". It fades after 6s.
+
+### 11.4 Rhythm gutter
+
+- Split the document into sentences with `Intl.Segmenter(locale, { granularity: "sentence" })`.
+- For each sentence, draw a 4px tall, 2px radius bar in the gutter, vertically centered on the sentence's first line, right-aligned, width = `min(gutterWidth, words * gutterWidth / 42)`, minimum 4px.
+- Color `--bar`; over 30 words `--warn`.
+- Hover a bar: bar turns `--ac`, its sentence gets `--ac-soft` background, tooltip shows "{n} words" or "{n} words, consider splitting".
+- Recompute on text change (debounced 150ms) and resize. R toggles visibility (opacity fade).
+
+### 11.5 Sounds like you
+
+- Meter value 0 to 100 in the top bar. It measures how close the current draft is to the user's voice profile, a set of measurable writing habits computed from their own drafts.
+- Hover or click opens a small popover: "Based on 41 of your drafts", and the two or three biggest differences in plain words ("You usually use contractions", "Your sentences here run longer than usual").
+- With no profile yet, the meter shows "Add writing" and links to the onboarding upload.
+- Voice notes use label "Not your voice" and a reason that cites the user's own habit ("Across your 41 drafts you write "we'd", never "we shall".").
+
+### 11.6 Empty and edge states
+
+- New draft: title placeholder "Untitled" in `--ink-3`, body placeholder "Start writing. Notes will appear in the margin."
+- No notes: count shows 0 and the notes column shows "Nothing to fix." in `--ink-3` once, near the top.
+- Checker unreachable: status bar shows "Checking paused, retrying" in `--warn`. Never a modal.
 
 ---
 
-## 5. Spacing, radius, elevation
+## 12. Keyboard map (editor)
 
-**Spacing scale (px):** 4, 8, 12, 16, 24, 32, 48, 64. Tokens `--s-1` through `--s-8`.
+Shortcuts that are single letters only fire when focus is not inside the text or an input. Inside the text, use the Alt variants.
 
-**Radius by hierarchy (not one radius for everything):**
-- Sheet: 2px (it is paper, it should feel flat and physical)
-- Buttons, inputs, chips: 6px
-- Margin notes: 8px
-- Popover card, bottom sheet: 12px
-
-**Elevation:**
-- Sheet: 1px `--rule` border, no shadow.
-- Margin notes: no shadow at rest. Active note: 1.5px `--pencil` border plus `0 4px 16px rgb(28 33 39 / 0.10)`.
-- Popover card: `0 1px 2px rgb(28 33 39 / 0.08), 0 8px 28px rgb(28 33 39 / 0.14)`.
-
-No gradients anywhere.
-
----
-
-## 6. Motion
-
-| Moment | Motion | Duration / easing |
+| Key | Alt variant | Action |
 |---|---|---|
-| Popover card opens | Fade + 4px rise | 120ms, `cubic-bezier(0.2, 0, 0, 1)` |
-| Note becomes active | Slides to its anchor line, border fades in | 180ms, same easing |
-| Fix applied | New text gets a category-tint wash that fades out | 600ms, ease-out |
-| Note removed | Fade out, remaining notes slide to close the gap | 160ms |
-
-That is the full list. Nothing animates on page load. Under `prefers-reduced-motion: reduce`, all of the above become instant, except the applied-fix wash, which becomes a static tint for 600ms then disappears.
-
-Motion in Bear and Linear is short, physical, and single-purpose: it confirms one state change and disappears. No parallax, no staggered reveals, no bouncy easing. Keep every timing and easing curve above; the discipline is in never adding a new animation "for polish." The one sanctioned exception is the dithered logo on the marketing page hero (8.7), which responds to the pointer and is static under reduced motion.
-
----
-
-## 7. Layout
-
-### Desktop (1100px and up)
-
-```
-+---------------------------------------------------------------------+
-| Margin    Untitled draft          [All][Correct][Clarity][Tone][Sty] |
-|                                          1,248 words     Score 82 v  |
-+---------------------------------------------------------------------+
-|  |                                           |                      |
-|  |   +-----------------------------------+   |  [note] Possible     |
-|m |   |  Weekly product update            |   |   typo  ~~shiped~~   |
-|i |   |                                   |   |   shipped            |
-|n |   |  Last week our team shiped the    |   |                      |
-|i |   |  new onboarding flow. Their was   |   |  [note] Wrong word   |
-|m |   |  alot of debate about wether...   |   |   ~~Their~~ There    |
-|a |   |                                   |   |                      |
-|p |   |                                   |   |  [note] Hedging      |
-|  |   +-----------------------------------+   |   "sort of"          |
-+---------------------------------------------------------------------+
-  ^ 8px issue          ^ sheet, centered,         ^ margin rail, 300px,
-    minimap strip        max 68ch text              notes pinned to lines
-```
-
-- Left-aligned text inside a centered sheet.
-- Rail width 300px, left edge 32px from the sheet.
-- Minimap is a thin vertical strip pinned to the left edge of the viewport.
-- Top bar: 56px tall, `--sheet` background, bottom border `--rule`.
-
-### Tablet (768 to 1099px)
-
-- Rail collapses to 44px wide: shows only colored dots at each anchor line. Clicking a dot opens the popover card at the mark.
-- Minimap stays.
-
-### Mobile (under 768px)
-
-- No rail, no minimap.
-- Marks stay inline. Tapping a mark opens the **bottom sheet** version of the suggestion card.
-- Category filter becomes a horizontally scrollable chip row.
-- Score opens as a full-height sheet.
+| J or ↓ | Alt+J | Next note |
+| K or ↑ | Alt+K | Previous note |
+| Enter | Alt+Enter | Accept active note |
+| S | Alt+S | Stet active note |
+| R | Alt+R | Toggle rhythm gutter |
+| Esc | | Return focus to the text |
+| ⌘K / Ctrl+K | | Command bar |
+| ⌘N / Ctrl+N | | New draft (app only) |
 
 ---
 
-## 8. Components
+## 13. Copy rules
 
-At least four custom components. None come from a UI kit. Each lives in its own folder with the component, its styles, and a short header comment explaining what it does and why.
-
-### 8.1 Suggestion mark (inline)
-
-Rendered as a ProseMirror inline decoration, not a DOM wrapper component.
-
-| State | Visual |
-|---|---|
-| Rest | Category underline stroke, `text-underline-offset: 4px` |
-| Hover | Underline thickens by 0.5px, cursor pointer |
-| Active (card open or note active) | Category tint background, 2px radius |
-| Filtered out | No decoration at all |
-| Ignored | Removed |
-
-Requirements:
-- Stays anchored while the user types anywhere else in the document.
-- Disappears immediately if the user edits inside its range (it will be rechecked).
-
-### 8.2 Suggestion card (popover and bottom sheet)
-
-Opens on click of a mark, Enter on a focused note, or keyboard shortcut.
-
-```
-+-----------------------------------------+
-| (o) Correctness . Possible typo         |
-|                                         |
-|  ~~shiped~~   shipped                   |
-|               shape  ship               |
-|                                         |
-|  The word may be misspelled.            |
-|                                         |
-|  [ Apply ]  Dismiss   Ignore this rule  |
-+-----------------------------------------+
-```
-
-- Header: category dot + category name + short title from the rule.
-- Primary replacement shown next to the struck-through original. Up to 2 alternates as secondary buttons.
-- One-sentence explanation in plain words (shorten LanguageTool messages, max ~120 chars, full text in a `title` attribute).
-- Actions, named consistently through the flow:
-  - **Apply** (primary): replaces text. Toast reads "Applied".
-  - **Dismiss**: hides this instance only. Toast reads "Dismissed" with **Undo**.
-  - **Ignore this rule**: hides all instances of the rule, persisted.
-  - For spelling issues, a fourth action: **Add to dictionary**.
-- Positioned below the mark, flips above if there is no room. Never covers the mark itself.
-- Width 320px. Max 1 card open at a time.
-- Esc closes and returns focus to the editor at the mark.
-- On mobile this becomes a bottom sheet with the same content and full-width buttons.
-
-### 8.3 Margin rail (the signature component)
-
-A column of margin notes, each vertically aligned with the line its mark sits on.
-
-Note contents (compact):
-```
-| (o) Possible typo                 |
-|     ~~shiped~~ shipped            |
-```
-
-Layout algorithm (implemented as a pure function in `src/lib/layout/rail-layout.ts`, fully unit tested):
-1. Input: list of `{ id, anchorTop, height }` sorted by `anchorTop`, plus optional `activeId`.
-2. Without an active note: place each note at `max(anchorTop, previousBottom + 8)`.
-3. With an active note: pin the active note at exactly its `anchorTop`. Lay out notes above it upward (each at `min(anchorTop, nextTop - 8 - height)`), and notes below it downward as in step 2.
-4. Output: `{ id, top }` for each note.
-
-Behavior:
-- Hovering a note highlights its mark and draws a 1px leader line from note to mark in the category color.
-- Clicking a note makes it active, scrolls its mark into view if needed, and expands it to show Apply / Dismiss inline.
-- Notes for filtered-out categories are hidden and the layout reflows.
-- Recalculates on: document change, window resize, font load, filter change. Batch recalcs into one `requestAnimationFrame`.
-- Must stay smooth (no visible jank) with 150 notes.
-
-### 8.4 Issue minimap
-
-An 8px wide vertical strip on the left edge of the viewport.
-
-- Represents the entire document height.
-- Each issue is a 2 to 3px tall tick at its relative position, in its category color.
-- A translucent `--ink` window at 8% opacity shows the currently visible region.
-- Click or drag anywhere to scroll the document there.
-- Hover shows a tiny tooltip with the count of issues in that region.
-- Hidden below 768px.
-
-### 8.5 Score panel
-
-Opened from the score button in the top bar. Anchored dropdown on desktop, full sheet on mobile.
-
-```
-+------------------------------------+
-|  82                                |
-|  Overall score                     |
-|                                    |
-|  Correctness   ########--   4      |
-|  Clarity       #########-   2      |
-|  Tone          ######----   6      |
-|  Style         #########-   1      |
-|                                    |
-|  Reading level     Grade 9         |
-|  Avg sentence      18 words        |
-|  Passive voice     3 sentences     |
-|  Tone reads as     Tentative       |
-|                                    |
-|  Scores are estimates based on     |
-|  the issues found, not a grade     |
-|  of your writing.                  |
-+------------------------------------+
-```
-
-- Bars are simple filled rects, category colored, no rounded pills.
-- Clicking a category row filters the editor to that category.
-- Score updates live but debounced (same cadence as checking).
-
-### 8.6 Status indicator
-
-Small text in the top bar next to the word count.
-
-| State | Copy |
-|---|---|
-| Idle, all checked | "All checked" |
-| Checking | "Checking..." (only shown if a check takes longer than 400ms) |
-| Checker unreachable | "Checking paused. Can't reach the checker, retrying in 10s." |
-| Document empty | Nothing shown |
-
-### 8.7 Logo mark
-
-A simple two-shape glyph, not a wordmark alone, not an icon-heavy symbol. It states the product's core relationship visually: a solid bar (the page's edge) beside a solid dot (a note pinned to it), the same relationship every margin note in the app draws between text and its annotation.
-
-- **Shapes:** one rounded vertical bar, one filled circle positioned beside it. Solid fills only, both shapes the same flat color, `--ink`. `--ink` already inverts with the theme (near black in light mode, near white in dark mode), so the mark never stays fixed black on a dark page.
-- **No gradient, no outline-only version, no drop shadow.** The mark must survive rendering as a flat silhouette at 16px (browser tab favicon) as easily as at 240px.
-- **Source file:** `public/margin-mark.svg`, solid black on a transparent background. It is the `imageSrc` input to the dithered logo (adapted from Componentry's `@componentry/dithered-logo`, vendored at `src/components/marketing/DitheredLogo.tsx`) on the marketing page hero, and is rendered as a flat static SVG everywhere else (top bar, favicon, app icon).
-- **Where the dithered, interactive version appears:** only on the marketing page hero, once, as the signature moment. Never inside the app itself. The editor's top bar uses the plain flat SVG, per section 2's rule that chrome recedes and never performs for its own sake.
-- **Wordmark pairing:** "Margin" set in Instrument Sans, sentence case, medium weight, sitting to the right of the mark with consistent optical spacing. No tagline stacked underneath it in the primary lockup.
+- Sentence case everywhere, including buttons and headings.
+- Buttons state the action: "Accept", "Stet", "Continue with email", "Start 14-day trial".
+- Note reasons are one sentence, second person, no hedging, no exclamation marks.
+- No em dashes. No emoji. No banned words from section 3.
+- Errors say what happened and what to do next.
 
 ---
 
-## 9. Empty, loading, and error states
+## 14. Responsive
 
-- **Empty document:** placeholder in the editor: "Start writing, or paste a draft. Suggestions appear in the margin." Rail shows nothing.
-- **No issues found:** rail shows a single quiet line at the top: "No suggestions right now."
-- **Checker down:** existing marks stay, status indicator explains, automatic retry with backoff (10s, 20s, 40s, cap 60s).
-- **Very long paste (over 50,000 characters):** check the visible region first, then the rest in the background.
-
-Errors never apologize and are never vague. They say what happened and what the user can do.
+- Marketing: two-column splits, grids and plan cards collapse to one column below 900px. The hero product frame stays but becomes 560px tall and shows the mobile editor layout.
+- App: see 10.1, 10.2, 11.1. Nothing may scroll horizontally except the pricing table container.
+- Minimum side gutter 16px at every width.
 
 ---
 
-## 10. Keyboard map
+## 15. Accessibility floor
 
-| Shortcut | Action |
-|---|---|
-| `Ctrl/Cmd + J` | Jump to next suggestion (opens its card) |
-| `Ctrl/Cmd + Shift + J` | Previous suggestion |
-| `Enter` (card open) | Apply primary replacement |
-| `1`, `2`, `3` (card open) | Apply that replacement |
-| `D` (card open) | Dismiss |
-| `Esc` | Close card, return focus to editor |
-| `Ctrl/Cmd + Z` | Undo, including undoing an applied fix |
-
-Show a small "Keyboard shortcuts" link in the top bar that opens a simple sheet listing these.
+- Text contrast 4.5:1 minimum (check `--tx-3` and `--ink-3` only for non-essential text).
+- Every interactive element reachable by Tab, visible focus ring (2px `--accent`/`--ac`, 2px offset).
+- Margin notes are a `role="list"`; the active note is announced with `aria-live="polite"`: "Passive voice. Suggest: the team decided. Press Enter to accept, S to keep yours."
+- Marks have `aria-describedby` pointing at their note.
+- Rhythm gutter is `aria-hidden`; the same information is available via the command "Show long sentences".
+- Reduced motion respected (section 7).
 
 ---
 
-## 11. Accessibility floor
+## 16. Logo
 
-- Visible focus ring on everything: 2px `--pencil` outline, 2px offset.
-- Marks have `aria-describedby` pointing to a visually hidden description ("Correctness suggestion: possible typo").
-- Rail is a `role="list"`; notes are `role="listitem"` with buttons inside.
-- Card uses `role="dialog"` with a label. Focus moves into it when opened by keyboard.
-- Announce "Applied" / "Dismissed" through an `aria-live="polite"` region.
-- Respect `prefers-reduced-motion` and `prefers-color-scheme`.
-- Target sizes at least 32px on desktop, 44px on touch.
+The mark is a rounded vertical bar with a filled circle beside it (a page edge with a note pinned to it). Source: `reference/margin-mark.svg`. Solid fill only, `currentColor`. Used at 16px (app), 20px (nav), 32px (auth). The wordmark is "Margin" in Inter Tight 600, tracking -0.02em. Favicon: the mark on transparent, white in dark browser themes, `#08090A` in light.
 
----
-
-## 12. Copy guidelines
-
-- Plain verbs, sentence case, no filler.
-- Same name for the same action everywhere: Apply produces "Applied".
-- Name things by what users understand ("Ignore this rule"), never by implementation ("Disable LT rule ID").
-- No em dashes. No arrows appended to buttons. No middle-dot meta strings in body copy (the single dot in the card header is the one exception, as a category separator).
-
----
-
-## 13. Things that must not appear
-
-These are the tells of templated or AI-generated UI. Reject them in review.
-
-- Identical rounded cards with the same grey shadow everywhere
-- Gradient washes or glassmorphism
-- All-caps tracked eyebrow labels
-- `01 / 02 / 03` numbering on things that are not a sequence
-- Fade-and-slide-up on every section load
-- One word in a headline set in a different color or italic
-- Generic shadcn / component-kit look left at defaults
-- Monospace used just to look technical
-- Stock icons for everything; use icons only where they add meaning (category dot, close, chevron)
-
-Beyond that list, explicitly exclude the specific tells that make a product look AI-generated to someone looking for it:
-
-- **No "AI" badges, pills, or chips anywhere in the UI.** No small purple or blue rounded tag reading "AI" or "Powered by AI" next to any feature. The product doesn't need to announce its own mechanism.
-- **No sparkle, wand, or magic-star icons.** These are the single most recognizable AI-tool visual cliché as of 2026. Use plain, literal icons only (a checkmark, a pencil, a dot), never a glowing star or sparkle glyph for "smart" features.
-- **No gradient buttons, gradient text, or gradient backgrounds**, purple-to-blue or otherwise. Flat color only, per section 3.
-- **No glassmorphism** (frosted, blurred translucent panels). Linear and Bear both use solid, flat surfaces.
-- **No watermark, badge, or "made with" credit line of any kind** in the footer, corner, or loading screen. Nothing that names a tool, platform, or framework used to build the product.
-- **No generic centered-hero-with-gradient-CTA layout.** That composition (big centered headline, one paragraph, one gradient button, soft blurred shapes floating behind) is the default output of nearly every AI page-builder and is recognizable on sight.
-- **No default shadcn/ui, Tailwind UI, or component-kit styling left unmodified.** If a component's shadow, radius, or spacing matches an off-the-shelf kit's defaults exactly, it hasn't been designed, it's been assembled. Every component in this spec is custom per section 8.
-- **No emoji in interface copy, buttons, or empty states.** Plain, direct language only, per section 12.
-- **No loading skeletons with shimmer gradients.** Use a plain, flat, low-opacity placeholder instead, no animated sheen.
-
-The test before shipping any screen: would this be at home in Bear or Linear's own UI? If it reads as "clearly a modern web app template" rather than "clearly this specific product," it fails and gets redesigned, not just recolored.
-
----
-
-## 14. Marketing page
-
-A single page, standalone from the app, built with the same tokens and typography as the product, not a different "landing page template" aesthetic layered on top. It lives at `/`; the editor lives at `/app`.
-
-### Hero
-
-Explicitly avoids the generic pattern banned in section 13 (centered headline, one paragraph, gradient button, soft blurred shapes). Instead:
-
-- **Two-column layout**, not centered. Left: the wordmark plus the dithered logo mark (interactive, per 8.7), a headline, one sentence of subtext, and a single primary button. Right: a real screenshot of the actual product mid-use, showing real text with a real margin note pinned beside it, cursor visible mid-interaction. Not an illustration, not an abstract shape: the actual interface doing the thing the product does.
-- **Headline:** states the mechanism plainly, does not oversell. Something in the register of "Suggestions that live where you're writing, not where they get in the way." No "revolutionize," "supercharge," or "unlock" language.
-- **Subtext:** one sentence, plain, no bullet list of adjectives.
-- **Primary button:** single action, "Open the editor", flat color, no gradient, no icon.
-- **No secondary "Watch a demo" button, no logos-of-companies-that-trust-us row.** This product has no customers yet; a fabricated trust row would itself be a tell.
-
-### Below the fold
-
-- **Three feature sections max**, each pairing one sentence of copy with one real screenshot or a small interactive fragment of the actual UI, never a stock illustration or icon grid.
-- **One section addresses the actual differentiation directly** (the margin-note approach vs. a popup sidebar), since this is the single clearest thing that separates the product from Grammarly. The copy from the original proposal to Callum already states this well; reuse it.
-- **No pricing section** until pricing is finalized.
-- **Footer:** minimal. No "made with" credit, no social icon row unless real accounts exist to link to.
-
-### What this page must not do
-
-Everything in section 13 applies here in full, and additionally: no auto-playing background video, no scroll-triggered stagger animations on any section (motion stays purposeful per section 6, not decorative), no fake testimonial quotes.
+Optional: the dithered interactive version of the mark (Componentry `@componentry/dithered-logo`) may appear once, in the landing hero above the headline, only if it looks right next to the new typography. It never appears in the app.

@@ -1,0 +1,614 @@
+<title>Margin Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* ---------- site tokens: dark by design, like Linear ---------- */
+:root{
+  color-scheme:dark;
+  --bg:#08090A; --bg-2:#0E0F11; --panel:#121316; --panel-2:#17181B;
+  --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
+  --tx:#F7F8F8; --tx-2:#8A8F98; --tx-3:#5E626A;
+  --accent:#8C9EFF;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --disp:"Inter Tight","Inter",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased;font-feature-settings:"cv11","ss01","ss03"}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:clamp(16px,4vw,32px)}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(8,9,10,.82);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;height:64px;gap:28px}
+.logo{display:flex;align-items:center;gap:10px;font:600 18px var(--disp);letter-spacing:-.02em}
+.logo svg{width:20px;height:20px;fill:currentColor}
+.links{display:flex;gap:4px;margin-left:auto}
+.links a{padding:6px 12px;border-radius:999px;color:var(--tx-2);font-size:14.5px;transition:color .15s,background .15s}
+.links a:hover,.links a.cur{color:var(--tx);background:rgba(255,255,255,.06)}
+.sep{width:1px;height:20px;background:var(--line-2)}
+.nav .login{color:var(--tx-2);font-size:14.5px}
+.nav .login:hover{color:var(--tx)}
+.pill{display:inline-flex;align-items:center;gap:8px;background:var(--tx);color:var(--bg);border-radius:999px;padding:8px 16px;font-weight:500;font-size:14.5px;transition:opacity .15s}
+.pill:hover{opacity:.88}
+.ghost{display:inline-flex;align-items:center;gap:8px;color:var(--tx-2);font-size:15px;transition:color .15s}
+.ghost:hover{color:var(--tx)}
+
+/* type */
+.d1{font:500 clamp(44px,7vw,84px)/1.0 var(--disp);letter-spacing:-.035em;margin:0;text-wrap:balance}
+.d2{font:500 clamp(32px,4.4vw,52px)/1.05 var(--disp);letter-spacing:-.03em;margin:0;text-wrap:balance}
+.d3{font:500 20px/1.25 var(--disp);letter-spacing:-.015em;margin:0}
+.lead{font-size:clamp(17px,1.6vw,20px);line-height:1.5;color:var(--tx-2);margin:0;max-width:34em}
+.muted{color:var(--tx-2)}
+
+/* hero */
+.hero{padding-block:clamp(72px,12vw,150px) 56px}
+.hero .row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-top:28px}
+.new{display:flex;gap:10px;font-size:15px}
+.new b{font-weight:500}
+.new a{color:var(--tx-2)} .new a:hover{color:var(--tx)}
+.frame{margin-top:64px;border:1px solid var(--line-2);border-radius:14px;overflow:hidden;background:var(--bg-2);box-shadow:0 40px 120px -40px rgba(140,158,255,.18)}
+.frame .app{height:600px;min-height:0}
+
+/* sections */
+.sec{padding-block:clamp(72px,10vw,120px);border-top:1px solid var(--line)}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:56px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.cell{background:var(--bg);padding:28px;display:flex;flex-direction:column;gap:10px;min-height:300px}
+.cell p{margin:0;color:var(--tx-2);max-width:36em}
+.vis{margin-top:auto;padding-top:24px}
+/* feature visuals */
+.v-note{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;max-width:320px}
+.v-note .h{font-size:12.5px;color:var(--tx-2);display:flex;gap:8px;align-items:center}
+.v-note .h i{width:12px;border-bottom:2px dotted var(--accent)}
+.v-note .f{margin-top:6px;font-size:15px}
+.v-note s{color:var(--tx-3)}
+.v-bars{display:flex;flex-direction:column;gap:9px;max-width:360px}
+.v-bars div{height:4px;border-radius:2px;background:#34373E}
+.v-bars .w{background:#E3A948}
+.v-meter{display:flex;align-items:center;gap:12px;font:500 13px var(--mono);color:var(--tx-2)}
+.v-meter .t{flex:1;max-width:260px;height:6px;border-radius:3px;background:#24262B;overflow:hidden}
+.v-meter .t i{display:block;height:100%;width:94%;background:#4CC2AE}
+.v-memo{border:1px dashed var(--line-2);border-radius:10px;padding:12px 14px;font-size:13.5px;color:var(--tx-2);max-width:360px}
+.v-memo b{color:var(--tx);font-weight:500}
+.keys{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.kb{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg-2);font-size:14px;color:var(--tx-2)}
+.kb kbd{font:500 12px var(--mono);color:var(--tx);border:1px solid var(--line-2);border-radius:5px;padding:2px 6px;min-width:24px;text-align:center}
+.priv{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:8px}
+.priv h3{font:500 16px var(--disp);margin:0 0 6px;letter-spacing:-.01em}
+.priv p{margin:0;color:var(--tx-2);font-size:14.5px}
+.cta{text-align:left;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+
+/* footer */
+.foot{border-top:1px solid var(--line);padding-block:48px 64px;display:grid;grid-template-columns:2fr repeat(3,1fr);gap:32px;font-size:14px}
+.foot h4{font:500 13px var(--sans);margin:0 0 12px}
+.foot a{display:block;color:var(--tx-2);padding:3px 0}
+.foot a:hover{color:var(--tx)}
+
+/* pricing */
+.ptop{padding-block:clamp(64px,9vw,110px) 40px}
+.bill{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;margin-top:28px;background:var(--bg-2)}
+.bill button{padding:6px 14px;border-radius:999px;color:var(--tx-2);font-size:14px}
+.bill button.on{background:rgba(255,255,255,.09);color:var(--tx)}
+.bill .save{color:#4CC2AE;margin-left:6px;font-size:12.5px}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.plan{background:var(--bg);padding:28px;display:flex;flex-direction:column;gap:18px}
+.plan.hl{background:var(--bg-2)}
+.plan .nm{font:500 18px var(--disp);letter-spacing:-.01em;display:flex;justify-content:space-between;align-items:center}
+.plan .tag{font:500 12px var(--sans);color:var(--accent)}
+.price{display:flex;align-items:baseline;gap:6px}
+.price b{font:500 44px/1 var(--disp);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.price span{color:var(--tx-2);font-size:14px}
+.plan .desc{color:var(--tx-2);margin:0;font-size:14.5px;min-height:44px}
+.plan ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;font-size:14.5px}
+.plan li{display:flex;gap:10px;align-items:baseline;color:#D0D3D8}
+.plan li::before{content:"";flex:none;width:10px;height:6px;border-left:1.5px solid var(--tx-2);border-bottom:1.5px solid var(--tx-2);transform:rotate(-45deg) translateY(-3px)}
+.btn2{display:flex;justify-content:center;padding:10px 16px;border-radius:8px;border:1px solid var(--line-2);font-weight:500;font-size:14.5px;transition:background .15s}
+.btn2:hover{background:rgba(255,255,255,.05)}
+.btn2.w{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.btn2.w:hover{opacity:.9;background:var(--tx)}
+.tblw{overflow-x:auto;margin-top:72px}
+table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:620px}
+th,td{padding:13px 12px;border-bottom:1px solid var(--line);text-align:left}
+th{font-weight:500;color:var(--tx-2);font-size:13.5px}
+td:not(:first-child),th:not(:first-child){text-align:center;width:18%}
+td.y{color:var(--tx)} td.n{color:var(--tx-3)}
+tr.grp td{color:var(--tx);font-weight:500;padding-top:28px}
+.faq{display:grid;grid-template-columns:1fr 1fr;gap:32px 48px;margin-top:24px}
+.faq h3{font:500 16px var(--disp);margin:0 0 6px}
+.faq p{margin:0;color:var(--tx-2);font-size:14.5px}
+
+/* auth */
+.auth{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-block:48px;padding-inline:16px}
+.auth .box{width:100%;max-width:360px;display:flex;flex-direction:column;gap:14px;text-align:center}
+.auth .logo{justify-content:center;margin-bottom:18px}
+.auth .logo svg{width:32px;height:32px}
+.auth h1{font:500 24px/1.2 var(--disp);letter-spacing:-.02em;margin:0 0 10px}
+.oauth{display:flex;align-items:center;justify-content:center;gap:10px;padding:11px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);font-weight:500;font-size:14.5px}
+.oauth:hover{border-color:var(--line-2)}
+.or{display:flex;align-items:center;gap:12px;color:var(--tx-3);font-size:12.5px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.field{text-align:left;display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;color:var(--tx-2)}
+.field input{background:var(--bg-2);border:1px solid var(--line);border-radius:8px;color:var(--tx);font:15px var(--sans);padding:10px 12px;outline:none}
+.field input:focus{border-color:var(--accent)}
+.auth .btn2{margin-top:4px}
+.small{font-size:13px;color:var(--tx-3)}
+.small a{color:var(--tx-2)} .small a:hover{color:var(--tx)}
+.drop{border:1px dashed var(--line-2);border-radius:12px;padding:28px 18px;display:flex;flex-direction:column;gap:6px;align-items:center;cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:rgba(140,158,255,.05)}
+.drop b{font-weight:500}
+.files{list-style:none;margin:0;padding:0;text-align:left;font-size:13.5px;display:flex;flex-direction:column;gap:6px}
+.files li{display:flex;justify-content:space-between;padding:8px 12px;border:1px solid var(--line);border-radius:8px;color:var(--tx-2)}
+.files li span:last-child{color:#4CC2AE;font-size:12.5px}
+.steps{display:flex;gap:6px;justify-content:center;margin-bottom:6px}
+.steps i{width:24px;height:3px;border-radius:2px;background:var(--line-2)}
+.steps i.on{background:var(--tx)}
+
+@media (max-width:900px){
+  .links{display:none}.sep{display:none}.nav .wrap{gap:14px}.nav .login{margin-left:auto}
+  .split,.grid2,.plans,.faq,.priv{grid-template-columns:1fr}
+  .foot{grid-template-columns:1fr 1fr}
+  .frame .app{height:560px}
+}
+
+/* ---------- editor (app) tokens: dark default, light optional ---------- */
+.app{
+  --app:#0E0F11; --side:#121316; --page:#16171A; --ink:#E4E5E9; --ink-2:#9A9CA5; --ink-3:#63656D;
+  --rule:#24262B; --hover:#1D1F23; --ac:#8C9EFF; --ac-soft:rgba(140,158,255,.12);
+  --spell:#F0766E; --clar:#8C9EFF; --voice:#4CC2AE; --warn:#E3A948; --bar:#34373E;
+  color-scheme:dark;
+}
+.app.light{
+  --app:#F4F4F2; --side:#EFEFEC; --page:#FFFFFF; --ink:#1B1B1F; --ink-2:#5E5F66; --ink-3:#9A9BA1;
+  --rule:#E3E3DF; --hover:#E7E7E3; --ac:#3552D4; --ac-soft:rgba(53,82,212,.09);
+  --spell:#C23A34; --clar:#3552D4; --voice:#17806F; --warn:#B7791F; --bar:#C9CAD0; color-scheme:light;
+}
+.app{display:grid;grid-template-columns:236px minmax(0,1fr);background:var(--app);color:var(--ink);font:13px/1.45 var(--sans);text-align:left}
+#r-app .app{height:100vh;height:100dvh}
+.a-side{background:var(--side);border-right:1px solid var(--rule);display:flex;flex-direction:column;padding:10px 8px;gap:14px;overflow:auto;min-height:0}
+.ws{display:flex;align-items:center;gap:8px;padding:6px 8px;font-weight:600}
+.ws svg{width:16px;height:16px;fill:var(--ink)}
+.ws .chev{margin-left:auto;color:var(--ink-3);font-weight:400}
+.a-search{display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;border-radius:6px;color:var(--ink-2);border:1px solid var(--rule);background:var(--page)}
+.a-search kbd,.k{font:500 11px var(--mono);color:var(--ink-3);margin-left:auto}
+.a-grp{display:flex;flex-direction:column;gap:1px}
+.a-gl{font-size:11.5px;color:var(--ink-3);padding:4px 8px;font-weight:500}
+.a-it{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;color:var(--ink-2);text-align:left;width:100%}
+.a-it:hover{background:var(--hover);color:var(--ink)}
+.a-it.cur{background:var(--hover);color:var(--ink);font-weight:500}
+.a-it .ct{margin-left:auto;font:11px var(--mono);color:var(--ink-3)}
+.a-it .dot{width:6px;height:6px;border-radius:50%;background:var(--ink-3);flex:none}
+.a-user{margin-top:auto;display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;color:var(--ink-2)}
+.a-user .av{width:22px;height:22px;border-radius:50%;background:#2B3A55;color:#C9D4FF;display:grid;place-items:center;font-size:10.5px;font-weight:600}
+.a-user a{margin-left:auto;font-size:12px;color:var(--ink-3)} .a-user a:hover{color:var(--ink)}
+.a-main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.a-top{display:flex;align-items:center;gap:12px;padding:0 16px;height:44px;border-bottom:1px solid var(--rule);flex:none}
+.crumb{color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb b{color:var(--ink);font-weight:500}
+.tools{margin-left:auto;display:flex;align-items:center;gap:6px}
+.chip{display:flex;align-items:center;gap:7px;padding:4px 9px;border-radius:6px;color:var(--ink-2);border:1px solid transparent}
+.chip:hover{background:var(--hover)}
+.chip.on{border-color:var(--rule);color:var(--ink)}
+.vbar{width:44px;height:4px;border-radius:2px;background:var(--rule);overflow:hidden}
+.vbar i{display:block;height:100%;width:86%;background:var(--voice);transition:width .4s}
+.num{font:500 12px var(--mono);font-variant-numeric:tabular-nums}
+.a-scroll{flex:1;overflow:auto;min-height:0}
+.sheet{display:grid;grid-template-columns:72px minmax(0,640px) 260px;justify-content:center;gap:0 28px;padding:56px 24px 120px;position:relative}
+.gutter{position:relative}
+.gutter .b{position:absolute;right:10px;height:4px;border-radius:2px;background:var(--bar);transition:background .15s,width .3s,opacity .2s}
+.gutter .b.long{background:var(--warn)}
+.gutter .b.hot{background:var(--ac)}
+.hide-rhythm .gutter .b{opacity:0}
+.doc h1{font:600 30px/1.2 var(--disp);letter-spacing:-.025em;margin:0 0 6px}
+.meta{color:var(--ink-3);margin:0 0 28px;display:flex;gap:10px;flex-wrap:wrap}
+.meta .tg{color:var(--ink-2)}
+.doc p{font:400 17px/1.75 var(--sans);letter-spacing:-.006em;margin:0 0 18px;max-width:64ch}
+.s{border-radius:2px;transition:background .15s}
+.s.hot{background:var(--ac-soft)}
+.m{text-decoration-line:underline;text-decoration-thickness:1.5px;text-underline-offset:4px;cursor:pointer;border-radius:2px}
+.m.spell{text-decoration-style:solid;text-decoration-color:var(--spell)}
+.m.clar{text-decoration-style:dotted;text-decoration-color:var(--clar);text-decoration-thickness:2px}
+.m.voice{text-decoration-style:wavy;text-decoration-color:var(--voice);text-decoration-thickness:1px}
+.m.on{background:var(--ac-soft)}
+.m.gone{text-decoration-line:line-through;text-decoration-style:solid;text-decoration-color:var(--ink-2);color:var(--ink-3)}
+.m.new{text-decoration:none;animation:ink 1.2s ease}
+@keyframes ink{from{background:var(--ac-soft)}to{background:transparent}}
+.notes{position:relative}
+.nt{position:absolute;left:0;right:0;padding:9px 11px 10px;border-radius:8px;border:1px solid transparent;transition:top .25s cubic-bezier(.2,.7,.2,1),opacity .2s,border-color .15s,background .15s;cursor:pointer}
+.nt:hover{background:var(--page)}
+.nt.on{background:var(--page);border-color:var(--rule);box-shadow:0 6px 18px -10px rgba(0,0,0,.35)}
+.nt .h{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2)}
+.nt .sw{width:12px;height:0;border-bottom:2px solid var(--c)}
+.nt.spell{--c:var(--spell)} .nt.clar{--c:var(--clar)} .nt.voice{--c:var(--voice)}
+.nt.clar .sw{border-bottom-style:dotted} .nt.voice .sw{border-bottom-style:dashed}
+.nt .fix{font:14.5px/1.45 var(--sans);margin-top:5px}
+.nt .fix s{color:var(--ink-3);text-decoration-color:var(--ink-3)}
+.nt .why{display:none;color:var(--ink-2);margin-top:6px;font-size:12.5px}
+.nt.on .why{display:block}
+.nt .act{display:none;gap:6px;margin-top:10px;align-items:center}
+.nt.on .act{display:flex}
+.btn{padding:4px 9px;border-radius:5px;border:1px solid var(--rule);font-size:12px;display:inline-flex;gap:6px;align-items:center}
+.btn:hover{background:var(--hover)}
+.btn.pri{background:var(--ink);color:var(--page);border-color:var(--ink)}
+.btn.pri:hover{opacity:.88;background:var(--ink)}
+.btn .k{margin-left:2px;color:inherit;opacity:.55}
+.nt.done{opacity:0;pointer-events:none}
+.memo{position:absolute;left:0;right:0;font-size:12px;color:var(--ink-2);padding:9px 11px;border-radius:8px;border:1px dashed var(--rule);transition:opacity .3s}
+.memo b{color:var(--ink);font-weight:500}
+.memo button{color:var(--ac);margin-left:4px}
+.status{display:flex;gap:16px;align-items:center;height:30px;padding:0 16px;border-top:1px solid var(--rule);color:var(--ink-3);font-size:11.5px;flex:none}
+.status .r{margin-left:auto}
+.status kbd{font:11px var(--mono);border:1px solid var(--rule);border-radius:4px;padding:0 4px;color:var(--ink-2)}
+.tip{position:fixed;z-index:60;background:#F7F8F8;color:#08090A;font-size:12px;padding:5px 8px;border-radius:5px;pointer-events:none;white-space:nowrap}
+.veil{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;justify-content:center;align-items:flex-start;padding:14vh 16px 0;z-index:70}
+.cmd{width:100%;max-width:560px;background:#16171A;border-radius:12px;box-shadow:0 24px 60px -12px rgba(0,0,0,.7),0 0 0 1px var(--line-2);overflow:hidden;color:var(--tx)}
+.cmd input{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--tx);font:15px var(--sans);padding:16px 18px;outline:none}
+.cmd ul{list-style:none;margin:0;padding:6px;max-height:320px;overflow:auto}
+.cmd li{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:7px;color:var(--tx-2);cursor:pointer;font-size:14px}
+.cmd li.sel{background:rgba(255,255,255,.06);color:var(--tx)}
+.cmd li .k{margin-left:auto}
+.cmd .sh{font-size:11.5px;color:var(--tx-3);padding:8px 12px 4px}
+@media (max-width:1100px){.sheet{grid-template-columns:40px minmax(0,1fr) 230px;gap:0 18px}}
+@media (max-width:820px){
+  .app{grid-template-columns:1fr}.a-side{display:none}
+  .sheet{grid-template-columns:20px minmax(0,1fr);padding:32px 16px 80px;gap:0 10px}
+  .notes{grid-column:1/-1;display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .nt,.memo{position:static}.nt.done{display:none}
+  .chip .lbl{display:none}.gutter .b{right:4px}.status .r{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+
+<!-- ================= LANDING ================= -->
+<div class="route" id="r-home">
+  <header class="nav" data-nav></header>
+  <section class="hero wrap">
+    <h1 class="d1">The writing editor<br>that keeps your voice</h1>
+    <div class="row">
+      <p class="lead">Margin checks spelling, clarity and tone, then leaves short notes beside your text. It learns how you write, so its edits sound like you.</p>
+      <div class="new"><b>New</b><a href="#pricing">Stet memory &rarr;</a></div>
+    </div>
+    <div class="frame" data-editor="demo"></div>
+  </section>
+
+  <section class="sec wrap" id="features">
+    <div class="split">
+      <h2 class="d2">Feedback where you&rsquo;re already looking</h2>
+      <p class="lead">No sidebar full of cards and no popups over your words. Every suggestion sits in the margin, next to the line it&rsquo;s about.</p>
+    </div>
+    <div class="grid2">
+      <div class="cell"><h3 class="d3">Notes in the margin</h3><p>Each note lines up with its sentence. Accept with Enter, keep your version with S, and move on.</p>
+        <div class="vis"><div class="v-note"><div class="h"><i></i>Passive voice</div><div class="f"><s>was decided by the team</s> &nbsp;the team decided</div></div></div></div>
+      <div class="cell"><h3 class="d3">Sentence rhythm</h3><p>A bar for every sentence, drawn beside the text. Run-ons stand out before a reader trips on them.</p>
+        <div class="vis"><div class="v-bars"><div style="width:42%"></div><div style="width:58%"></div><div style="width:24%"></div><div class="w" style="width:96%"></div><div style="width:36%"></div><div style="width:18%"></div></div></div></div>
+      <div class="cell"><h3 class="d3">Sounds like you</h3><p>Margin reads your past drafts and flags edits that would make you sound like everyone else.</p>
+        <div class="vis"><div class="v-meter"><span>Voice</span><span class="t"><i></i></span><span>94%</span></div><p class="small" style="margin-top:10px">Trained on 41 of your drafts</p></div></div>
+      <div class="cell"><h3 class="d3">Stet memory</h3><p>Say no to a suggestion once and it stays said. Margin won&rsquo;t raise it again, in this draft or the next.</p>
+        <div class="vis"><div class="v-memo">Kept. Margin won&rsquo;t flag <b>&ldquo;utilize&rdquo;</b> again in any of your drafts.</div></div></div>
+    </div>
+  </section>
+
+  <section class="sec wrap">
+    <div class="split">
+      <h2 class="d2">Built for the keyboard</h2>
+      <p class="lead">Move through a draft&rsquo;s notes without touching the mouse. Everything else is one command away.</p>
+    </div>
+    <div class="keys">
+      <div class="kb"><kbd>J</kbd><kbd>K</kbd>Next and previous note</div>
+      <div class="kb"><kbd>&crarr;</kbd>Accept</div>
+      <div class="kb"><kbd>S</kbd>Stet, keep yours</div>
+      <div class="kb"><kbd>R</kbd>Show rhythm</div>
+      <div class="kb"><kbd>&#8984;</kbd><kbd>K</kbd>Command bar</div>
+    </div>
+  </section>
+
+  <section class="sec wrap">
+    <div class="split">
+      <h2 class="d2">Your drafts stay yours</h2>
+      <p class="lead">Writing is private until you say otherwise.</p>
+    </div>
+    <div class="priv">
+      <div><h3>No training on your text</h3><p>Your drafts shape your own voice profile and nothing else.</p></div>
+      <div><h3>Delete means gone</h3><p>Remove a draft and it&rsquo;s removed from our servers the same day.</p></div>
+      <div><h3>Cancel in one click</h3><p>No retention calls and no hidden renewal. Your plan ends when you say.</p></div>
+    </div>
+  </section>
+
+  <section class="sec wrap">
+    <div class="cta">
+      <h2 class="d2">Write your next draft in Margin</h2>
+      <div style="display:flex;gap:18px;align-items:center"><a class="ghost" href="#pricing">See pricing &rarr;</a><a class="pill" href="#signup">Sign up</a></div>
+    </div>
+  </section>
+  <footer class="wrap" data-foot></footer>
+</div>
+
+<!-- ================= PRICING ================= -->
+<div class="route" id="r-pricing" hidden>
+  <header class="nav" data-nav></header>
+  <section class="ptop wrap">
+    <h1 class="d1">Pricing</h1>
+    <p class="lead" style="margin-top:20px">Start free. Upgrade when Margin has learned enough of your voice to be worth it.</p>
+    <div class="bill" role="group" aria-label="Billing period"><button type="button" class="on" data-bill="y">Yearly<span class="save">&minus;20%</span></button><button type="button" data-bill="m">Monthly</button></div>
+  </section>
+  <section class="wrap">
+    <div class="plans">
+      <div class="plan"><div class="nm">Free</div><div class="price"><b>$0</b></div><p class="desc">For occasional writing and trying Margin out.</p><a class="btn2" href="#signup">Get started</a>
+        <ul><li>Spelling and grammar</li><li>Margin notes</li><li>Up to 20 drafts</li><li>Light and dark themes</li></ul></div>
+      <div class="plan hl"><div class="nm">Pro <span class="tag">Most writers</span></div><div class="price"><b data-p="12,15">$12</b><span>per month</span></div><p class="desc">For people who write every day and care how they sound.</p><a class="btn2 w" href="#signup">Start 14-day trial</a>
+        <ul><li>Everything in Free</li><li>Clarity and tone notes</li><li>Sentence rhythm</li><li>Sounds-like-you voice profile</li><li>Stet memory across drafts</li><li>Unlimited drafts</li></ul></div>
+      <div class="plan"><div class="nm">Team</div><div class="price"><b data-p="18,22">$18</b><span>per member / month</span></div><p class="desc">For teams that publish under one name.</p><a class="btn2" href="#signup">Start 14-day trial</a>
+        <ul><li>Everything in Pro</li><li>Shared style guide</li><li>Team word list and stet list</li><li>Admin and billing controls</li><li>Google sign-in for the whole team</li></ul></div>
+    </div>
+    <div class="tblw">
+      <table>
+        <thead><tr><th>Compare plans</th><th>Free</th><th>Pro</th><th>Team</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="4">Checking</td></tr>
+          <tr><td>Spelling and grammar</td><td class="y">Yes</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+          <tr><td>Clarity and tone</td><td class="n">No</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+          <tr><td>Sentence rhythm</td><td class="n">No</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+          <tr class="grp"><td colspan="4">Your voice</td></tr>
+          <tr><td>Voice profile</td><td class="n">No</td><td class="y">Personal</td><td class="y">Personal + team</td></tr>
+          <tr><td>Stet memory</td><td class="y">This draft</td><td class="y">All drafts</td><td class="y">Shared</td></tr>
+          <tr class="grp"><td colspan="4">Workspace</td></tr>
+          <tr><td>Drafts</td><td class="y">20</td><td class="y">Unlimited</td><td class="y">Unlimited</td></tr>
+          <tr><td>Members</td><td class="y">1</td><td class="y">1</td><td class="y">Unlimited</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section class="sec wrap" style="margin-top:72px">
+    <h2 class="d2">Questions</h2>
+    <div class="faq">
+      <div><h3>What happens after the trial?</h3><p>You pick a plan or drop to Free. We email you three days before the trial ends, and nothing is charged without a card on file.</p></div>
+      <div><h3>Can I cancel any time?</h3><p>Yes, from Settings in one click. Yearly plans are refunded for the unused months.</p></div>
+      <div><h3>How does the voice profile learn?</h3><p>From the drafts you write in Margin, plus any past writing you choose to upload. You can reset it whenever you want.</p></div>
+      <div><h3>Do you offer discounts?</h3><p>Students and non-profits get Pro at half price. Write to us from your school or organisation email.</p></div>
+    </div>
+  </section>
+  <footer class="wrap" data-foot></footer>
+</div>
+
+<!-- ================= SIGN UP ================= -->
+<div class="route" id="r-signup" hidden>
+  <div class="auth"><form class="box" id="f-signup" novalidate>
+    <a class="logo" href="#home" aria-label="Margin home"><svg viewBox="0 0 240 240"><rect x="60" y="40" width="26" height="160" rx="6"/><circle cx="168" cy="88" r="40"/></svg></a>
+    <h1>Create your Margin account</h1>
+    <button class="oauth" type="button" data-go="welcome"><svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Continue with Google</button>
+    <div class="or">or</div>
+    <div class="field"><label for="su-name">Name</label><input id="su-name" autocomplete="name" placeholder="Mira Tan"></div>
+    <div class="field"><label for="su-email">Work email</label><input id="su-email" type="email" autocomplete="email" placeholder="mira@northwind.co"></div>
+    <button class="btn2 w" type="submit">Continue with email</button>
+    <p class="small">Already have an account? <a href="#login">Log in</a></p>
+    <p class="small">By signing up you agree to the Terms and Privacy Policy.</p>
+  </form></div>
+</div>
+
+<!-- ================= LOG IN ================= -->
+<div class="route" id="r-login" hidden>
+  <div class="auth"><form class="box" id="f-login" novalidate>
+    <a class="logo" href="#home" aria-label="Margin home"><svg viewBox="0 0 240 240"><rect x="60" y="40" width="26" height="160" rx="6"/><circle cx="168" cy="88" r="40"/></svg></a>
+    <h1>Log in to Margin</h1>
+    <button class="oauth" type="button" data-go="app"><svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Continue with Google</button>
+    <div class="or">or</div>
+    <div class="field"><label for="li-email">Email</label><input id="li-email" type="email" autocomplete="email" placeholder="mira@northwind.co"></div>
+    <button class="btn2 w" type="submit">Email me a login link</button>
+    <p class="small">No account yet? <a href="#signup">Sign up</a></p>
+  </form></div>
+</div>
+
+<!-- ================= ONBOARDING ================= -->
+<div class="route" id="r-welcome" hidden>
+  <div class="auth"><div class="box" style="max-width:420px">
+    <div class="steps"><i class="on"></i><i class="on"></i><i></i></div>
+    <h1>Teach Margin how you write</h1>
+    <p class="muted" style="margin:0 0 8px">Add a few things you&rsquo;ve written before: emails, posts, docs. Three is enough to start. Margin uses them for your voice profile only.</p>
+    <label class="drop" id="drop" for="up"><b>Drop files here or choose files</b><span class="small">.txt, .md or .docx</span></label>
+    <input id="up" type="file" multiple accept=".txt,.md,.docx" hidden>
+    <ul class="files" id="files"></ul>
+    <a class="btn2 w" href="#app">Continue to editor</a>
+    <p class="small"><a href="#app">Skip for now</a>. You can add writing later in Settings.</p>
+  </div></div>
+</div>
+
+<!-- ================= APP ================= -->
+<div class="route" id="r-app" hidden><div data-editor="app"></div></div>
+
+<div class="veil" id="veil" hidden><div class="cmd" role="dialog" aria-label="Command bar"><input id="cmdIn" placeholder="Type a command or search" autocomplete="off"><ul id="cmdList"></ul></div></div>
+
+<script>
+const MARK='<svg viewBox="0 0 240 240" aria-hidden="true"><rect x="60" y="40" width="26" height="160" rx="6"/><circle cx="168" cy="88" r="40"/></svg>';
+document.querySelectorAll('[data-nav]').forEach(n=>n.innerHTML=`<div class="wrap"><a class="logo" href="#home">${MARK}Margin</a>
+  <nav class="links"><a href="#home" data-l="home">Product</a><a href="#pricing" data-l="pricing">Pricing</a><a href="#home">Changelog</a><a href="#home">Contact</a></nav>
+  <span class="sep"></span><a class="login" href="#login">Log in</a><a class="pill" href="#signup">Sign up</a></div>`);
+document.querySelectorAll('[data-foot]').forEach(f=>f.innerHTML=`<div class="foot"><div><a class="logo" href="#home" style="padding:0">${MARK}Margin</a></div>
+  <div><h4>Product</h4><a href="#home">Features</a><a href="#pricing">Pricing</a><a href="#home">Changelog</a></div>
+  <div><h4>Company</h4><a href="#home">About</a><a href="#home">Contact</a></div>
+  <div><h4>Legal</h4><a href="#home">Privacy</a><a href="#home">Terms</a></div></div>`);
+
+/* ---------- editor ---------- */
+const EDITOR=`<div class="app">
+ <nav class="a-side" aria-label="Documents">
+  <div class="ws">${MARK}Northwind<span class="chev">&#8964;</span></div>
+  <button class="a-search" type="button" data-cmd><span>Search or jump to</span><kbd>&#8984;K</kbd></button>
+  <div class="a-grp"><button class="a-it" type="button"><span class="dot"></span>Inbox<span class="ct">3</span></button><button class="a-it" type="button"><span class="dot"></span>All drafts<span class="ct">41</span></button><button class="a-it" type="button"><span class="dot"></span>Shared with me</button></div>
+  <div class="a-grp"><div class="a-gl">Recent</div><button class="a-it cur" type="button">Pricing update<span class="ct">412</span></button><button class="a-it" type="button">Q4 board memo<span class="ct">1,180</span></button><button class="a-it" type="button">Reply to Hanna re: refund<span class="ct">96</span></button><button class="a-it" type="button">Onboarding email 2<span class="ct">230</span></button></div>
+  <div class="a-grp"><div class="a-gl">Tags</div><button class="a-it" type="button"># customers<span class="ct">12</span></button><button class="a-it" type="button"># launch<span class="ct">7</span></button><button class="a-it" type="button"># internal<span class="ct">22</span></button></div>
+  <div class="a-user"><span class="av">MT</span>Mira Tan<a href="#home">Log out</a></div>
+ </nav>
+ <main class="a-main">
+  <div class="a-top"><div class="crumb">All drafts / # customers / <b>Pricing update</b></div>
+   <div class="tools">
+    <button class="chip on" type="button" data-rhythm title="Sentence rhythm (R)"><svg width="14" height="12" viewBox="0 0 14 12" aria-hidden="true"><rect width="9" height="2" rx="1" fill="currentColor"/><rect y="5" width="14" height="2" rx="1" fill="currentColor"/><rect y="10" width="5" height="2" rx="1" fill="currentColor"/></svg><span class="lbl">Rhythm</span></button>
+    <button class="chip" type="button" title="How close this draft is to your usual voice"><span class="lbl">Sounds like you</span><span class="vbar"><i></i></span><span class="num vp">86%</span></button>
+    <button class="chip" type="button"><span class="num cnt">5</span><span class="lbl">notes</span></button>
+    <button class="chip" type="button" data-theme-t title="Light or dark"><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg></button>
+   </div></div>
+  <div class="a-scroll"><div class="sheet">
+   <div class="gutter" aria-hidden="true"></div>
+   <article class="doc">
+    <h1>Pricing update for early customers</h1>
+    <div class="meta"><span>Edited 4 min ago</span><span class="tg">#customers</span><span class="tg">#launch</span></div>
+    <p><span class="s">Starting next month, everyone who joined before March will keep their current rate for a full year.</span> <span class="s">The new pricing <span class="m clar" data-n="0">was decided by the team</span> after three weeks of calls with people like you.</span> <span class="s">We wanted to be clear about it early.</span></p>
+    <p><span class="s">You don't need to do anything <span class="m clar" data-n="1">in order to</span> keep your rate, since it will be applied to your account automatically and you will <span class="m spell" data-n="2">recieve</span> a confirmation email once the change goes live, along with a copy of your current invoice and a short note explaining what changes for new customers after that date.</span></p>
+    <p><span class="s">If you want to <span class="m clar" data-n="3">utilize</span> the annual plan instead, reply to this email.</span> <span class="s"><span class="m voice" data-n="4">We shall be delighted to</span> switch it for you.</span> <span class="s">Thanks for being here early.</span></p>
+    <p><span class="s">Mira, for the Northwind team</span></p>
+   </article>
+   <aside class="notes" aria-label="Margin notes"></aside>
+  </div></div>
+  <div class="status"><span>412 words</span><span>2 min read</span><span>Saved</span><span class="r"><kbd>J</kbd> <kbd>K</kbd> move &nbsp; <kbd>&crarr;</kbd> accept &nbsp; <kbd>S</kbd> stet &nbsp; <kbd>&#8984;K</kbd> commands</span></div>
+ </main></div>`;
+
+const NOTES=[
+ {cat:"clar",label:"Passive voice",from:"was decided by the team",to:"the team decided",why:"Say who decided. Readers trust a decision more when someone owns it."},
+ {cat:"clar",label:"Wordy",from:"in order to",to:"to",why:"Same meaning, three fewer words."},
+ {cat:"spell",label:"Spelling",from:"recieve",to:"receive",why:"I before E, except in this one."},
+ {cat:"clar",label:"Plainer word",from:"utilize",to:"use",why:"“Use” does the same job. Stet this if the formal word is on purpose.",memo:"utilize"},
+ {cat:"voice",label:"Not your voice",from:"We shall be delighted to",to:"We’d be glad to",why:"Across your 41 drafts you write “we’d”, never “we shall”. This line reads stiffer than you."}
+];
+let tipEl;
+function tip(e,t){untip();tipEl=document.createElement('div');tipEl.className='tip';tipEl.textContent=t;document.body.appendChild(tipEl);tipEl.style.left=(e.clientX+12)+'px';tipEl.style.top=(e.clientY-10)+'px'}
+function untip(){tipEl&&tipEl.remove();tipEl=null}
+
+function mountEditor(host){
+  host.innerHTML=EDITOR;
+  const q=s=>host.querySelector(s);
+  const app=q('.app'),doc=q('.doc'),notes=q('.notes'),gutter=q('.gutter'),sheet=q('.sheet');
+  const marks=[...doc.querySelectorAll('.m')];
+  let active=0,left=NOTES.length;
+  NOTES.forEach((n,i)=>{
+    const el=document.createElement('div');el.className='nt '+n.cat;el.dataset.n=i;
+    el.innerHTML=`<div class="h"><span class="sw"></span>${n.label}</div><div class="fix"><s>${n.from}</s> &nbsp;${n.to}</div><div class="why">${n.why}</div>
+    <div class="act"><button class="btn pri" type="button" data-a="acc">Accept<span class="k">&crarr;</span></button><button class="btn" type="button" data-a="stet">Stet<span class="k">S</span></button></div>`;
+    el.addEventListener('click',e=>{const a=e.target.closest('[data-a]');a?(a.dataset.a==='acc'?accept(i):stet(i)):setActive(i)});
+    notes.appendChild(el);
+  });
+  marks.forEach(m=>m.addEventListener('click',()=>setActive(+m.dataset.n)));
+  function layout(){
+    if(!host.offsetParent)return;
+    const pad=parseFloat(getComputedStyle(sheet).paddingTop)||0,base=sheet.getBoundingClientRect().top+pad;
+    if(getComputedStyle(notes).display!=='flex'){
+      let y=0;
+      [...notes.children].forEach(el=>{
+        if(el.classList.contains('done'))return;
+        const mk=el.classList.contains('memo')?doc.querySelector(`[data-memo="${el.dataset.n}"]`):marks[+el.dataset.n];
+        if(!mk)return;
+        const top=Math.max(mk.getBoundingClientRect().top-base-8,y);el.style.top=top+'px';y=top+el.offsetHeight+8;
+      });
+    }
+    gutter.innerHTML='';
+    const gw=Math.max(8,gutter.clientWidth-12);
+    doc.querySelectorAll('.s').forEach(s=>{
+      const words=s.textContent.trim().split(/\s+/).length,r=s.getClientRects()[0];if(!r)return;
+      const b=document.createElement('div');b.className='b'+(words>30?' long':'');
+      b.style.top=(r.top-base+r.height/2-2)+'px';b.style.width=Math.max(4,Math.min(gw,words*gw/42))+'px';
+      b.onmouseenter=ev=>{s.classList.add('hot');b.classList.add('hot');tip(ev,words+' words'+(words>30?', consider splitting':''))};
+      b.onmouseleave=()=>{s.classList.remove('hot');b.classList.remove('hot');untip()};
+      gutter.appendChild(b);
+    });
+  }
+  function setActive(i){if(NOTES[i]===undefined)return;active=i;
+    notes.querySelectorAll('.nt').forEach(e=>e.classList.toggle('on',+e.dataset.n===i&&!e.classList.contains('done')));
+    marks.forEach(m=>m.classList.toggle('on',+m.dataset.n===i));requestAnimationFrame(layout)}
+  const openList=()=>NOTES.map((_,i)=>i).filter(i=>!notes.querySelector(`.nt[data-n="${i}"]`).classList.contains('done'));
+  function finish(i){const el=notes.querySelector(`.nt[data-n="${i}"]`);el.classList.add('done');el.classList.remove('on');marks[i].classList.remove('on');
+    left--;q('.cnt').textContent=left;const o=openList(),nx=o.find(j=>j>i)??o[0];setTimeout(()=>nx!==undefined?setActive(nx):layout(),260)}
+  function accept(i){if(!openList().includes(i))return;const m=marks[i],n=NOTES[i];m.classList.add('gone');
+    setTimeout(()=>{
+      if(i===0){m.parentNode.innerHTML='<span class="m new">The team decided the new pricing</span> after three weeks of calls with people like you.'}
+      else{m.textContent=n.to;m.className='m new'}
+      if(n.cat==='voice'){q('.vbar i').style.width='94%';q('.vp').textContent='94%'}
+      layout()},280);
+    finish(i)}
+  function stet(i){if(!openList().includes(i))return;const m=marks[i],n=NOTES[i];m.className='';
+    if(n.memo){m.dataset.memo=i;const memo=document.createElement('div');memo.className='memo';memo.dataset.n=i;
+      memo.innerHTML=`Kept. Margin won’t flag <b>“${n.memo}”</b> again in any of your drafts.<button type="button">Undo</button>`;
+      memo.querySelector('button').onclick=()=>{memo.remove();layout()};notes.appendChild(memo);
+      setTimeout(()=>{memo.style.opacity='0';setTimeout(()=>{memo.remove();layout()},300)},6000)}
+    finish(i)}
+  const toggleRhythm=()=>{app.classList.toggle('hide-rhythm');q('[data-rhythm]').classList.toggle('on')};
+  const toggleTheme=()=>{app.classList.toggle('light');requestAnimationFrame(layout)};
+  q('[data-rhythm]').onclick=toggleRhythm;q('[data-theme-t]').onclick=toggleTheme;q('[data-cmd]').onclick=()=>cmd(true,api);
+  function keys(e){const o=openList();
+    if(e.key==='r'||e.key==='R'){toggleRhythm();return}
+    if(!o.length)return;
+    if(e.key==='j'||e.key==='ArrowDown'){e.preventDefault();setActive(o.find(j=>j>active)??o[0])}
+    else if(e.key==='k'||e.key==='ArrowUp'){e.preventDefault();setActive([...o].reverse().find(j=>j<active)??o[o.length-1])}
+    else if(e.key==='Enter'){e.preventDefault();accept(o.includes(active)?active:o[0])}
+    else if(e.key==='s'||e.key==='S'){stet(o.includes(active)?active:o[0])}}
+  const api={layout,keys,toggleRhythm,toggleTheme,next:()=>{const o=openList();setActive(o.find(j=>j>active)??o[0])}};
+  setActive(0);
+  return api;
+}
+const eds={};
+document.querySelectorAll('[data-editor]').forEach(h=>eds[h.dataset.editor]=mountEditor(h));
+
+/* ---------- command bar ---------- */
+const veil=document.getElementById('veil'),cin=document.getElementById('cmdIn'),clist=document.getElementById('cmdList');
+let target=null,sel=0,shown=[];
+const C=()=>[
+  {s:"This draft",t:"Tighten this paragraph",k:"⌥T",f:()=>{}},
+  {s:"This draft",t:"Read as: a customer",k:"",f:()=>{}},
+  {s:"This draft",t:"Next note",k:"J",f:()=>target&&target.next()},
+  {s:"View",t:"Toggle sentence rhythm",k:"R",f:()=>target&&target.toggleRhythm()},
+  {s:"View",t:"Switch light / dark",k:"",f:()=>target&&target.toggleTheme()},
+  {s:"Go to",t:"Pricing",k:"",f:()=>location.hash='pricing'},
+  {s:"Go to",t:"Log out",k:"",f:()=>location.hash='home'}
+];
+function render(){const qv=cin.value.toLowerCase();shown=C().filter(c=>c.t.toLowerCase().includes(qv));sel=Math.min(sel,Math.max(0,shown.length-1));
+  let last='';clist.innerHTML='';
+  shown.forEach((c,i)=>{if(c.s!==last){const h=document.createElement('div');h.className='sh';h.textContent=c.s;clist.appendChild(h);last=c.s}
+    const li=document.createElement('li');li.className=i===sel?'sel':'';li.innerHTML=`${c.t}<span class="k">${c.k}</span>`;
+    li.onmousemove=()=>{if(sel!==i){sel=i;render()}};li.onclick=()=>run(i);clist.appendChild(li)})}
+function run(i){const c=shown[i];cmd(false);c&&c.f()}
+function cmd(on,t){veil.hidden=!on;if(on){target=t||target;cin.value='';sel=0;render();cin.focus()}}
+cin.addEventListener('input',()=>{sel=0;render()});
+veil.addEventListener('click',e=>{if(e.target===veil)cmd(false)});
+
+/* ---------- router ---------- */
+const routes=['home','pricing','signup','login','welcome','app'];
+function current(){const h=location.hash.slice(1);return routes.includes(h)?h:'home'}
+function go(){
+  const r=current();
+  routes.forEach(x=>document.getElementById('r-'+x).hidden=x!==r);
+  document.querySelectorAll('.links a').forEach(a=>a.classList.toggle('cur',a.dataset.l===r));
+  window.scrollTo(0,0);cmd(false);
+  requestAnimationFrame(()=>{r==='app'?eds.app.layout():r==='home'&&eds.demo.layout()});
+  document.title=r==='home'?'Margin Prototype':'Margin Prototype';
+}
+addEventListener('hashchange',go);
+addEventListener('resize',()=>{eds.app.layout();eds.demo.layout()});
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();cmd(true,current()==='app'?eds.app:eds.demo);return}
+  if(!veil.hidden){if(e.key==='Escape')cmd(false);else if(e.key==='ArrowDown'){e.preventDefault();sel=Math.min(shown.length-1,sel+1);render()}else if(e.key==='ArrowUp'){e.preventDefault();sel=Math.max(0,sel-1);render()}else if(e.key==='Enter'){e.preventDefault();run(sel)}return}
+  if(e.target.closest('input,textarea,a,button'))return;
+  if(current()==='app')eds.app.keys(e);
+});
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>location.hash=b.dataset.go);
+document.getElementById('f-signup').addEventListener('submit',e=>{e.preventDefault();location.hash='welcome'});
+document.getElementById('f-login').addEventListener('submit',e=>{e.preventDefault();location.hash='app'});
+
+/* pricing toggle */
+document.querySelectorAll('[data-bill]').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('[data-bill]').forEach(x=>x.classList.toggle('on',x===b));
+  const y=b.dataset.bill==='y';document.querySelectorAll('[data-p]').forEach(p=>{const [a,m]=p.dataset.p.split(',');p.textContent='$'+(y?a:m)});
+});
+
+/* onboarding upload (names only; nothing leaves the page) */
+const up=document.getElementById('up'),drop=document.getElementById('drop'),files=document.getElementById('files');
+function addFiles(list){[...list].forEach(f=>{const li=document.createElement('li');li.innerHTML=`<span></span><span>Added</span>`;li.firstChild.textContent=f.name;files.appendChild(li)})}
+up.onchange=()=>addFiles(up.files);
+['dragover','dragenter'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',e=>addFiles(e.dataTransfer.files));
+
+(document.fonts?document.fonts.ready:Promise.resolve()).then(go);
+go();
+</script>
