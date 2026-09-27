@@ -62,6 +62,12 @@ describe("passive voice", () => {
     });
   });
 
+  it("leaves feelings and states alone", () => {
+    expect(passiveIssues("We'd be delighted to help.")).toHaveLength(0);
+    expect(passiveIssues("The office is based in Leeds.")).toHaveLength(0);
+    expect(passiveIssues("It was used by the team daily.")).toHaveLength(1);
+  });
+
   it("flags a passive with no agent but offers no rewrite", () => {
     const [issue] = passiveIssues("The report was written quickly.");
     expect(issue?.label).toBe("Passive voice");

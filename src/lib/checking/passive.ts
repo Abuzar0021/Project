@@ -19,6 +19,35 @@ const AGENT =
 const CLAUSE_WORD =
   /^(after|before|in|on|at|for|with|to|from|during|when|and|but|so)$/i;
 
+// Participles that usually describe a state or feeling rather than an action
+// ("we'd be delighted", "the office is based in Leeds"). Without a named doer
+// they are adjectives, not passive voice, so they are left alone.
+const STATE_WORDS = new Set([
+  "delighted",
+  "pleased",
+  "excited",
+  "interested",
+  "tired",
+  "worried",
+  "surprised",
+  "satisfied",
+  "disappointed",
+  "concerned",
+  "involved",
+  "based",
+  "located",
+  "supposed",
+  "used",
+  "married",
+  "prepared",
+  "scared",
+  "bored",
+  "confused",
+  "committed",
+  "dedicated",
+  "qualified",
+]);
+
 const REASON_WITH_AGENT =
   "Say who decided. Readers trust a decision more when someone owns it.";
 const REASON_NO_AGENT =
@@ -52,6 +81,8 @@ export function passiveIssues(text: string): DetectedIssue[] {
         agentText = words.join(" ");
         end += " by ".length + agentText.length;
       }
+
+      if (!agentText && STATE_WORDS.has(participle.toLowerCase())) continue;
 
       const issue: DetectedIssue = {
         offset: sentence.start + at,
