@@ -13,6 +13,13 @@
   padding-top: var(--s-1);
 }
 
+/* Notes are role="listitem" <li>s in the rail; drop the default list marker,
+   which would otherwise draw a stray bullet beside every note. */
+.item,
+.dotItem {
+  list-style: none;
+}
+
 /* Notes are absolutely positioned; top comes from the layout algorithm and
    animates when the active note pulls the stack level with its line. */
 .item {
