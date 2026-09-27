@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Plan cards with the yearly and monthly toggle. Plan buttons go to sign up,
+ * or to Settings when already signed in, carrying the plan and period.
+ */
+
 import { useState } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { PLANS, YEARLY_SAVING, type Period } from "@/lib/plans";

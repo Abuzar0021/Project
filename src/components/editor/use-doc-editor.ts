@@ -1,5 +1,7 @@
 "use client";
 
+/** Builds the TipTap editor with the extensions Margin needs. */
+
 import { useEditor, type Editor } from "@tiptap/react";
 import { Extension, type JSONContent } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";

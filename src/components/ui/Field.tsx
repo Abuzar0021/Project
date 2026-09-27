@@ -1,3 +1,5 @@
+/** Labelled text input with an error message linked for screen readers. */
+
 import type { InputHTMLAttributes } from "react";
 import styles from "./Field.module.css";
 

@@ -1,3 +1,5 @@
+/** Small per-writer preferences, such as whether the rhythm gutter is on. */
+
 import { readJSON, writeJSON } from "./storage";
 
 export interface Prefs {

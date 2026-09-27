@@ -1,3 +1,5 @@
+/** Site footer: the logo and three columns of links. */
+
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import site from "./site.module.css";

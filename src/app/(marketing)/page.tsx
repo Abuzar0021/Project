@@ -1,3 +1,8 @@
+/**
+ * Landing page, top to bottom: hero with the live editor, features, keyboard,
+ * privacy promises, and a closing call to action.
+ */
+
 import { Hero } from "@/components/marketing/Hero";
 import { FeatureGrid } from "@/components/marketing/FeatureGrid";
 import {

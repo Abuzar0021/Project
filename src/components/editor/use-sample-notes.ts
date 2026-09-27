@@ -1,5 +1,7 @@
 "use client";
 
+/** Notes for the landing page demo, found once in the sample text. */
+
 import { useEffect } from "react";
 import type { Editor } from "@tiptap/react";
 import type { DetectedIssue } from "@/types/suggestion";

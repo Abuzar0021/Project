@@ -1,3 +1,5 @@
+/** Small dark label that follows the pointer. */
+
 import styles from "./Tooltip.module.css";
 
 /** Small dark label that follows the pointer. */

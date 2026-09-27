@@ -1,3 +1,5 @@
+/** The Margin mark (a page edge with a note beside it) and the wordmark. */
+
 import styles from "./Logo.module.css";
 
 export function LogoMark({ size = 20 }: { size?: 16 | 20 | 32 }) {

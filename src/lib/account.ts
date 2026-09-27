@@ -1,3 +1,9 @@
+/**
+ * Accounts for this preview, stored in the browser. A session cookie lets the
+ * middleware guard the app, and a theme cookie lets the server render the
+ * right theme first time. This module is the seam for a real auth service.
+ */
+
 import type { Period, PlanId } from "./plans";
 import { TRIAL_DAYS } from "./plans";
 import {

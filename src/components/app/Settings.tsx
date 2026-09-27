@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Settings page. Plan changes arrive here from the pricing page as ?plan=,
+ * and take effect without payment while billing is not connected.
+ */
+
 import Link from "next/link";
 import { useReducer, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";

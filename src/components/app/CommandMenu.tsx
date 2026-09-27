@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Command bar, built on cmdk for filtering and keyboard behavior. Commands
+ * are grouped under small headings; disabled ones show why.
+ */
+
 import { Command as Cmdk } from "cmdk";
 import type { Command } from "./AppContext";
 import styles from "./CommandMenu.module.css";

@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Draft title and meta row. The title grows with its text, and Enter moves
+ * into the body instead of adding a line.
+ */
+
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 import styles from "./Editor.module.css";
 

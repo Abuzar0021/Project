@@ -1,3 +1,8 @@
+/**
+ * "Feedback where you're already looking": four features, each with a small
+ * live sample of the interface rather than an image.
+ */
+
 import site from "./site.module.css";
 import styles from "./FeatureGrid.module.css";
 

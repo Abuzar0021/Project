@@ -1,3 +1,5 @@
+/** Sentence splitting with offsets, using the browser's own sentence rules. */
+
 import { countWords } from "./word-count";
 
 export interface Sentence {

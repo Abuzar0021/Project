@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * The app frame: sidebar, main column and command bar. Owns the Ctrl or Cmd K
+ * shortcut and the global commands; draft pages add their own through context.
+ */
+
 import {
   createContext,
   useContext,

@@ -1,3 +1,8 @@
+/**
+ * Maps LanguageTool's rule categories onto Margin's three: spelling and
+ * grammar, clarity, and voice.
+ */
+
 import type { Category } from "@/types/suggestion";
 import type { RawMatch } from "@/types/languagetool";
 

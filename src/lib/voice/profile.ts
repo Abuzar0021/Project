@@ -1,3 +1,8 @@
+/**
+ * The voice profile: measurements from uploaded writing plus the writer's
+ * other drafts long enough to learn from.
+ */
+
 import type { Draft } from "@/lib/drafts";
 import { docText } from "@/lib/drafts";
 import { readJSON, writeJSON } from "@/lib/storage";

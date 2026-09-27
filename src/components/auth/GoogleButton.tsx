@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Google sign-in button. Sign-in providers are not connected in this preview,
+ * so pressing it explains that instead of pretending to work.
+ */
+
 import { useState } from "react";
 import styles from "./Auth.module.css";
 

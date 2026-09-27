@@ -1,3 +1,8 @@
+/**
+ * Drafts for this preview, stored in the browser per account. New accounts get
+ * the sample drafts once.
+ */
+
 import type { JSONContent } from "@tiptap/core";
 import { countWords } from "./text/word-count";
 import { newId, readJSON, writeJSON } from "./storage";

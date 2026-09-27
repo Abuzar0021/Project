@@ -1,3 +1,8 @@
+/**
+ * Long sentences. Past the limit, suggests splitting at the "and", "but" or
+ * "so" closest to the middle, where a new clause can stand on its own.
+ */
+
 import type { DetectedIssue } from "@/types/suggestion";
 import { splitSentences } from "@/lib/text/sentences";
 

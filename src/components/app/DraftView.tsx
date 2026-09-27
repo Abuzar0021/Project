@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * The draft page: top bar, editor and status bar for one draft. Loads the
+ * draft, autosaves after a pause, feeds the editor the plan's categories, the
+ * voice profile and kept suggestions, and registers the draft's commands.
+ */
+
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";

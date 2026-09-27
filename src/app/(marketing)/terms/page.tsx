@@ -1,3 +1,5 @@
+/** Terms of service page, a placeholder until the terms are final. */
+
 import type { Metadata } from "next";
 import { ComingSoon } from "@/components/marketing/ComingSoon";
 

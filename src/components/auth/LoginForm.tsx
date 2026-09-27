@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Log in form. Finds the account on this device and returns the writer to the
+ * page they were sent away from.
+ */
+
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";

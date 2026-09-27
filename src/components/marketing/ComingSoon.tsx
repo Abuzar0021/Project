@@ -1,3 +1,5 @@
+/** Placeholder for pages that are linked but not written yet. */
+
 import site from "./site.module.css";
 import styles from "./ComingSoon.module.css";
 

@@ -1,3 +1,10 @@
+/**
+ * Margin's own checks, run in the browser: a list of common misspellings,
+ * wordy and formal phrases, hedges and weak words, passive voice, and long
+ * sentences. Each issue carries a label, a one-sentence reason and a fix when
+ * there is one.
+ */
+
 import type { DetectedIssue } from "@/types/suggestion";
 import { HEDGES, MISSPELLINGS, PLAINER, WEAK_WORDS, WORDY } from "./phrases";
 import { passiveIssues } from "./passive";

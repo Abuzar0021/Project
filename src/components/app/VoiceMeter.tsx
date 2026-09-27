@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * "Sounds like you" meter. Clicking it opens a short list of the biggest
+ * differences from the writer's usual habits.
+ */
+
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { VoiceReading } from "@/lib/voice/meter";

@@ -1,3 +1,8 @@
+/**
+ * Buttons and button-styled links in the five variants from the design:
+ * pill, primary, outline, and the two small app buttons.
+ */
+
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import styles from "./Button.module.css";

@@ -1,3 +1,8 @@
+/**
+ * Sample drafts for new accounts. They are written with contractions
+ * throughout, so the voice profile learns a clear habit from them.
+ */
+
 export interface SeedDraft {
   title: string;
   tags: string[];

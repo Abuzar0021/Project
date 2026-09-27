@@ -1,5 +1,7 @@
 "use client";
 
+/** Keeps the underlines in step with the notes store. */
+
 import { useEffect } from "react";
 import type { Editor } from "@tiptap/react";
 import { REBUILD_META } from "@/lib/editor/suggestions-plugin";

@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Onboarding upload. Files are read in the browser, measured for the voice
+ * profile, and dropped; only the measurements are kept.
+ */
+
 import Link from "next/link";
 import { useEffect, useState, type DragEvent } from "react";
 import { useRouter } from "next/navigation";

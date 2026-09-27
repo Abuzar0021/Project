@@ -1,3 +1,5 @@
+/** Shown for any address that does not exist. */
+
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import styles from "./not-found.module.css";

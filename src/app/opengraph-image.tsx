@@ -1,3 +1,5 @@
+/** Link preview image: a plain render of the editor with two margin notes. */
+
 import { ImageResponse } from "next/og";
 
 export const alt = "Margin: a writing editor with notes beside your text";

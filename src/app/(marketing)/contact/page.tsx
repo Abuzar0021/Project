@@ -1,3 +1,5 @@
+/** Contact page, a placeholder until a contact address or form exists. */
+
 import type { Metadata } from "next";
 import { ComingSoon } from "@/components/marketing/ComingSoon";
 

@@ -1,3 +1,8 @@
+/**
+ * "Not your voice" notes: phrases that break a strong habit in the writer's
+ * own drafts, with a reason that cites the habit.
+ */
+
 import type { DetectedIssue } from "@/types/suggestion";
 import { PAIRS, type VoiceSample } from "./features";
 import { matchCase } from "@/lib/checking/local-rules";

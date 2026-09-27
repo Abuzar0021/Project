@@ -1,3 +1,8 @@
+/**
+ * Pricing page: plan cards with a billing toggle, a comparison table and common questions.
+ * Everything shown comes from lib/plans.ts.
+ */
+
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE } from "@/lib/account";

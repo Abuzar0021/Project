@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Per-editor state for notes: the open suggestions, the active one, notes
+ * being accepted, stet confirmations and the checker's status.
+ */
+
 import { createContext, useContext } from "react";
 import { createStore, useStore, type StoreApi } from "zustand";
 import type { Suggestion } from "@/types/suggestion";

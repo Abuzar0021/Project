@@ -1,3 +1,5 @@
+/** Horizontal rule with a word in the middle, as in "or". */
+
 import styles from "./Divider.module.css";
 
 export function Divider({ label = "or" }: { label?: string }) {

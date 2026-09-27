@@ -1,5 +1,12 @@
 "use client";
 
+/**
+ * Checks the draft as it changes. Local rules run at once on each edited
+ * paragraph; LanguageTool results arrive through the scheduler and are merged
+ * in. Results are filtered by the plan and by kept suggestions before they
+ * become notes.
+ */
+
 import { useCallback, useEffect, useRef } from "react";
 import type { Editor } from "@tiptap/react";
 import type { Category } from "@/types/suggestion";

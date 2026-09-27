@@ -1,3 +1,5 @@
+/** Sticky site navigation. */
+
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import { ButtonLink } from "@/components/ui/Button";

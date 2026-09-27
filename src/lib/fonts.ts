@@ -1,3 +1,5 @@
+/** The three typefaces, self-hosted through next/font. */
+
 import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 
 export const inter = Inter({

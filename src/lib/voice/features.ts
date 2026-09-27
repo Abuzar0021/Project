@@ -1,3 +1,9 @@
+/**
+ * Measures writing habits for the voice profile: contractions against their
+ * long forms, sentence length, formal words and exclamation marks. Only the
+ * counts are kept, never the text.
+ */
+
 import { splitSentences } from "@/lib/text/sentences";
 import { countWords } from "@/lib/text/word-count";
 

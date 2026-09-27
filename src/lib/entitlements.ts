@@ -1,3 +1,5 @@
+/** What each plan unlocks. Every feature check in the product reads from here. */
+
 import type { Category } from "@/types/suggestion";
 import type { PlanId } from "./plans";
 

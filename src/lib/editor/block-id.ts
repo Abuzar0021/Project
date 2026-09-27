@@ -1,3 +1,5 @@
+/** Stable ids for paragraphs, so checks can be cached and grouped per paragraph. */
+
 import { Extension } from "@tiptap/core";
 import {
   Plugin,

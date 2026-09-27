@@ -1,3 +1,5 @@
+/** Word counts and reading time. */
+
 export function countWords(text: string): number {
   const trimmed = text.trim();
   if (trimmed.length === 0) return 0;

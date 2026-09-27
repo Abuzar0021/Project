@@ -1,5 +1,12 @@
 "use client";
 
+/**
+ * The editor: rhythm gutter, text and margin notes. In "app" mode it checks as
+ * you type and responds to the keyboard map; in "demo" mode, used on the
+ * landing page, it shows fixed sample notes and never takes global shortcuts.
+ * Each instance has its own notes store.
+ */
+
 import {
   useEffect,
   useImperativeHandle,

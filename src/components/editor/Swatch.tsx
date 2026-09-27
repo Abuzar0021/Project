@@ -1,3 +1,5 @@
+/** The small line sample in a note's header, drawn like its underline. */
+
 import type { Category } from "@/types/suggestion";
 import styles from "./Notes.module.css";
 

@@ -1,3 +1,8 @@
+/**
+ * Passive voice. When the doer is named ("by the team") and the subject is
+ * short, offers the active rewrite ("The team decided the pricing").
+ */
+
 import type { DetectedIssue } from "@/types/suggestion";
 import { splitSentences } from "@/lib/text/sentences";
 import { IRREGULAR_PARTICIPLES } from "./phrases";

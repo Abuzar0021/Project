@@ -1,3 +1,5 @@
+/** Home screen icon for iOS: the mark in white on the site's near-black. */
+
 import { ImageResponse } from "next/og";
 
 export const size = { width: 180, height: 180 };

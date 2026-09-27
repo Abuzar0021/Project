@@ -1,3 +1,5 @@
+/** Reads uploaded writing in the browser. Word files are parsed with mammoth. */
+
 export const ACCEPTED = ".txt,.md,.docx";
 
 /** Read a file's text in the browser. Nothing is uploaded anywhere. */

@@ -1,3 +1,8 @@
+/**
+ * Lower landing sections: keyboard shortcuts, privacy promises and the closing
+ * call to action.
+ */
+
 import { ButtonLink } from "@/components/ui/Button";
 import { Kbd } from "@/components/ui/Kbd";
 import Link from "next/link";

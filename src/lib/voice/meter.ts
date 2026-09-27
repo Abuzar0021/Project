@@ -1,3 +1,8 @@
+/**
+ * The "Sounds like you" score: how far a draft's habits are from the writer's
+ * usual ones, weighted by how much evidence the draft has.
+ */
+
 import {
   averageSentence,
   contractionRate,

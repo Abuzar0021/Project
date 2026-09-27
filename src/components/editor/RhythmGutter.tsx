@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Rhythm gutter: one bar per sentence, as long as the sentence has words,
+ * centered on its first line. Long sentences turn amber.
+ */
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Editor } from "@tiptap/react";
 import { extractBlocks } from "@/lib/checking/extract";

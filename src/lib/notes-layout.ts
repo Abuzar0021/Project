@@ -1,3 +1,5 @@
+/** Places margin notes beside their lines without overlapping. */
+
 export interface NoteBox {
   id: string;
   /** Top of the underlined text, relative to the notes column. */

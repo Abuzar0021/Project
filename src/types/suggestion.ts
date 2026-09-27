@@ -1,3 +1,5 @@
+/** Types shared by the checker, the editor and the notes. */
+
 export type Category = "spelling" | "clarity" | "voice";
 
 export type SuggestionSource = "languagetool" | "local" | "voice" | "sample";

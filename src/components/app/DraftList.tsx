@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * List of all drafts, or of one tag. Also explains the Free plan's draft limit
+ * when a new draft could not be created.
+ */
+
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { editedAgo } from "@/lib/drafts";

@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * The product frame in the landing hero: the real editor and app chrome
+ * running on a sample draft. Nothing is saved and nothing is sent anywhere.
+ */
+
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Editor, type EditorControls } from "@/components/editor/Editor";

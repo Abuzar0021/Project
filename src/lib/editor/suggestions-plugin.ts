@@ -1,3 +1,9 @@
+/**
+ * Draws suggestion underlines as ProseMirror decorations and keeps them on the
+ * right words while the writer types. Typing inside an underline removes it
+ * until that paragraph is checked again.
+ */
+
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";

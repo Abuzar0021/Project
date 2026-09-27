@@ -1,3 +1,5 @@
+/** Stet memory: suggestions a writer turned down, so they are not raised again. */
+
 import { newId, readJSON, writeJSON } from "./storage";
 
 export interface StetRule {

@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Confirmation shown where a note was stetted. It offers Undo for six
+ * seconds, then fades away.
+ */
+
 import { useEffect, useState } from "react";
 import type { Memo } from "./notes-store";
 import styles from "./Notes.module.css";

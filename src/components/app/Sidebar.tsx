@@ -1,3 +1,8 @@
+/**
+ * Left sidebar: workspace, search, drafts, tags and the signed-in user.
+ * Presentational, so the landing page demo can show it with sample data.
+ */
+
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { LogoMark } from "@/components/ui/Logo";

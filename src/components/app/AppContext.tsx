@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * App-wide state for signed-in pages: the account, its drafts, the theme, the
+ * command bar, and the plan's entitlements. Redirects to log in when there is
+ * no account on this device.
+ */
+
 import {
   createContext,
   useCallback,

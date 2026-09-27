@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Accept and Stet, plus moving between notes. Accept strikes the text, swaps
+ * in the fix after a short beat, and highlights the new words.
+ */
+
 import { useCallback } from "react";
 import type { Editor } from "@tiptap/react";
 import type { Suggestion } from "@/types/suggestion";

@@ -1,3 +1,5 @@
+/** Bottom bar: word count, read time, save state, checker state and key hints. */
+
 import { Kbd } from "@/components/ui/Kbd";
 import styles from "./StatusBar.module.css";
 

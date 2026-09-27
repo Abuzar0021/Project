@@ -1,3 +1,8 @@
+/**
+ * Route guard: /app and /welcome need a session; signed-in visitors skip the
+ * log in and sign up pages. A plan picked on the pricing page is carried along.
+ */
+
 import { NextResponse, type NextRequest } from "next/server";
 import { SESSION_COOKIE } from "@/lib/account";
 

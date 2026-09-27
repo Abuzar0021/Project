@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Sign up form: name and work email, with plain-language errors. A plan picked
+ * on the pricing page comes along in the address.
+ */
+
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";

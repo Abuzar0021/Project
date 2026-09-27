@@ -1,3 +1,8 @@
+/**
+ * Short-lived background highlights, such as new text after Accept or the
+ * sentence under a hovered rhythm bar. They follow the text as it changes.
+ */
+
 import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";

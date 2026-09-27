@@ -1,3 +1,5 @@
+/** Small line icons for the top bar and sidebar. They inherit the text color. */
+
 export function RhythmIcon() {
   return (
     <svg width="14" height="12" viewBox="0 0 14 12" aria-hidden="true">

@@ -1,3 +1,8 @@
+/**
+ * The app frame for every page under /app. The theme cookie is read on the
+ * server so the first paint already matches the writer's light or dark choice.
+ */
+
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { THEME_COOKIE, type Theme } from "@/lib/account";

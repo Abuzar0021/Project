@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * One margin note: category, label and fix line; when active, also the reason
+ * and the Accept and Stet buttons.
+ */
+
 import type { Suggestion } from "@/types/suggestion";
 import { noteElementId } from "@/lib/editor/suggestions-plugin";
 import { Button } from "@/components/ui/Button";

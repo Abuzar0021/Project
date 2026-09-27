@@ -1,5 +1,7 @@
 "use client";
 
+/** Keyboard shortcuts for moving through and resolving notes. */
+
 import { useEffect, useRef } from "react";
 import type { Editor } from "@tiptap/react";
 import { openNotes, useNotesStore } from "./notes-store";

@@ -1,3 +1,5 @@
+/** About page, a placeholder until the copy is written. */
+
 import type { Metadata } from "next";
 import { ComingSoon } from "@/components/marketing/ComingSoon";
 

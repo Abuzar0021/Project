@@ -1,3 +1,5 @@
+/** Plans, prices and the pricing page copy. Prices are placeholders. */
+
 export type PlanId = "free" | "pro" | "team";
 export type Period = "yearly" | "monthly";
 

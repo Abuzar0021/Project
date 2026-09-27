@@ -1,3 +1,7 @@
+/**
+ * Safe wrappers around localStorage and cookies. Storage can be full or
+ * blocked, and the app should keep working for the visit when it is.
+ */
 const PREFIX = "margin:";
 
 export function readJSON<T>(key: string, fallback: T): T {

@@ -1,3 +1,8 @@
+/**
+ * Turns issues found in one paragraph into positioned suggestions, keeping one
+ * per stretch of text when rules overlap.
+ */
+
 import type { DetectedIssue, Suggestion } from "@/types/suggestion";
 import type { RawMatch } from "@/types/languagetool";
 import { categoryFor, labelFor, shortenReason } from "@/lib/categories";

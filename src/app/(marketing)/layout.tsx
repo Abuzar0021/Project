@@ -1,3 +1,8 @@
+/**
+ * Shared frame for the public pages: nav, content, footer. The nav swaps
+ * "Log in" and "Sign up" for "Open Margin" when a session cookie is present.
+ */
+
 import { cookies } from "next/headers";
 import { SESSION_COOKIE } from "@/lib/account";
 import { Nav } from "@/components/marketing/Nav";

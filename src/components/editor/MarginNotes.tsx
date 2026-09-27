@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * The margin notes column. Each note sits level with its underline and is
+ * pushed down only as far as needed to clear the note above.
+ */
+
 import {
   useCallback,
   useEffect,

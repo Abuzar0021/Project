@@ -1,3 +1,5 @@
+/** Top bar with the breadcrumb on the left and tool chips on the right. */
+
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { MenuIcon } from "./icons";
 import styles from "./TopBar.module.css";

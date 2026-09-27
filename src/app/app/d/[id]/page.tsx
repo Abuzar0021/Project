@@ -1,3 +1,5 @@
+/** One draft in the editor. The draft itself loads in the browser. */
+
 import { DraftView } from "@/components/app/DraftView";
 
 export default async function DraftPage({
