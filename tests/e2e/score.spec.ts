@@ -43,7 +43,7 @@ async function scoreValue(page: Page): Promise<number> {
 test.describe("score panel", () => {
   test("fixing an issue raises the score", async ({ page }) => {
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
     await expect(
       page.locator(".margin-mark--correctness").first(),
     ).toBeVisible();
@@ -62,7 +62,7 @@ test.describe("score panel", () => {
 
   test("clicking a category row filters the editor", async ({ page }) => {
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
     await expect(page.locator(".margin-mark--clarity").first()).toBeVisible();
 
     await page.getByRole("button", { name: /Open score panel/ }).click();

@@ -15,7 +15,7 @@ test("shows the paused status when the checker is unreachable", async ({
       body: JSON.stringify({ error: "Cannot reach the checker." }),
     }),
   );
-  await page.goto("/");
+  await page.goto("/app");
 
   await expect(
     page.getByText(

@@ -6,7 +6,7 @@
 import { test, expect } from "@playwright/test";
 
 test("home page loads the editor shell and sample draft", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/app");
   await expect(page).toHaveTitle(/Margin/);
 
   // Wordmark in the top bar.

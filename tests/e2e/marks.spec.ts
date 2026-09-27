@@ -8,13 +8,13 @@ import { test, expect } from "@playwright/test";
 
 test.describe("suggestion marks", () => {
   test("marks render for the sample document", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/app");
     await expect(page.locator(".margin-mark").first()).toBeVisible();
     expect(await page.locator(".margin-mark").count()).toBeGreaterThan(0);
   });
 
   test("the category filter shows and hides marks", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/app");
     await expect(page.locator(".margin-mark--clarity").first()).toBeVisible();
 
     // Filtering to Tone hides clarity marks and keeps tone marks.
@@ -28,7 +28,7 @@ test.describe("suggestion marks", () => {
   });
 
   test("editing inside a mark removes it", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/app");
     await expect(page.locator(".margin-mark--tone").first()).toBeVisible();
     const before = await page.locator(".margin-mark--tone").count();
 

@@ -39,7 +39,7 @@ async function mockChecker(page: Page): Promise<void> {
 test.describe("suggestion card", () => {
   test("apply replaces the text and undo restores it", async ({ page }) => {
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
 
     const mark = page.locator(".margin-mark--correctness").first();
     await expect(mark).toBeVisible();
@@ -61,7 +61,7 @@ test.describe("suggestion card", () => {
 
   test("dismiss hides the mark and undo brings it back", async ({ page }) => {
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
 
     await page.locator(".margin-mark--correctness").first().click();
     await page
@@ -78,7 +78,7 @@ test.describe("suggestion card", () => {
 
   test("ignore this rule persists across a reload", async ({ page }) => {
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
 
     await page.locator(".margin-mark--correctness").first().click();
     await page

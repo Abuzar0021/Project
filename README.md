@@ -37,9 +37,25 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-Open http://localhost:3000. The app also runs without LanguageTool: the tone,
-clarity, and style rules run in the browser, and the status bar shows the
-checker as paused.
+Open http://localhost:3000 for the marketing page, or http://localhost:3000/app
+for the editor. The app also runs without LanguageTool: the tone, clarity, and
+style rules run in the browser, and the status bar shows the checker as paused.
+
+## Screenshots
+
+Every product image (the marketing page shots, `docs/screenshots/`, and the iOS
+app icon) comes from the real app. With the app running, regenerate them all:
+
+```bash
+node scripts/capture-screenshots.mjs
+```
+
+The checker is stubbed with LanguageTool's responses for the sample draft, so
+captures are deterministic. Rebuild afterwards: the marketing page reads the
+image sizes from `src/components/marketing/shots.json` at build time.
+
+If Playwright's browser download is blocked or slow, point the capture script
+and `pnpm e2e` at any installed Chromium with `PLAYWRIGHT_CHROMIUM_PATH`.
 
 ## Scripts
 
@@ -69,15 +85,18 @@ for HTTPS; see `docker/Caddyfile.example`.
 
 ```
 src/
-  app/       Next.js routes and the /api/check endpoint
-  components/ editor, card, rail, minimap, score, status, ui primitives
+  app/       Routes: / (marketing), /app (editor), /api/check, icons
+  components/ editor, card, rail, minimap, score, status, brand, marketing,
+             ui primitives
   lib/       Pure logic: checking pipeline, editor plugins, layout, scoring
   store/     Zustand stores
   styles/    tokens.css and globals.css
   types/     Shared domain types
 tests/       unit (Vitest) and e2e (Playwright)
 docker/      Dockerfile, compose files, and a Caddy example
-docs/        Architecture notes
+docs/        Architecture notes and screenshots
+public/      The logo mark source and the marketing page captures
+scripts/     capture-screenshots.mjs
 ```
 
 ## Where to start reading

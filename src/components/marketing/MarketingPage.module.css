@@ -1,0 +1,203 @@
+/* Marketing page (DESIGN 14). Values from tokens.css. One grid for the hero and
+   every feature row, hairline rules between rows, flat surfaces throughout. */
+
+.page {
+  --page-max: 1440px;
+  --page-gutter: var(--s-7);
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 0 var(--page-gutter);
+  /* The dithered mark's canvas overhangs the text column by design. */
+  overflow-x: clip;
+}
+
+/* Hero: text on the left, the product on the right. Never centered. */
+.hero {
+  display: grid;
+  /* The product gets two thirds, so the captures stay close to 1:1 and the
+     margin notes in them stay readable. */
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  gap: var(--s-8);
+  align-items: center;
+  padding: calc(var(--s-8) * 1.5) 0 var(--s-8);
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  margin-bottom: var(--s-7);
+}
+
+/* The canvas leaves room around the glyph for dots pushed by the pointer. The
+   negative margins trim that room so the bar lines up with the text column and
+   the lockup is only as tall as the visible mark. */
+.heroMark {
+  width: 136px;
+  height: 136px;
+  flex: none;
+  margin: -34px -39px;
+}
+
+.heroWord {
+  font: var(--t-ui-lg);
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.headline {
+  font: var(--t-display);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0;
+  max-width: 17ch;
+  text-wrap: balance;
+}
+
+.sub {
+  font: var(--t-doc-body);
+  color: var(--ink-muted);
+  margin: var(--s-4) 0 0;
+  max-width: 38ch;
+}
+
+.primary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  margin-top: var(--s-6);
+  padding: 0 var(--s-4);
+  border-radius: var(--radius-control);
+  background: var(--pencil);
+  color: var(--sheet);
+  font: var(--t-ui);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.primary:hover {
+  background: color-mix(in srgb, var(--pencil) 88%, var(--ink));
+}
+
+/* Screenshots sit in a plain frame: one hairline, no shadow, no tilt. */
+.heroShot,
+.featureShot {
+  margin: 0;
+  justify-self: start;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-note);
+  overflow: hidden;
+  background: var(--paper);
+}
+
+/* Feature rows share the hero's grid so every left edge lines up. */
+.feature {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  gap: var(--s-8);
+  align-items: start;
+  padding: var(--s-8) 0;
+  border-top: 1px solid var(--rule);
+}
+
+.featureText {
+  max-width: 40ch;
+}
+
+.featureTitle {
+  font: var(--t-doc-h2);
+  color: var(--ink);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.featureBody {
+  font: var(--t-doc-body);
+  color: var(--ink-muted);
+  margin: var(--s-3) 0 0;
+}
+
+.featureBody kbd {
+  font: var(--t-ui-sm);
+  color: var(--ink);
+  padding: 1px var(--s-1);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-control);
+  background: var(--sheet);
+  white-space: nowrap;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-6) 0 var(--s-7);
+  border-top: 1px solid var(--rule);
+}
+
+.footerLink {
+  font: var(--t-ui);
+  color: var(--ink-muted);
+  text-decoration: none;
+  border-radius: var(--radius-control);
+  padding: var(--s-1) var(--s-2);
+  margin-right: calc(var(--s-2) * -1);
+}
+
+.footerLink:hover {
+  color: var(--ink);
+}
+
+/* Narrow screens: one column, text first, then the product. */
+@media (max-width: 959px) {
+  .page {
+    --page-gutter: var(--s-5);
+  }
+
+  .hero,
+  .feature {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-6);
+  }
+
+  .hero {
+    padding-top: var(--s-8);
+  }
+
+  .feature {
+    padding: var(--s-7) 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .page {
+    --page-gutter: var(--s-4);
+  }
+
+  .lockup {
+    margin-bottom: var(--s-6);
+  }
+
+  .heroWord {
+    font-size: 26px;
+  }
+
+  /* Frames around shots cropped to the notes fill the column, so the enlarged
+     image inside has a definite width to size against. */
+  .shotFocus {
+    justify-self: stretch;
+  }
+
+  .primary {
+    min-height: 44px;
+  }
+}

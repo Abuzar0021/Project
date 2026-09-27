@@ -1,10 +1,8 @@
 /**
- * Home page: mounts the editor shell.
- * The shell is a client component (it owns the TipTap editor and browser
- * storage); this server component just renders it as the whole page.
+ * Home page (/): the marketing page (DESIGN 14). The editor lives at /app.
  */
-import { EditorShell } from "@/components/editor/EditorShell";
+import { MarketingPage } from "@/components/marketing/MarketingPage";
 
 export default function Home() {
-  return <EditorShell />;
+  return <MarketingPage />;
 }

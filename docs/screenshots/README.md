@@ -4,9 +4,9 @@ Pitch screenshots of Margin at three widths in both themes, captured with
 Playwright against the production build (LanguageTool mocked so all four
 categories show):
 
-- `light-1440.png`, `dark-1440.png` — desktop, full margin rail
-- `light-900.png`, `dark-900.png` — tablet, collapsed dot rail
-- `light-390.png`, `dark-390.png` — mobile, inline marks, no rail or minimap
+- `light-1440.png`, `dark-1440.png`: desktop, full margin rail
+- `light-900.png`, `dark-900.png`: tablet, collapsed dot rail
+- `light-390.png`, `dark-390.png`: mobile, inline marks, no rail or minimap
 
 ## Design review (Phase 9)
 

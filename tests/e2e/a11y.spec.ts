@@ -40,7 +40,7 @@ async function scan(page: Page) {
 test.describe("accessibility", () => {
   test("default state has no violations", async ({ page }) => {
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
     await expect(page.locator(".margin-mark").first()).toBeVisible();
     const results = await scan(page);
     expect(results.violations).toEqual([]);
@@ -48,7 +48,7 @@ test.describe("accessibility", () => {
 
   test("card open has no violations", async ({ page }) => {
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
     await page.locator(".margin-mark--correctness").first().click();
     await expect(page.getByRole("dialog")).toBeVisible();
     const results = await scan(page);
@@ -57,9 +57,24 @@ test.describe("accessibility", () => {
 
   test("score panel open has no violations", async ({ page }) => {
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
     await page.getByRole("button", { name: /Open score panel/ }).click();
     await expect(page.getByRole("dialog", { name: "Score" })).toBeVisible();
+    const results = await scan(page);
+    expect(results.violations).toEqual([]);
+  });
+
+  test("marketing page has no violations", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    const results = await scan(page);
+    expect(results.violations).toEqual([]);
+  });
+
+  test("marketing page on mobile has no violations", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await page.goto("/");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const results = await scan(page);
     expect(results.violations).toEqual([]);
   });
@@ -67,7 +82,7 @@ test.describe("accessibility", () => {
   test("mobile default has no violations", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 800 });
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
     await expect(page.locator(".margin-mark").first()).toBeVisible();
     const results = await scan(page);
     expect(results.violations).toEqual([]);

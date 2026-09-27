@@ -1,0 +1,18 @@
+{
+  "hero": {
+    "width": 2090,
+    "height": 1098
+  },
+  "rail": {
+    "width": 2090,
+    "height": 648
+  },
+  "card": {
+    "width": 864,
+    "height": 644
+  },
+  "marks": {
+    "width": 1364,
+    "height": 692
+  }
+}

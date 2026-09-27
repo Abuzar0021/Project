@@ -19,12 +19,13 @@ Suggestions are not dumped in a generic right-hand list. Each one is a **margin 
 
 ## 2. Design principles
 
-1. **The text is the hero.** The writing sheet gets the most space, the best type, and the calmest color. Chrome recedes.
-2. **Every mark earns its place.** Underline style, color, and note position all encode information (category, severity, location). Nothing is decorative.
-3. **Category is never color alone.** Each category has its own underline stroke style so the UI works for color-blind users and in grayscale.
-4. **Motion only answers actions.** No page-load choreography, no hover animations on every element. Motion confirms what changed (a fix applied, a note activated).
-5. **Keyboard first, mouse friendly.** Every action reachable without a pointer.
-6. **Honest scoring.** Scores are heuristic and the UI says so in plain words. No fake precision.
+Reference points: **Bear** for the writing surface (warm, quiet, confident use of negative space, nothing decorative) and **Linear** for the interface chrome (precise, custom, no default component-kit look). The fusion: a calm page to write on, wrapped in an interface that feels built, not assembled.
+
+1. **The text is the hero.** Chrome recedes further than in a typical SaaS tool, closer to Bear's restraint than Grammarly's density.
+2. **Every mark earns its place.** No decoration that doesn't encode information.
+3. **Nothing borrowed from a component kit at default settings.** Every button, card, and input is intentionally spaced and styled, the way Linear's are.
+4. **Motion is felt, not seen.** Subtle, physical, never a flourish.
+5. **The product never announces that it's a tool, or that AI built it.** It reads as software someone designed, full stop.
 
 ---
 
@@ -75,6 +76,10 @@ Theme follows `prefers-color-scheme`, with a manual toggle stored in `localStora
 
 All text and underline colors must meet WCAG AA contrast against their surface. Verify with a contrast check before finishing each phase that introduces color.
 
+### Flat color only
+
+No gradients anywhere, not even subtle ones: not on buttons, not on backgrounds, not on the score ring. Linear and Bear both use flat color exclusively. A single flat accent color (`--pencil`, brass in dark mode) does everything a gradient would have done, with more restraint.
+
 ---
 
 ## 4. Typography
@@ -94,6 +99,7 @@ Load via `next/font/google` with `display: swap`.
 
 | Token | Size / line-height | Family / weight | Use |
 |---|---|---|---|
+| `--t-display` | 34 to 44px (fluid) / 1.15 | Newsreader 500 | Marketing page headline only |
 | `--t-doc-h1` | 32px / 1.25 | Newsreader 600 | Document title |
 | `--t-doc-h2` | 24px / 1.3 | Newsreader 600 | Headings inside the doc |
 | `--t-doc-body` | 19px / 1.65 | Newsreader 400 | Editor body |
@@ -139,6 +145,8 @@ No gradients anywhere.
 | Note removed | Fade out, remaining notes slide to close the gap | 160ms |
 
 That is the full list. Nothing animates on page load. Under `prefers-reduced-motion: reduce`, all of the above become instant, except the applied-fix wash, which becomes a static tint for 600ms then disappears.
+
+Motion in Bear and Linear is short, physical, and single-purpose: it confirms one state change and disappears. No parallax, no staggered reveals, no bouncy easing. Keep every timing and easing curve above; the discipline is in never adding a new animation "for polish." The one sanctioned exception is the dithered logo on the marketing page hero (8.7), which responds to the pointer and is static under reduced motion.
 
 ---
 
@@ -309,6 +317,16 @@ Small text in the top bar next to the word count.
 | Checker unreachable | "Checking paused. Can't reach the checker, retrying in 10s." |
 | Document empty | Nothing shown |
 
+### 8.7 Logo mark
+
+A simple two-shape glyph, not a wordmark alone, not an icon-heavy symbol. It states the product's core relationship visually: a solid bar (the page's edge) beside a solid dot (a note pinned to it), the same relationship every margin note in the app draws between text and its annotation.
+
+- **Shapes:** one rounded vertical bar, one filled circle positioned beside it. Solid fills only, both shapes the same flat color, `--ink`. `--ink` already inverts with the theme (near black in light mode, near white in dark mode), so the mark never stays fixed black on a dark page.
+- **No gradient, no outline-only version, no drop shadow.** The mark must survive rendering as a flat silhouette at 16px (browser tab favicon) as easily as at 240px.
+- **Source file:** `public/margin-mark.svg`, solid black on a transparent background. It is the `imageSrc` input to the dithered logo (adapted from Componentry's `@componentry/dithered-logo`, vendored at `src/components/marketing/DitheredLogo.tsx`) on the marketing page hero, and is rendered as a flat static SVG everywhere else (top bar, favicon, app icon).
+- **Where the dithered, interactive version appears:** only on the marketing page hero, once, as the signature moment. Never inside the app itself. The editor's top bar uses the plain flat SVG, per section 2's rule that chrome recedes and never performs for its own sake.
+- **Wordmark pairing:** "Margin" set in Instrument Sans, sentence case, medium weight, sitting to the right of the mark with consistent optical spacing. No tagline stacked underneath it in the primary lockup.
+
 ---
 
 ## 9. Empty, loading, and error states
@@ -372,3 +390,44 @@ These are the tells of templated or AI-generated UI. Reject them in review.
 - Generic shadcn / component-kit look left at defaults
 - Monospace used just to look technical
 - Stock icons for everything; use icons only where they add meaning (category dot, close, chevron)
+
+Beyond that list, explicitly exclude the specific tells that make a product look AI-generated to someone looking for it:
+
+- **No "AI" badges, pills, or chips anywhere in the UI.** No small purple or blue rounded tag reading "AI" or "Powered by AI" next to any feature. The product doesn't need to announce its own mechanism.
+- **No sparkle, wand, or magic-star icons.** These are the single most recognizable AI-tool visual cliché as of 2026. Use plain, literal icons only (a checkmark, a pencil, a dot), never a glowing star or sparkle glyph for "smart" features.
+- **No gradient buttons, gradient text, or gradient backgrounds**, purple-to-blue or otherwise. Flat color only, per section 3.
+- **No glassmorphism** (frosted, blurred translucent panels). Linear and Bear both use solid, flat surfaces.
+- **No watermark, badge, or "made with" credit line of any kind** in the footer, corner, or loading screen. Nothing that names a tool, platform, or framework used to build the product.
+- **No generic centered-hero-with-gradient-CTA layout.** That composition (big centered headline, one paragraph, one gradient button, soft blurred shapes floating behind) is the default output of nearly every AI page-builder and is recognizable on sight.
+- **No default shadcn/ui, Tailwind UI, or component-kit styling left unmodified.** If a component's shadow, radius, or spacing matches an off-the-shelf kit's defaults exactly, it hasn't been designed, it's been assembled. Every component in this spec is custom per section 8.
+- **No emoji in interface copy, buttons, or empty states.** Plain, direct language only, per section 12.
+- **No loading skeletons with shimmer gradients.** Use a plain, flat, low-opacity placeholder instead, no animated sheen.
+
+The test before shipping any screen: would this be at home in Bear or Linear's own UI? If it reads as "clearly a modern web app template" rather than "clearly this specific product," it fails and gets redesigned, not just recolored.
+
+---
+
+## 14. Marketing page
+
+A single page, standalone from the app, built with the same tokens and typography as the product, not a different "landing page template" aesthetic layered on top. It lives at `/`; the editor lives at `/app`.
+
+### Hero
+
+Explicitly avoids the generic pattern banned in section 13 (centered headline, one paragraph, gradient button, soft blurred shapes). Instead:
+
+- **Two-column layout**, not centered. Left: the wordmark plus the dithered logo mark (interactive, per 8.7), a headline, one sentence of subtext, and a single primary button. Right: a real screenshot of the actual product mid-use, showing real text with a real margin note pinned beside it, cursor visible mid-interaction. Not an illustration, not an abstract shape: the actual interface doing the thing the product does.
+- **Headline:** states the mechanism plainly, does not oversell. Something in the register of "Suggestions that live where you're writing, not where they get in the way." No "revolutionize," "supercharge," or "unlock" language.
+- **Subtext:** one sentence, plain, no bullet list of adjectives.
+- **Primary button:** single action, "Open the editor", flat color, no gradient, no icon.
+- **No secondary "Watch a demo" button, no logos-of-companies-that-trust-us row.** This product has no customers yet; a fabricated trust row would itself be a tell.
+
+### Below the fold
+
+- **Three feature sections max**, each pairing one sentence of copy with one real screenshot or a small interactive fragment of the actual UI, never a stock illustration or icon grid.
+- **One section addresses the actual differentiation directly** (the margin-note approach vs. a popup sidebar), since this is the single clearest thing that separates the product from Grammarly. The copy from the original proposal to Callum already states this well; reuse it.
+- **No pricing section** until pricing is finalized.
+- **Footer:** minimal. No "made with" credit, no social icon row unless real accounts exist to link to.
+
+### What this page must not do
+
+Everything in section 13 applies here in full, and additionally: no auto-playing background video, no scroll-triggered stagger animations on any section (motion stays purposeful per section 6, not decorative), no fake testimonial quotes.

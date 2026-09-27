@@ -20,10 +20,16 @@
   flex: none;
 }
 
-.wordmark {
-  font: var(--t-ui-lg);
-  font-weight: 600;
-  color: var(--ink);
+/* The brand lockup links home. Padding gives it a comfortable hit area and room
+   for the focus ring; the negative margin keeps the glyph on the bar's edge. */
+.home {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 var(--s-1);
+  margin-left: calc(var(--s-1) * -1);
+  border-radius: var(--radius-control);
+  text-decoration: none;
 }
 
 .titleWrap {

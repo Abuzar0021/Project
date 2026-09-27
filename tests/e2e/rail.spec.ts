@@ -37,14 +37,14 @@ async function mockChecker(page: Page): Promise<void> {
 test.describe("margin rail", () => {
   test("renders notes beside the text", async ({ page }) => {
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
     await expect(page.getByRole("list", { name: "Suggestions" })).toBeVisible();
     expect(await page.getByRole("listitem").count()).toBeGreaterThan(3);
   });
 
   test("clicking a note expands it and applies inline", async ({ page }) => {
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
 
     const note = page
       .getByRole("listitem")
@@ -65,7 +65,7 @@ test.describe("margin rail", () => {
 
   test("shows the empty state for an empty document", async ({ page }) => {
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
     await page.getByRole("button", { name: "Document menu" }).click();
     await page.getByRole("menuitem", { name: "New draft" }).click();
     await expect(page.getByText("No suggestions right now.")).toBeVisible();

@@ -39,7 +39,7 @@ test("tapping a mark opens the bottom sheet and Apply works", async ({
   page,
 }) => {
   await mockChecker(page);
-  await page.goto("/");
+  await page.goto("/app");
 
   // Rail and minimap are hidden at mobile width.
   await expect(page.getByRole("list", { name: "Suggestions" })).toHaveCount(0);

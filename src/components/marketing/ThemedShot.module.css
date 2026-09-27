@@ -1,0 +1,41 @@
+/* ThemedShot: show the capture that matches the active theme. The selectors
+   mirror the theme rules in tokens.css. */
+
+.shot {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.dark {
+  display: none;
+}
+
+/* Phones: blow the capture up and anchor it right so the margin notes read at
+   close to their real size. The frame around it clips the left side. The
+   !important beats the inline max-width that caps desktop display size. */
+@media (max-width: 767px) {
+  .focusRight {
+    width: 240%;
+    max-width: none !important;
+    margin-left: -140%;
+  }
+}
+
+:global(:root[data-theme="dark"]) .light {
+  display: none;
+}
+
+:global(:root[data-theme="dark"]) .dark {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme="light"])) .light {
+    display: none;
+  }
+
+  :global(:root:not([data-theme="light"])) .dark {
+    display: block;
+  }
+}

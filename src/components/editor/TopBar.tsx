@@ -1,6 +1,7 @@
 /**
  * TopBar: the app chrome above the writing sheet (DESIGN.md 7 and 8.6).
- * Holds the wordmark, the editable document title with a small menu, the
+ * Holds the brand lockup (a link back to the marketing page), the editable
+ * document title with a small menu, the
  * category filter chips, the live word count, a status slot, the score button,
  * the theme toggle, and the keyboard-shortcuts link. The chips, score button,
  * and shortcuts link are intentionally inert this phase; they gain behavior in
@@ -9,7 +10,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useEditorUI } from "@/store/editor-ui";
+import { BrandLockup } from "@/components/brand/BrandLockup";
 import { CATEGORIES, CATEGORY_LABELS } from "@/types/suggestion";
 import type { CategoryFilter } from "@/types/suggestion";
 import { Chip } from "@/components/ui/Chip";
@@ -49,7 +52,9 @@ export function TopBar({ onNewDraft }: TopBarProps) {
   return (
     <header className={styles.bar}>
       <div className={styles.left}>
-        <span className={styles.wordmark}>Margin</span>
+        <Link href="/" className={styles.home}>
+          <BrandLockup />
+        </Link>
         <TitleMenu title={title} setTitle={setTitle} onNewDraft={onNewDraft} />
       </div>
 

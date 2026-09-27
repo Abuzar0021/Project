@@ -43,7 +43,7 @@ test("clicking the minimap scrolls the document", async ({ page }) => {
     }),
   );
   await seedLongDoc(page);
-  await page.goto("/");
+  await page.goto("/app");
   await page.waitForTimeout(500);
 
   const workspace = page.getByTestId("workspace");

@@ -38,7 +38,7 @@ test.describe("keyboard flow", () => {
     page,
   }) => {
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
     await expect(page.locator(".margin-mark").first()).toBeVisible();
 
     await page.locator(".ProseMirror").click();
@@ -58,7 +58,7 @@ test.describe("keyboard flow", () => {
 
   test("the shortcuts sheet opens", async ({ page }) => {
     await mockChecker(page);
-    await page.goto("/");
+    await page.goto("/app");
     await page.getByRole("button", { name: "Shortcuts" }).click();
     const dialog = page.getByRole("dialog", { name: "Keyboard shortcuts" });
     await expect(dialog).toBeVisible();

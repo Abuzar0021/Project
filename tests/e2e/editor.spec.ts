@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("editor foundation", () => {
   test("word count reflects the document", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/app");
     const editor = page.locator(".ProseMirror");
     await editor.click();
     // Replace everything with a known phrase so the count is deterministic.
@@ -18,7 +18,7 @@ test.describe("editor foundation", () => {
   });
 
   test("edits survive a reload", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/app");
     const editor = page.locator(".ProseMirror");
     await editor.click();
     await page.keyboard.press("End");
@@ -30,7 +30,7 @@ test.describe("editor foundation", () => {
   });
 
   test("undo restores text after an edit", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/app");
     const editor = page.locator(".ProseMirror");
     await editor.click();
     await page.keyboard.press("End");
@@ -41,7 +41,7 @@ test.describe("editor foundation", () => {
   });
 
   test("New draft clears the document", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/app");
     await page.getByRole("button", { name: "Document menu" }).click();
     await page.getByRole("menuitem", { name: "New draft" }).click();
     await expect(page.getByText("0 words")).toBeVisible();
