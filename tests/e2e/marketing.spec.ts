@@ -59,6 +59,31 @@ test.describe("marketing site", () => {
     ).toBeVisible();
   });
 
+  test("the hero draws the dithered mark and keeps the headline readable", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const drawn = () =>
+      page
+        .locator("main canvas")
+        .first()
+        .evaluate((canvas: HTMLCanvasElement) => {
+          const ctx = canvas.getContext("2d");
+          if (!ctx || canvas.width === 0) return false;
+          const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          for (let i = 3; i < data.length; i += 4)
+            if (data[i] !== 0) return true;
+          return false;
+        });
+    await expect.poll(drawn).toBe(true);
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "The writing editor that keeps your voice",
+      }),
+    ).toBeVisible();
+  });
+
   test("the hero runs the real editor with the five sample notes", async ({
     page,
   }) => {

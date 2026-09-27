@@ -1,0 +1,38 @@
+/* Inherits all type from its parent; only layout lives here. */
+/* The words are absolutely positioned, so the box has no baseline of its own.
+   It is exactly one line tall, so aligning it to the top of the line puts the
+   letters where plain text would sit. */
+.root {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: top;
+}
+
+/* Holds the SVG filter definition without taking up space. */
+.defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.stage {
+  position: relative;
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  user-select: none;
+}
+
+/* Both words sit on the same center line so the blend stays in place. */
+.layer {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  display: block;
+  width: max-content;
+  white-space: pre;
+  transform-origin: center;
+}

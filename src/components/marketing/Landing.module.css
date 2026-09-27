@@ -2,6 +2,14 @@
   padding-block: clamp(72px, 12vw, 150px) 56px;
 }
 
+/* The canvas leaves room around the mark for dots pushed by the pointer. The
+   negative margins pull the visible mark back into line with the headline. */
+.heroMark {
+  width: 168px;
+  height: 168px;
+  margin: -52px 0 -20px -60px;
+}
+
 .heroRow {
   display: flex;
   justify-content: space-between;
