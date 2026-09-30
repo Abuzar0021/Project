@@ -170,4 +170,34 @@ test.describe("marketing site", () => {
       expect(text).not.toMatch(/\p{Extended_Pictographic}/u);
     }
   });
+
+  test("the launch film builds, scrubs with the scroll and ends on sign up", async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(String(error)));
+    await page.goto("/launch");
+    await expect(
+      page.locator('[data-f="stage"][data-ready="true"]'),
+    ).toBeAttached();
+    await expect(
+      page.getByText("Writing with AI got faster.").first(),
+    ).toBeAttached();
+
+    // Scroll to the last frame: the film's call to action is on screen.
+    await page.evaluate(() => {
+      const film = document
+        .querySelector('[data-f="stage"]')
+        ?.closest(".pin-spacer");
+      if (!film) throw new Error("the stage is not pinned");
+      const end = film.getBoundingClientRect().bottom + window.scrollY;
+      window.scrollTo(0, end - window.innerHeight - 20);
+    });
+    const cta = page
+      .locator('[data-f="cta"]')
+      .getByRole("link", { name: "Write your next draft in Margin" });
+    await expect(cta).toBeVisible();
+    await expect(cta).toHaveAttribute("href", "/signup");
+    expect(errors).toEqual([]);
+  });
 });

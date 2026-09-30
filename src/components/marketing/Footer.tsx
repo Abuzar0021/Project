@@ -12,6 +12,7 @@ const COLUMNS = [
       { href: "/#features", label: "Features" },
       { href: "/pricing", label: "Pricing" },
       { href: "/changelog", label: "Changelog" },
+      { href: "/launch", label: "The film" },
     ],
   },
   {

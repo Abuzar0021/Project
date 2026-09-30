@@ -17,8 +17,10 @@
 
 import {
   type CSSProperties,
+  type Ref,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
 } from "react";
@@ -437,6 +439,19 @@ const drawParticles = (
   ctx.globalAlpha = 1;
 };
 
+/**
+ * Drive the same effects the pointer produces, for scripted moments such as
+ * the launch film. Positions are fractions of the canvas, from 0 to 1.
+ */
+export interface DitheredLogoHandle {
+  /** Send a ripple ring out from a point, as a click does. */
+  ripple: (x?: number, y?: number) => void;
+  /** Push the dots away from a point, as a hovering pointer does. */
+  stir: (x: number, y: number) => void;
+  /** Let the dots drift back home. */
+  settle: () => void;
+}
+
 export interface DitheredLogoProps {
   /** Image or SVG to turn into dots. Must be same-origin so pixels can be read. */
   imageSrc: string;
@@ -459,6 +474,8 @@ export interface DitheredLogoProps {
   particleColor?: string;
   style?: CSSProperties;
   className?: string;
+  /** Optional handle for triggering ripples and pushes from code. */
+  controls?: Ref<DitheredLogoHandle>;
 }
 
 export function DitheredLogo({
@@ -477,6 +494,7 @@ export function DitheredLogo({
   particleColor = "currentColor",
   style,
   className,
+  controls,
 }: DitheredLogoProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const systemRef = useRef<ParticleSystem | null>(null);
@@ -627,6 +645,29 @@ export function DitheredLogo({
       startLoop,
     ],
   );
+
+  useImperativeHandle(controls, () => {
+    const point = (x: number, y: number) => {
+      const rect = canvasRef.current?.getBoundingClientRect();
+      return rect ? { x: rect.width * x, y: rect.height * y } : { x: 0, y: 0 };
+    };
+    return {
+      ripple: (x = 0.5, y = 0.5) => {
+        if (reducedMotion) return;
+        ripplesRef.current.push({ ...point(x, y), start: performance.now() });
+        startLoop();
+      },
+      stir: (x, y) => {
+        if (reducedMotion) return;
+        cursorRef.current = { ...point(x, y), active: true };
+        startLoop();
+      },
+      settle: () => {
+        cursorRef.current.active = false;
+        startLoop();
+      },
+    };
+  }, [reducedMotion, startLoop]);
 
   // Rebuild only when a setting actually changes, not on every render.
   useEffect(() => {
