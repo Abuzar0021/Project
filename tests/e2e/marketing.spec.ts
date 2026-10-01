@@ -184,6 +184,12 @@ test.describe("marketing site", () => {
       page.getByText("Writing with AI got faster.").first(),
     ).toBeAttached();
 
+    // Sound starts from a click and can be turned off again.
+    await page.getByRole("button", { name: "Sound off" }).click();
+    await expect(
+      page.getByRole("button", { name: "Sound on" }),
+    ).toHaveAttribute("aria-pressed", "true");
+
     // Scroll to the last frame: the film's call to action is on screen.
     await page.evaluate(() => {
       const film = document

@@ -80,6 +80,19 @@
   visibility: hidden;
 }
 
+/* Capture mode: the stage fills the window and the controls step aside. */
+.stage[data-capture="true"] {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+
+.stage[data-capture="true"] .controls,
+.stage[data-capture="true"] .hint,
+.stage[data-capture="true"] .progress {
+  display: none;
+}
+
 .rig {
   position: absolute;
   top: 0;

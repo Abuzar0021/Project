@@ -10,7 +10,11 @@
  * reverts the whole film and builds it again at the same point.
  *
  * Every named beat fires a "margin:film-beat" event on window as the
- * playhead crosses it, for sound design.
+ * playhead crosses it, and plays its sound when sound is on.
+ *
+ * With ?capture in the URL the film skips the scroll and exposes a seek
+ * function and the rendered soundtrack on window, so it can be exported
+ * frame by frame as a video.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -31,6 +35,7 @@ import {
   type FilmContext,
   type Scene,
 } from "./motion";
+import { FilmSound, renderSoundtrack, toWav } from "./sound";
 import { KeysLayer, token } from "./scenes/shared";
 import { ProblemLayer, problem } from "./scenes/Problem";
 import { LogoLayer, reframe } from "./scenes/Reframe";
@@ -66,6 +71,28 @@ export const SCENES: Scene[] = [
 /** Scroll distance per second of film. */
 const PX_PER_SECOND = 90;
 
+/** What the capture mode puts on window for the exporter. */
+export interface FilmCapture {
+  duration: number;
+  seek: (seconds: number) => void;
+  soundtrack: () => Promise<string>;
+}
+
+declare global {
+  interface Window {
+    __marginFilm?: FilmCapture;
+  }
+}
+
+function base64(bytes: ArrayBuffer): string {
+  const view = new Uint8Array(bytes);
+  let out = "";
+  for (let i = 0; i < view.length; i += 0x8000) {
+    out += String.fromCharCode(...view.subarray(i, i + 0x8000));
+  }
+  return btoa(out);
+}
+
 function clock(seconds: number): string {
   const s = Math.max(0, Math.round(seconds));
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
@@ -79,9 +106,12 @@ export function LaunchFilm() {
   const trigger = useRef<ScrollTrigger | null>(null);
   const playback = useRef<gsap.core.Tween | null>(null);
   const progress = useRef(0);
+  const direction = useRef(1);
+  const sound = useRef<FilmSound | null>(null);
   const [compact, setCompact] = useState(false);
   const [build, setBuild] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [soundOn, setSoundOn] = useState(false);
 
   // Phones get the narrower product frame; the product re-measures itself
   // and asks for a rebuild when it has.
@@ -125,6 +155,9 @@ export function LaunchFilm() {
       const film = root.current;
       const stage = film?.querySelector<HTMLElement>('[data-f="stage"]');
       if (build === 0 || !film || !stage) return;
+      const capture = new URLSearchParams(window.location.search).has(
+        "capture",
+      );
       const reduce = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
@@ -151,10 +184,13 @@ export function LaunchFilm() {
         beat(tl, name, at) {
           BEATS.push({ name, time: Math.round(at * 100) / 100 });
           tl.call(
-            () =>
+            () => {
+              // Sound only plays forward; scrubbing back is silent.
+              if (direction.current > 0) sound.current?.beat(name);
               window.dispatchEvent(
                 new CustomEvent(BEAT_EVENT, { detail: { name, time: at } }),
-              ),
+              );
+            },
             [],
             at,
           );
@@ -195,6 +231,25 @@ export function LaunchFilm() {
         }
       };
 
+      if (capture) {
+        tl.pause(0);
+        stage.dataset.capture = "true";
+        const beats = BEATS.slice();
+        window.__marginFilm = {
+          duration: total,
+          seek: (seconds) => {
+            tl.seek(seconds, true);
+            render(seconds);
+          },
+          soundtrack: async () =>
+            base64(toWav(await renderSoundtrack(total, beats))),
+        };
+        stage.dataset.ready = "true";
+        return () => {
+          delete window.__marginFilm;
+        };
+      }
+
       const st = ScrollTrigger.create({
         trigger: root.current,
         pin: stage,
@@ -205,8 +260,10 @@ export function LaunchFilm() {
         animation: tl,
         onUpdate: (self) => {
           progress.current = self.progress;
+          direction.current = self.direction;
           render(self.progress * total);
         },
+        onToggle: (self) => sound.current?.setBed(self.isActive),
       });
       trigger.current = st;
       render(0);
@@ -226,7 +283,30 @@ export function LaunchFilm() {
     { scope: root, dependencies: [build], revertOnUpdate: true },
   );
 
-  useEffect(() => () => void playback.current?.kill(), []);
+  useEffect(
+    () => () => {
+      playback.current?.kill();
+      sound.current?.dispose();
+    },
+    [],
+  );
+
+  /** Browsers only allow audio after a click, so sound starts from one. */
+  const startSound = async () => {
+    sound.current ??= new FilmSound();
+    await sound.current.enable();
+    sound.current.setBed(trigger.current?.isActive ?? true);
+    setSoundOn(true);
+  };
+
+  const toggleSound = () => {
+    if (soundOn) {
+      sound.current?.disable();
+      setSoundOn(false);
+    } else {
+      void startSound();
+    }
+  };
 
   const toggle = () => {
     const st = trigger.current;
@@ -236,6 +316,7 @@ export function LaunchFilm() {
       setPlaying(false);
       return;
     }
+    if (!soundOn) void startSound();
     const total = st.animation?.duration() ?? 0;
     let from = st.progress;
     if (from >= 0.999 || window.scrollY < st.start) {
@@ -284,6 +365,25 @@ export function LaunchFilm() {
         <div className={styles.controls}>
           <span className={styles.chapter} ref={chapter} aria-hidden="true" />
           <span className={styles.time} ref={time} aria-hidden="true" />
+          <button
+            type="button"
+            className={styles.play}
+            onClick={toggleSound}
+            aria-pressed={soundOn}
+          >
+            <svg width="12" height="10" viewBox="0 0 12 10" aria-hidden="true">
+              <path d="M1 3.5 H3.5 L6.5 1 V9 L3.5 6.5 H1 Z" />
+              {soundOn ? (
+                <path
+                  d="M8.5 3 Q10 5 8.5 7"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                />
+              ) : null}
+            </svg>
+            {soundOn ? "Sound on" : "Sound off"}
+          </button>
           <button type="button" className={styles.play} onClick={toggle}>
             {playing ? (
               <svg
