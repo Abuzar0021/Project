@@ -17,7 +17,7 @@ const KEYS = [
   { keys: ["⌘", "K"], label: "Command bar" },
 ];
 
-export const PROMISES = [
+const PROMISES = [
   {
     title: "No training on your text",
     text: "Your drafts shape your own voice profile and nothing else.",

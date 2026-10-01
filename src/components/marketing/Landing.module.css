@@ -19,11 +19,6 @@
   margin-top: 28px;
 }
 
-.heroLinks {
-  display: grid;
-  gap: 6px;
-}
-
 .new {
   display: flex;
   gap: 10px;

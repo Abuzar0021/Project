@@ -33,16 +33,10 @@ export function Hero() {
           beside your text. It learns how you write, so its edits sound like
           you.
         </p>
-        <div className={styles.heroLinks}>
-          <p className={styles.new}>
-            <b>New</b>
-            <Link href="/#stet-memory">Stet memory &rarr;</Link>
-          </p>
-          <p className={styles.new}>
-            <b>Film</b>
-            <Link href="/launch">Why Margin exists &rarr;</Link>
-          </p>
-        </div>
+        <p className={styles.new}>
+          <b>New</b>
+          <Link href="/#stet-memory">Stet memory &rarr;</Link>
+        </p>
       </div>
       <DemoFrame />
     </section>
